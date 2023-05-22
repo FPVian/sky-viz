@@ -5,13 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Streamlit",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run", 
+                "${workspaceFolder}/src/flights/streamlit/first_app.py"
+            ],
+            "console": "integratedTerminal",
+            "env": { "FLIGHTS_ENV": "dev" }
+        },
+        {
             "name": "Dev",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "env": { "PYTHON_APP_ENV": "dev" }
+            "env": { "FLIGHTS_ENV": "dev" }
         },
         {
             "name": "Prod",
@@ -20,7 +32,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "env": { "PYTHON_APP_ENV": "prod" }
+            "env": { "FLIGHTS_ENV": "prod" }
         }
     ]
 }
