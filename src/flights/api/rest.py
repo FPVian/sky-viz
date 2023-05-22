@@ -6,7 +6,7 @@ from typing import Optional
 
 log = logger.create(__name__)
 
-NUMBER_OF_TRIES = 3
+NUMBER_OF_TRIES = 5
 
 
 class BaseApi:
@@ -14,7 +14,7 @@ class BaseApi:
         self.url = url
         self.headers = headers
 
-    def get(self, params: Optional[str] = None):
+    def get(self, params: Optional[str] = None) -> requests.Response or None:
         response = requests.get(self.url, headers=self.headers, params=params, timeout=5)
         for _ in range(NUMBER_OF_TRIES):
             if response.status_code == 200:
@@ -30,4 +30,4 @@ class BaseApi:
                 log.error(f'Response headers: {e.response.headers}')
                 log.error(f'Request url: {e.response.request.url}')
                 log.error(f'Request method: {e.response.request.method}')
-        raise ConnectionAbortedError(f'Failed to get {self.url} after {NUMBER_OF_TRIES} tries')
+        log.critical(f'Failed to get response from {self.url} after {NUMBER_OF_TRIES} tries')

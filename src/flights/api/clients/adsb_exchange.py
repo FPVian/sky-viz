@@ -9,7 +9,10 @@ log = logger.create(__name__)
 
 class AdsbExchangeClient():
 
-    def get_aircraft_scatter(self, lat: float, lon: float):
+    def __init__(self) -> None:
+        self.api_key: str = s.AdsbExchange.API_KEY
+
+    def get_aircraft_scatter(self, lat: float, lon: float) -> list[dict] or None:
         '''
         Returns a dict of aircraft within 1,000 km of a given lat/lon, flying at an elevation of 10,000 feet or higher.
         Response is in the following format:
@@ -35,18 +38,17 @@ class AdsbExchangeClient():
             'version': 0}]
         '''
         log.info(f'Getting aircraft scatter data from AdsbExchange API at lat: {lat}, lon: {lon}')
-        base_url = 'https://aircraftscatter.p.rapidapi.com/lat/{lat}/lon/{lon}/'
+        url = f'https://aircraftscatter.p.rapidapi.com/lat/{lat}/lon/{lon}/'
         headers = {
             'X-RapidAPI-Host': 'aircraftscatter.p.rapidapi.com',
-            'X-RapidAPI-Key': s.AdsbExchange.API_KEY
+            'X-RapidAPI-Key': self.api_key
         }
-        url = base_url.format(lat=str(lat), lon=str(lon))
-        response: dict = BaseApi(url, headers).get()
-        aircraft: list[dict] = response['ac'] if response['ac'] is not None else []
+        response: dict[str:list] = BaseApi(url, headers).get()
+        aircraft = response.get('ac')
         log.info(f'Found {len(aircraft)} aircraft data points')
         return aircraft
 
-    def get_aircraft_traffic(self, lat: float, lon: float):
+    def get_aircraft_traffic(self, lat: float, lon: float) -> list[dict] or None:
         '''
         Returns a dict of all aircraft within 25 nautical mile radius of a given lat/lon.
         Response is in the following format:
@@ -82,14 +84,13 @@ class AdsbExchangeClient():
             'wtc': '0'}]
         '''
         log.info(f'Getting aircraft traffic data from AdsbExchange API at lat: {lat}, lon: {lon}')
-        base_url = 'https://adsbx-flight-sim-traffic.p.rapidapi.com/api/aircraft/json/lat/{lat}/lon/{lon}/dist/25/'
+        url = f'https://adsbx-flight-sim-traffic.p.rapidapi.com/api/aircraft/json/lat/{lat}/lon/{lon}/dist/25/'
         headers = {
             'X-RapidAPI-Host': 'adsbx-flight-sim-traffic.p.rapidapi.com',
-            'X-RapidAPI-Key': s.AdsbExchange.API_KEY
+            'X-RapidAPI-Key': self.api_key
         }
-        url = base_url.format(lat=str(lat), lon=str(lon))
-        response: dict = BaseApi(url, headers).get()
-        aircraft: list[dict] = response['ac'] if response['ac'] is not None else []
+        response: dict[str:list] = BaseApi(url, headers).get()
+        aircraft = response.get('ac')
         log.info(f'Found {len(aircraft)} aircraft traffic data points')
         return aircraft
 
@@ -99,5 +100,5 @@ from pprint import pprint
 # pprint(AdsbExchangeClient().get_aircraft_traffic(90, 45))
 pprint(AdsbExchangeClient().get_aircraft_traffic(51.533, -0.0926))
 # test that list length = 'total'
-# test outcome for empty response ([])
+# test outcome for empty response (none)
 # test raise Key Error if 'ac' is missing
