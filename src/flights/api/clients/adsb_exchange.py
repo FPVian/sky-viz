@@ -2,8 +2,6 @@ from flights.utils import logger
 from flights.config.settings import s
 from flights.api.rest import BaseApi
 
-from typing import Optional
-
 log = logger.create(__name__)
 
 
@@ -93,12 +91,3 @@ class AdsbExchangeClient():
         aircraft = response.get('ac')
         log.info(f'Found {len(aircraft)} aircraft traffic data points')
         return aircraft
-
-
-# testing
-from pprint import pprint
-# pprint(AdsbExchangeClient().get_aircraft_traffic(90, 45))
-pprint(AdsbExchangeClient().get_aircraft_traffic(51.533, -0.0926))
-# test that list length = 'total'
-# test outcome for empty response (none)
-# test raise Key Error if 'ac' is missing

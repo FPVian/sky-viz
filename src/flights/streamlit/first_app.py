@@ -1,9 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import time
-
-from flights.streamlit.sections.sidebar import sidebar
+from datetime import timedelta
 
 st.set_page_config(
     page_title='Flight Data',
@@ -22,54 +20,35 @@ st.set_page_config(
         },
     )
 
-st.title('Flight Data')
+st.title('Uber pickups in NYC')
 
-with st.sidebar:
-    sidebar()
+DATE_COLUMN = 'date/time'
+DATA_URL = ('https://s3-us-west-2.amazonaws.com/'
+         'streamlit-demo-data/uber-raw-data-sep14.csv.gz')
 
-left_column, right_column = st.columns(2)
+@st.cache_data(ttl=timedelta(minutes=60))
+def load_data(nrows):
+    data = pd.read_csv(DATA_URL, nrows=nrows)
+    lowercase = lambda x: str(x).lower()
+    data.rename(lowercase, axis='columns', inplace=True)
+    data[DATE_COLUMN] = pd.to_datetime(data[DATE_COLUMN])
+    return data
 
-with left_column:
-    x = st.slider('multiplier', value=1)
-
-    chart_data = pd.DataFrame(
-        np.random.randn(20, 3),
-        columns=['a', 'b', 'c'])
-
-    st.line_chart(chart_data.multiply(x))
-
-    map_data = pd.DataFrame(
-        np.random.randn(1000, 2) / [50, 50] + [37.76, -122.4],
-        columns=['lat', 'lon'])
-
-    st.map(map_data)
-
-with right_column:
-    if st.checkbox('Show dataframe'):
-        chart_data = pd.DataFrame(
-        np.random.randn(20, 3),
-        columns=['a', 'b', 'c'])
-        chart_data
+# Load 10,000 rows of data into the dataframe.
+data = load_data(10000)
 
 
-    df = pd.DataFrame({
-        'first column': [1, 2, 3, 4],
-        'second column': [10, 20, 30, 40]
-        })
+if st.checkbox('Show raw data'):
+    st.subheader('Raw data')
+    st.write(data)
 
-    option = st.selectbox(
-        'Which number do you like best?',
-        df['first column'])
+st.subheader('Number of pickups by hour')
+hist_values = np.histogram(
+    data[DATE_COLUMN].dt.hour, bins=24, range=(0,24))[0]
+st.bar_chart(hist_values)
 
-    'You selected: ', option
 
-with st.expander('Expand'):
-    st.write('This text is hidden')
-    latest_iteration = st.empty()
-    bar = st.progress(0)
-
-    for i in range(100):
-        # Update the progress bar with each iteration.
-        latest_iteration.text(f'Iteration {i+1}')
-        bar.progress(i + 1)
-        time.sleep(0.1)
+hour_to_filter = st.slider('hour', 0, 23, 17)  # min: 0h, max: 23h, default: 17h
+filtered_data = data[data[DATE_COLUMN].dt.hour == hour_to_filter]
+st.subheader(f'Map of all pickups at {hour_to_filter}:00')
+st.map(filtered_data)
