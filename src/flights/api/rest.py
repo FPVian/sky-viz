@@ -1,4 +1,5 @@
 from flights.utils import logger
+from flights.config.settings import s
 
 import requests
 
@@ -6,28 +7,36 @@ from typing import Optional
 
 log = logger.create(__name__)
 
-NUMBER_OF_TRIES = 3
-
 
 class BaseApi:
-    def __init__(self, base_url):
-        self.base_url = base_url
 
-    def get(self, endpoint, headers: Optional[str] = None, params: Optional[str] = None):
-        url = self.base_url + endpoint
-        response = requests.get(url, headers=headers, params=params, timeout=5)
-        for _ in range(NUMBER_OF_TRIES):
-            if response.status_code == 200:
+    def __init__(self, url: str, headers: Optional[dict] = None):
+        self.url = url
+        self.headers = headers or {}
+
+    def _make_request(self, method: str, params: Optional[dict] = None) -> Optional[requests.Response]:
+        try:
+            response = requests.request(method, self.url, params=params, headers=self.headers, timeout=s.Api.TIMEOUT)
+            response.raise_for_status()
+            return response
+        except requests.exceptions.RequestException as error:
+            self._log_error(error)
+            return None
+
+    def _log_error(self, error: requests.exceptions.RequestException):
+        request = error.request
+        response = error.response
+        log.error(f'Error for {request.method} {request.url}: {error}')
+        if response is not None:
+            log.error(f'Status code {response.status_code}, response text:\n{response.text}')
+
+    def get(self, params: Optional[dict] = None) -> Optional[dict]:
+        for _ in range(s.Api.NUMBER_OF_TRIES):
+            response = self._make_request('GET', params)
+            if response is not None and response.status_code == 200:
+                log.debug(response.json())
                 return response.json()
-            try:
-                response.raise_for_status()
-                log.warning(f'Got status code {response.status_code} from {url}')
-                log.warning(f'response.text: {response.text}')
-            except requests.exceptions.HTTPError as e:
-                log.error(f'HTTPError: {e}')
-                log.error(f'HTTP Status Code: {e.response.status_code}')
-                log.error(f'Response: {e.response.text}')
-                log.error(f'Response headers: {e.response.headers}')
-                log.error(f'Request url: {e.response.request.url}')
-                log.error(f'Request method: {e.response.request.method}')
-        raise ConnectionAbortedError(f'Failed to get {url} after {NUMBER_OF_TRIES} tries')
+        log.critical(f'Failed to GET 200 status after {s.Api.NUMBER_OF_TRIES} tries. Url: {self.url} Params: {params}')
+        if response:
+            log.critical(f'Status code {response.status_code}, response text:\n{response.text}')
+        return None

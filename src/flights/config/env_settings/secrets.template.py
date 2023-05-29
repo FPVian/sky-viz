@@ -4,7 +4,9 @@ Rename this to secrets.py to store passwords and keys for different environments
 
 
 class Default:
-    pass
+
+    class AdsbExchange:
+        API_KEY: str = ''
 
 
 class Prod:
