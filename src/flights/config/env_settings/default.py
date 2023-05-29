@@ -27,3 +27,7 @@ class Settings(secrets.Default):
         DRIVER: str = 'sqlite'
         SQLITE_PATH: str = 'db.sqlite3'
         POSTGRES_URL: str = 'pass'
+
+    class Api:
+        TIMEOUT: int = 5
+        NUMBER_OF_TRIES: int = 5

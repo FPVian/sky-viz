@@ -18,7 +18,10 @@ def test_adsb_exchange_scatter_response_format():
     response: dict[str:list] = BaseApi(url, headers).get()
     log.debug(f'raw adsb exchange aircraft scatter response:\n{response}')
     assert 'ac' in response.keys()
-    assert len(response['ac']) == response['total']
+    if response['ac'] is not None:
+        assert len(response['ac']) == response['total']
+    else:
+        assert response['total'] == 0
 
 
 def test_adsb_exchange_traffic_response_format():
@@ -34,4 +37,7 @@ def test_adsb_exchange_traffic_response_format():
     response: dict[str:list] = BaseApi(url, headers).get()
     log.debug(f'raw adsb exchange aircraft traffic response:\n{response}')
     assert 'ac' in response.keys()
-    assert len(response['ac']) == response['total']
+    if response['ac'] is not None:
+        assert len(response['ac']) == response['total']
+    else:
+        assert response['total'] == 0
