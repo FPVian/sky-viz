@@ -1,4 +1,5 @@
 from flights.streamlit.sections.sidebar import sidebar
+from flights.api.clients.adsb_exchange import AdsbExchangeClient
 
 import streamlit as st
 
@@ -23,21 +24,33 @@ st.set_page_config(
 
 st.title('Flight Data')
 
-@st.cache_resource
-def init_db_connection():
-    pass
+
+# @st.cache_resource
+# def init_db_connection():
+#     pass
+
 
 @st.cache_data(ttl=timedelta(minutes=60))
-def fetch_data(_db_connection):
-    pass
+def fetch_data():
+    latitude = 39.8564  # Denver International Airport
+    longitude = -104.6764  # Denver International Airport
+    response = AdsbExchangeClient().get_aircraft_scatter(latitude, longitude)
+    return response
 
-with st.sidebar:
-    sidebar()
 
-left_column, right_column = st.columns(2)
+data = fetch_data()
 
-with left_column:
-    pass
 
-with right_column:
-    pass
+st.subheader('Map of current flights within 1,000km of Denver International Airport')
+st.map(data)
+
+# with st.sidebar:
+    # sidebar()
+
+# left_column, right_column = st.columns(2)
+
+# with left_column:
+#     pass
+
+# with right_column:
+#     pass
