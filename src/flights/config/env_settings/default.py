@@ -23,10 +23,15 @@ class Settings(secrets.Default):
         BYTES_PER_FILE: int = 1000000  # must be nonzero to rotate
         NUMBER_OF_BACKUPS: int = 1  # must be nonzero to rotate
 
-    class Database:
-        DRIVER: str = 'sqlite'
+    class Database(secrets.Default.Database):
+        DRIVER: str = 'sqlite'  # 'sqlite' or 'postgres'
         SQLITE_PATH: str = 'db.sqlite3'
-        POSTGRES_URL: str = 'pass'
+
+        class Postgres(secrets.Default.Database.Postgres):
+            HOST: str = 'localhost'
+            PORT: int = 5432
+            DB_NAME: str = 'flights_db'
+            USERNAME: str = 'dbuser'
 
     class Api:
         TIMEOUT: int = 5

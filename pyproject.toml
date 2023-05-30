@@ -9,9 +9,10 @@ name = "flights"
 version = "0.0.1"
 requires-python = ">=3.11"
 dependencies = [
-    "requests == 2.30.0",
-    "pytest == 7.3.1",
-    "alembic == 1.11.1",
-    "streamlit == 1.22.0",
     "flake8",
+    "pytest == 7.3.1",
+    "requests == 2.30.0",
+    "alembic == 1.11.1",
+    "psycopg[binary] == 3.1.9",
+    "streamlit == 1.22.0",
 ]

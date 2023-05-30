@@ -1,5 +1,5 @@
-from example.db import model, sqlite, postgres
-from example.config.settings import s
+from flights.db import model, sqlite, postgres
+from flights.config.settings import s
 
 from logging.config import fileConfig
 

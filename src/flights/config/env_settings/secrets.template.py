@@ -8,6 +8,10 @@ class Default:
     class AdsbExchange:
         API_KEY: str = ''
 
+    class Database:
+        class Postgres:
+            PASSWORD: str = ''
+
 
 class Prod:
     pass

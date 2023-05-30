@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
-from sqlalchemy.types import DateTime
+from datetime import datetime
 
 '''
 See the docs for SQLAlchemy annotated declarative tables here:
@@ -18,7 +18,14 @@ class Flights(Base):
     __tablename__ = 'flights'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    upload_date_utc: Mapped[DateTime]
+    upload_date_utc: Mapped[datetime]
+    flight_name: Mapped[str]
     latitude: Mapped[float]
     longitude: Mapped[float]
-    number_of_flights: Mapped[int]
+    altitude: Mapped[float]
+    heading: Mapped[float]
+    speed: Mapped[float]
+    # origin: Mapped[str]
+    # destination: Mapped[str]
+    # aircraft: Mapped[str]
+    # registration: Mapped[str]

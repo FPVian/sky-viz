@@ -1,13 +1,21 @@
 from flights.utils import logger
 from flights.data import extract
 
+import asyncio
+
 log = logger.create(__name__)
 
 
-def main():
+async def main():
     log.info('starting flights app')
-    extract.get_current_flights()
-
+    while True:
+        try:
+            extract.get_current_flights()
+            await asyncio.sleep(5)
+        except Exception as e:
+            log.error(e)
+            await asyncio.sleep(3600)
+            log.info('restarting flights app')
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
