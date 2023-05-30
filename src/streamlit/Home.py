@@ -1,4 +1,4 @@
-from flights.streamlit.sections.sidebar import sidebar
+from streamlit.sections.sidebar import sidebar
 from flights.api.clients.adsb_exchange import AdsbExchangeClient
 
 import streamlit as st
@@ -44,8 +44,8 @@ data = fetch_data()
 st.subheader('Map of current flights within 1,000km of Denver International Airport')
 st.map(data)
 
-# with st.sidebar:
-    # sidebar()
+with st.sidebar:
+    sidebar()
 
 # left_column, right_column = st.columns(2)
 

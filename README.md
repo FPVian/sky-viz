@@ -1,5 +1,6 @@
-# flight-data
-Aggregates and stores data from adsb receivers to create visualiations and generate insights about the world above us.
+# sky-viz
+Monitors and stores data from adsb receivers to create visualiations and generate insights about the world above us.
+Check it out! [skyviz.app](skyviz.app)
 
 ## Instructions
 - rename `secrets.template.py` to `secrets.py`
