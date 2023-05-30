@@ -1,6 +1,7 @@
 # sky-viz
 Monitors and stores data from adsb receivers to create visualiations and generate insights about the world above us.
-Check it out! [skyviz.app](skyviz.app)
+
+Check it out! [skyviz.app](https://skyviz.app)
 
 ## Instructions
 - rename `secrets.template.py` to `secrets.py`

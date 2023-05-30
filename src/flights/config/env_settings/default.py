@@ -8,7 +8,7 @@ Settings usually must exist in Defaults to work with code completion
 
 
 class Settings(secrets.Default):
-    ENV_VAR_NAME: str = 'FLIGHTS_ENV'
+    ENV_VAR_NAME: str = 'SKYVIZ_ENV'
     BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
     PROJECT_ROOT: Path = BASE_DIR.parent.parent
 
@@ -33,6 +33,6 @@ class Settings(secrets.Default):
             DB_NAME: str = 'flights_db'
             USERNAME: str = 'dbuser'
 
-    class Api:
+    class Api(secrets.Default.Api):
         TIMEOUT: int = 5
         NUMBER_OF_TRIES: int = 5

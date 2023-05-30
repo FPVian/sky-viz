@@ -1,4 +1,4 @@
-from streamlit.sections.sidebar import sidebar
+from skyviz.sections.sidebar import sidebar
 from flights.api.clients.adsb_exchange import AdsbExchangeClient
 
 import streamlit as st

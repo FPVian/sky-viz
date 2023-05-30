@@ -1,4 +1,5 @@
 from flights.utils import logger
+from flights.config.settings import s
 from flights.data import extract
 
 import asyncio

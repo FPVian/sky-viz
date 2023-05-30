@@ -8,7 +8,7 @@ log = logger.create(__name__)
 class AdsbExchangeClient():
 
     def __init__(self) -> None:
-        self.api_key: str = s.AdsbExchange.API_KEY
+        self.api_key: str = s.Api.AdsbExchange.API_KEY
 
     def get_aircraft_scatter(self, lat: float, lon: float) -> list:
         '''

@@ -11,28 +11,28 @@
             "module": "streamlit",
             "args": [
                 "run", 
-                "${workspaceFolder}/src/streamlit/Home.py"
+                "${workspaceFolder}/src/skyviz/Home.py"
             ],
             "console": "integratedTerminal",
-            "env": { "FLIGHTS_ENV": "dev" }
+            "env": { "SKYVIZ_ENV": "dev" }
         },
         {
-            "name": "Dev",
+            "name": "Dev Current File",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "env": { "FLIGHTS_ENV": "dev" }
+            "env": { "SKYVIZ_ENV": "dev" }
         },
         {
-            "name": "Prod",
+            "name": "Prod Current File",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "env": { "FLIGHTS_ENV": "prod" }
+            "env": { "SKYVIZ_ENV": "prod" }
         }
     ]
 }
