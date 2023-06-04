@@ -22,6 +22,5 @@ dependencies = [
 
 [tool.pytest.ini_options]
 # switch commented line to test other module
-# only one hydra config can be active at a time
 addopts = "--ignore=tests/skyviz"
 # addopts = "--ignore=tests/flights"
