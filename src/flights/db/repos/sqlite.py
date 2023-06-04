@@ -1,5 +1,5 @@
-from flights.config.settings import s
 from flights.utils import logger
+from flights.db.base_repo import BaseRepository
 
 from sqlalchemy import create_engine
 
@@ -11,10 +11,11 @@ https://docs.sqlalchemy.org/en/20/core/engines.html
 '''
 
 
-class Repository:
-    def __init__(self):
-        self.db_path = s.Database.SQLITE_PATH
+class SqliteRepository(BaseRepository):
+    def __init__(self, database):
+        self.db_path = database
 
+    @property
     def engine(self):
         log.info('creating sqlite engine')
         return create_engine(f'sqlite:///{self.db_path}', echo=False)

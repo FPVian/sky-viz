@@ -11,7 +11,13 @@ Also consider unincluding views:
 ## Manipulating databases:
 
 - open the terminal and change directory to folder with alembic.ini file
-- set environment variable to select correct database
+- set environment variable to select correct database:
+
+> `export SKYVIZ_ENV='dev'`
+
+- check that the correct enviroment is set:
+
+> `printenv SKYVIZ_ENV`
 
 ### Check for changes to the database model:
 

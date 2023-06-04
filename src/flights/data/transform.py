@@ -5,7 +5,7 @@ log = logger.create(__name__)
 
 def get_current_flights():
     log.info('starting get_current_flights')
-    # do something
+    # add states based on lat/long
     log.info('get_current_flights complete!')
 
 

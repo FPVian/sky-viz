@@ -1,6 +1,8 @@
 # User-Defined
 *secrets.py
 *.log*
+.hydra/
+*.sqlite3
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
