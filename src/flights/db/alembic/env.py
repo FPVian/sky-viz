@@ -1,4 +1,5 @@
-from flights.db import model, sqlite, postgres
+from flights.db import model
+from flights.db.repos import sqlite, postgres
 from flights.config.settings import s
 
 from logging.config import fileConfig
@@ -14,10 +15,10 @@ target_metadata = model.Base.metadata
 
 
 def select_database_engine():
-    if s.Database.DRIVER == 'sqlite':
-        return sqlite.Repository().engine()
-    elif s.Database.DRIVER == 'postgres':
-        return postgres.Repository().engine()
+    if s.db.driver == 'sqlite':
+        return sqlite.SqliteRepository().engine()
+    elif s.db.driver == 'postgres':
+        return postgres.PostgresRepository().engine()
     else:
         print('ERROR - DATABASE DRIVER SETTINGS IMPROPERLY CONFIGURED')
 
@@ -59,7 +60,7 @@ def run_migrations_online() -> None:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            render_as_batch=True  # added this to add compatibility with SQLite
+            render_as_batch=True  # increases compatibility with SQLite
         )
 
         with context.begin_transaction():

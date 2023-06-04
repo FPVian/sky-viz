@@ -10,7 +10,7 @@ st.set_page_config(
     page_icon='✈️',
     layout='wide',
     menu_items={
-        'Get help': 'mailto:distantdollars@gmail.com?subject=Flight%20Data%20Help',
+        'Get help': 'mailto:ian@skyviz.app?subject=SkyViz%20Help',
         'About': '''
             ### Github
             [Source](https://www.github.com/fpvian/flight-data)

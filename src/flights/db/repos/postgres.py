@@ -1,5 +1,6 @@
 from flights.config.settings import s
 from flights.utils import logger
+from flights.db.base_repo import BaseRepository
 
 from sqlalchemy import create_engine, URL
 
@@ -11,15 +12,15 @@ https://docs.sqlalchemy.org/en/20/core/engines.html
 '''
 
 
-class Repository:
+class PostgresRepository(BaseRepository):
     def __init__(self):
         self.db_url = URL.create(
             drivername='postgresql+psycopg',
-            username=s.Database.Postgres.USERNAME,
-            password=s.Database.Postgres.PASSWORD,
-            host=s.Database.Postgres.HOST,
-            port=s.Database.Postgres.PORT,
-            database=s.Database.Postgres.DB_NAME
+            username=s.db.username,
+            password=s.db.password,
+            host=s.db.host,
+            port=s.db.port,
+            database=s.db.name
         )
 
     def engine(self):

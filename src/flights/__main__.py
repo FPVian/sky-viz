@@ -1,6 +1,5 @@
 from flights.utils import logger
-from flights.config.settings import s
-from flights.data import extract
+from flights.data import transform
 
 import asyncio
 
@@ -11,11 +10,11 @@ async def main():
     log.info('starting flights app')
     while True:
         try:
-            extract.get_current_flights()
+            transform.get_current_flights()
             await asyncio.sleep(5)
         except Exception as e:
             log.error(e)
-            await asyncio.sleep(3600)
+            await asyncio.sleep(60)
             log.info('restarting flights app')
 
 if __name__ == '__main__':

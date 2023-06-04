@@ -8,7 +8,7 @@ log = logger.create(__name__)
 class AdsbExchangeClient():
 
     def __init__(self) -> None:
-        self.api_key: str = s.Api.AdsbExchange.API_KEY
+        self.api_key: str = s.api.adsb_exchange.api_key
 
     def get_aircraft_scatter(self, lat: float, lon: float) -> list:
         '''
@@ -73,7 +73,7 @@ class AdsbExchangeClient():
             'X-RapidAPI-Host': 'aircraftscatter.p.rapidapi.com',
             'X-RapidAPI-Key': self.api_key
         }
-        response: dict[str:list] = BaseApi(url, headers).get()
+        response: dict[str, list] = BaseApi(url, headers).get()
         aircraft = None
         if response:
             aircraft = response.get('ac')
@@ -126,7 +126,7 @@ class AdsbExchangeClient():
             'X-RapidAPI-Host': 'adsbx-flight-sim-traffic.p.rapidapi.com',
             'X-RapidAPI-Key': self.api_key
         }
-        response: dict[str:list] = BaseApi(url, headers).get()
+        response: dict[str, list] = BaseApi(url, headers).get()
         aircraft = None
         if response:
             aircraft = response.get('ac')

@@ -6,15 +6,16 @@ import alembic.config
 import sqlite3
 import os
 
-os.chdir(f'{s.BASE_DIR}/db/')
+
+os.chdir(f'{s.project_root}/src/flights/db/')
 
 # %%
 alembic.config.main(argv=['upgrade', 'heads'])
 
 # %%
-con = sqlite3.connect(s.Database.SQLITE_PATH)
+con = sqlite3.connect(s.db.sqlite_path)
 
 # %%
-os.remove(s.Database.SQLITE_PATH)
+os.remove(s.db.sqlite_path)
 
 # %%

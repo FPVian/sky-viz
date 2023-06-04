@@ -13,9 +13,9 @@ def test_adsb_exchange_scatter_response_format():
     url = 'https://aircraftscatter.p.rapidapi.com/lat/37.3387/lon/-122.8853/'
     headers = {
         'X-RapidAPI-Host': 'aircraftscatter.p.rapidapi.com',
-        'X-RapidAPI-Key': s.AdsbExchange.API_KEY
+        'X-RapidAPI-Key': s.api.adsb_exchange.api_key
     }
-    response: dict[str:list] = BaseApi(url, headers).get()
+    response = BaseApi(url, headers).get()
     log.debug(f'raw adsb exchange aircraft scatter response:\n{response}')
     assert 'ac' in response.keys()
     if response['ac'] is not None:
@@ -32,9 +32,9 @@ def test_adsb_exchange_traffic_response_format():
     url = 'https://adsbx-flight-sim-traffic.p.rapidapi.com/api/aircraft/json/lat/37.3387/lon/-122.8853/dist/25/'
     headers = {
         'X-RapidAPI-Host': 'adsbx-flight-sim-traffic.p.rapidapi.com',
-        'X-RapidAPI-Key': s.AdsbExchange.API_KEY
+        'X-RapidAPI-Key': s.api.adsb_exchange.api_key
     }
-    response: dict[str:list] = BaseApi(url, headers).get()
+    response = BaseApi(url, headers).get()
     log.debug(f'raw adsb exchange aircraft traffic response:\n{response}')
     assert 'ac' in response.keys()
     if response['ac'] is not None:

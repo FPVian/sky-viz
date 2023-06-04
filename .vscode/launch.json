@@ -33,6 +33,15 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "env": { "SKYVIZ_ENV": "prod" }
-        }
+        },
+        {
+            "name": "Debug Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": { "SKYVIZ_ENV": "debug" }
+        },
     ]
 }

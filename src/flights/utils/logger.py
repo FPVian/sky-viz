@@ -10,24 +10,24 @@ logging docs: https://docs.python.org/3/howto/logging.html#loggers
 
 def create(name: str):
     logger = logging.getLogger(name)
-    logger.setLevel(s.Logs.LEVEL)
+    logger.setLevel(s.logs.level)
 
     file_handler = handlers.RotatingFileHandler(
-        filename=s.Logs.FILE_PATH,
-        maxBytes=s.Logs.BYTES_PER_FILE,
-        backupCount=s.Logs.NUMBER_OF_BACKUPS
-        )
-    file_handler.setLevel(s.Logs.LEVEL)
-    file_formatter = logging.Formatter(s.Logs.FILE_FORMAT)
+        filename=s.logs.file_path,
+        maxBytes=s.logs.bytes_per_file,
+        backupCount=s.logs.number_of_backups
+    )
+    file_handler.setLevel(s.logs.level)
+    file_formatter = logging.Formatter(s.logs.file_format)
     file_handler.setFormatter(file_formatter)
     logger.addHandler(file_handler)
 
-    if s.Logs.LOG_TO_CONSOLE is False:
+    if s.logs.log_to_console is False:
         return logger
 
     stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(s.Logs.LEVEL)
-    stream_formatter = logging.Formatter(s.Logs.STREAM_FORMAT)
+    stream_handler.setLevel(s.logs.level)
+    stream_formatter = logging.Formatter(s.logs.stream_format)
     stream_handler.setFormatter(stream_formatter)
     logger.addHandler(stream_handler)
 
