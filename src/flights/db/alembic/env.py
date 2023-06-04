@@ -1,26 +1,18 @@
 from flights.db import model
-from flights.db.repos import sqlite, postgres
 from flights.config.settings import s
 
-from logging.config import fileConfig
-
 from alembic import context
+from hydra.utils import instantiate
+
+from logging.config import fileConfig
 
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
+
 target_metadata = model.Base.metadata
-
-
-def select_database_engine():
-    if s.db.driver == 'sqlite':
-        return sqlite.SqliteRepository().engine()
-    elif s.db.driver == 'postgres':
-        return postgres.PostgresRepository().engine()
-    else:
-        print('ERROR - DATABASE DRIVER SETTINGS IMPROPERLY CONFIGURED')
 
 
 def run_migrations_offline() -> None:
@@ -54,7 +46,7 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = select_database_engine()
+    connectable = instantiate(s.db).engine
 
     with connectable.connect() as connection:
         context.configure(

@@ -1,4 +1,4 @@
-from flights.config.groups.secrets import PostgresSecrets
+from skyviz.config.groups.secrets import PostgresSecrets
 
 from omegaconf import MISSING
 
@@ -12,7 +12,7 @@ class Db:
 
 @dataclass
 class PostgresDocker(Db):
-    _target_: str = 'flights.db.repos.postgres.PostgresRepository'
+    _target_: str = 'skyviz.db.repos.postgres.PostgresRepository'
     driver: str = 'postgresql+psycopg'
     host: str = 'localhost'
     port: int = 5432
@@ -23,5 +23,5 @@ class PostgresDocker(Db):
 
 @dataclass
 class Sqlite(Db):
-    _target_: str = 'flights.db.repos.sqlite.SqliteRepository'
+    _target_: str = 'skyviz.db.repos.sqlite.SqliteRepository'
     database: str = '${general.project_root}/src/flights/db/flights_db.sqlite3'

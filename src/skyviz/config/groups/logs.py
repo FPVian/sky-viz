@@ -5,8 +5,8 @@ from dataclasses import dataclass
 class Logs():
     level: str = 'INFO'
     log_to_console: bool = True
-    path: str = '${general.project_root}'
-    name: str = 'flights.log'
+    path: str = '${general.project_root}/logs'
+    name: str = 'skyviz.log'
     file_path: str = '${.path}/${.name}'
     stream_format: str = '[%(levelname)s] %(module)-12s - %(message)s'
     file_format: str = '[%(levelname)s] %(asctime)s %(name)-40s: %(funcName)-15s - %(message)-50s (pid:%(process)s)'

@@ -1,9 +1,12 @@
+from skyviz.utils import logger
 from skyviz.sections.sidebar import sidebar
-from flights.api.clients.adsb_exchange import AdsbExchangeClient
+from skyviz.utils.temp import DemoData
 
 import streamlit as st
 
 from datetime import timedelta
+
+log = logger.create(__name__)
 
 st.set_page_config(
     page_title='Flight Data',
@@ -34,7 +37,7 @@ st.title('Flight Data')
 def fetch_data():
     latitude = 39.8564  # Denver International Airport
     longitude = -104.6764  # Denver International Airport
-    response = AdsbExchangeClient().get_aircraft_scatter(latitude, longitude)
+    response = DemoData().get_aircraft_scatter(latitude, longitude)
     return response
 
 
@@ -54,3 +57,15 @@ with st.sidebar:
 
 # with right_column:
 #     pass
+
+
+def main():
+    pass
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception as e:
+        log.error(e)
+        raise e

@@ -35,8 +35,6 @@ class Environs:
             '_self_',
             {'general': 'general_dev'},
             {'db': 'sqlite'},
-            {'api': 'api_dev'},
-            {'api/adsb_exchange': 'adsb_exchange_dev'},
             {'logs': 'logs_dev'},
         ],
 
@@ -44,8 +42,6 @@ class Environs:
             '_self_',
             {'general': 'general_dev'},
             {'db': 'postgres_docker'},
-            {'api': 'api_dev'},
-            {'api/adsb_exchange': 'adsb_exchange_dev'},
             {'logs': 'logs_dev'},
         ],
 
@@ -53,8 +49,6 @@ class Environs:
             '_self_',
             {'general': 'general_prod'},
             {'db': 'postgres_docker'},
-            {'api': 'api_prod'},
-            {'api/adsb_exchange': 'adsb_exchange_prod'},
             {'logs': 'logs_prod'},
         ],
 
@@ -62,8 +56,6 @@ class Environs:
             '_self_',
             {'general': 'general_dev'},
             {'db': 'postgres_docker'},
-            {'api': 'api_dev'},
-            {'api/adsb_exchange': 'adsb_exchange_dev'},
             {'logs': 'logs_debug'},
         ]
     }
