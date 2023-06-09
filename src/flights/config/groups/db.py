@@ -1,13 +1,12 @@
 from flights.config.groups.secrets import PostgresSecrets
 
-from omegaconf import MISSING
-
 from dataclasses import dataclass
 
 
 @dataclass
 class Db:
-    database: str = MISSING
+    alembic_ini_path: str = '${general.project_root}/src/flights/db/alembic.ini'
+    alembic_folder_path: str = '${general.project_root}/src/flights/db/alembic'
 
 
 @dataclass
@@ -24,4 +23,4 @@ class PostgresDocker(Db):
 @dataclass
 class Sqlite(Db):
     _target_: str = 'flights.db.repos.sqlite.SqliteRepository'
-    database: str = '${general.project_root}/src/flights/db/flights_db.sqlite3'
+    database_path: str = '${general.project_root}/src/flights/db/flights_db.sqlite3'

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 class Logs():
     level: str = 'INFO'
     log_to_console: bool = True
-    path: str = '${general.project_root}'
+    path: str = '${general.project_root}/logs'
     name: str = 'flights.log'
     file_path: str = '${.path}/${.name}'
     stream_format: str = '[%(levelname)s] %(module)-12s - %(message)s'
