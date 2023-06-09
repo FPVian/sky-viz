@@ -14,7 +14,7 @@ class Base(DeclarativeBase):
 
 class Flights(Base):
     __tablename__ = 'flights'
-    id: Mapped[int] = mapped_column(primary_key=True)  # , autoincrement=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     flight: Mapped[Optional[str]]
     latitude: Mapped[float]
     longitude: Mapped[float]

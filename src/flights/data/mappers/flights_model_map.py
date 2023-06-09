@@ -12,7 +12,7 @@ class FlightsMapper:
     Takes the scatter data from the ADSB exchange API and maps it to the flights db model.
     '''
 
-    def map_scatter_data(self, scatter_data: list[dict], row_entry_date: datetime) -> list[Flights]:
+    def map_scatter_data(self, scatter_data: list[dict], sample_entry_date: datetime) -> list[Flights]:
         log.info(f'mapping {len(scatter_data)} rows of scatter data to flights table model')
         flights = []
         for flight in scatter_data:
@@ -37,7 +37,7 @@ class FlightsMapper:
                 table_row.source = flight.get('type')
                 table_row.rssi = self._safe_cast_to_float(flight.get('rssi'))
                 table_row.emergency = self._map_emergency(flight)
-                table_row.sample_entry_date_utc = row_entry_date  # datetime.utcnow().replace(tzinfo=pytz.utc)
+                table_row.sample_entry_date_utc = sample_entry_date
                 table_row.icao_id = flight['hex']
 
                 flights.append(table_row)
