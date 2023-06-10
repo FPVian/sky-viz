@@ -1,6 +1,9 @@
 Alembic docs:
 > https://alembic.sqlalchemy.org/en/latest/index.html
 
+Commands API:
+> https://alembic.sqlalchemy.org/en/latest/api/commands.html
+
 Alembic utils can be used to add autogenerate support for views in PostgreSQL:
 > https://github.com/olirice/alembic_utils
 

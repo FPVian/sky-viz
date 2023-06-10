@@ -23,4 +23,4 @@ class PostgresDocker(Db):
 @dataclass
 class Sqlite(Db):
     _target_: str = 'flights.db.repos.sqlite.SqliteRepository'
-    database_path: str = '${general.project_root}/src/flights/db/flights_db.sqlite3'
+    database_path: str = '${general.project_root}/src/database/flights_db.sqlite3'

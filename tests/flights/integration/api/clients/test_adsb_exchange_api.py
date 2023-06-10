@@ -1,6 +1,6 @@
 from flights.utils import logger
 from flights.config.settings import s
-from flights.api.rest import BaseApi
+from flights.api.rest import RestApi
 
 log = logger.create(__name__)
 
@@ -15,7 +15,7 @@ def test_adsb_exchange_scatter_response_format() -> None:
         'X-RapidAPI-Host': 'aircraftscatter.p.rapidapi.com',
         'X-RapidAPI-Key': s.api.adsb_exchange.api_key
     }
-    response: dict[str, list] = BaseApi(url, headers).get()
+    response: dict[str, list] = RestApi(url, headers).get()
     log.debug(f'raw adsb exchange aircraft scatter response:\n{response}')
     assert 'ac' in response.keys()
     if response['ac'] is not None:
@@ -34,7 +34,7 @@ def test_adsb_exchange_traffic_response_format() -> None:
         'X-RapidAPI-Host': 'adsbx-flight-sim-traffic.p.rapidapi.com',
         'X-RapidAPI-Key': s.api.adsb_exchange.api_key
     }
-    response: dict[str, list] = BaseApi(url, headers).get()
+    response: dict[str, list] = RestApi(url, headers).get()
     log.debug(f'raw adsb exchange aircraft traffic response:\n{response}')
     assert 'ac' in response.keys()
     if response['ac'] is not None:

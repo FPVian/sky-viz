@@ -1,5 +1,5 @@
 from flights.utils import logger
-from flights.db.model import Base
+from database.models import Base
 
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session
@@ -23,6 +23,7 @@ class BaseRepository(ABC):
         self.alembic_ini_path = alembic_ini_path
         self.alembic_folder_path = alembic_folder_path
     
+    @property
     @abstractmethod
     def engine(self) -> Engine:
         '''
@@ -46,5 +47,4 @@ class BaseRepository(ABC):
         '''
         log.info(f'inserting {len(rows)} rows into {rows[0].__tablename__}')
         with Session(self.engine) as session, session.begin():
-            # session.add_all(rows)
-            session.add(rows[0])
+            session.add_all(rows)

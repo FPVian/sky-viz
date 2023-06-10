@@ -1,8 +1,8 @@
 {
     "python.linting.flake8Enabled": true,
     "python.linting.flake8Args": [
-        "--max-line-length=125",
-        "--ignore=W292,W293",
+        "--max-line-length=150",
+        "--ignore=W292,W293,W503",
     ],
     "python.linting.mypyEnabled": true,
     "python.testing.pytestArgs": [

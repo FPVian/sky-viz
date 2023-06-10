@@ -2,17 +2,12 @@ from flights.utils import logger
 from flights.db.base_repo import BaseRepository
 
 from sqlalchemy import create_engine, Engine
-from alembic.config import Config
-from alembic import command
 
 log = logger.create(__name__)
 
 '''
 SQLAlchemy docs for engine configuration:
 https://docs.sqlalchemy.org/en/20/core/engines.html
-
-Alembic docs for programmatic usage:
-https://alembic.sqlalchemy.org/en/latest/api/commands.html#alembic.command.upgrade
 '''
 
 

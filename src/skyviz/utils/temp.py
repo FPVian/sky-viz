@@ -21,7 +21,7 @@ class DemoData():
             'X-RapidAPI-Host': 'aircraftscatter.p.rapidapi.com',
             'X-RapidAPI-Key': self.api_key
         }
-        response: dict[str, list] = BaseApi(url, headers).get()
+        response: dict[str, list] = RestApi(url, headers).get()
         aircraft = None
         if response:
             aircraft = response.get('ac')
@@ -32,7 +32,7 @@ class DemoData():
         return aircraft
 
 
-class BaseApi:
+class RestApi:
 
     def __init__(self, url: str, headers: Optional[dict] = None):
         self.url = url

@@ -9,7 +9,7 @@ import time
 log = logger.create(__name__)
 
 
-class BaseApi:
+class RestApi:
 
     def __init__(self, url: str, headers: Optional[dict] = None):
         self.url = url

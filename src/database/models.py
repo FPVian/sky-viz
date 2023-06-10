@@ -12,9 +12,10 @@ class Base(DeclarativeBase):
     __tablename__: str
 
 
-class Flights(Base):
-    __tablename__ = 'flights'
-    id: Mapped[int] = mapped_column(primary_key=True)
+class FlightSamples(Base):
+    __tablename__ = 'flight_samples'
+    icao_id: Mapped[str] = mapped_column(primary_key=True)
+    sample_entry_date_utc: Mapped[datetime] = mapped_column(primary_key=True)
     flight: Mapped[Optional[str]]
     latitude: Mapped[float]
     longitude: Mapped[float]
@@ -30,5 +31,3 @@ class Flights(Base):
     source: Mapped[Optional[str]]
     rssi: Mapped[Optional[float]]
     emergency: Mapped[Optional[str]]
-    sample_entry_date_utc: Mapped[datetime]
-    icao_id: Mapped[str]
