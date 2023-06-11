@@ -22,4 +22,4 @@ class GeneralDev(General):
 @dataclass
 class GeneralProd(General):
     suppress_errors: bool = True
-    wait_between_runs: int = 300
+    wait_between_runs: int = 1800

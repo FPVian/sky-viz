@@ -6,30 +6,20 @@ from sqlalchemy.orm import Session
 from alembic.config import Config
 from alembic import command
 
-from abc import ABC, abstractmethod
-
 log = logger.create(__name__)
 
 
-class BaseRepository(ABC):
+class BaseRepository():
     '''
     See the docs for writing SQL statements with SQLAlchemy 2.0 here:
     https://docs.sqlalchemy.org/en/20/orm/queryguide/index.html
 
     Unit of work pattern: https://docs.sqlalchemy.org/en/20/tutorial/orm_data_manipulation.html
     '''
-    @abstractmethod
-    def __init__(self, alembic_ini_path, alembic_folder_path):
+    def __init__(self, engine: Engine, alembic_ini_path: str, alembic_folder_path: str):
+        self.engine = engine
         self.alembic_ini_path = alembic_ini_path
         self.alembic_folder_path = alembic_folder_path
-    
-    @property
-    @abstractmethod
-    def engine(self) -> Engine:
-        '''
-        Creates a SQLAlchemy engine for connecting to the database.
-        '''
-        pass
 
     def upgrade_db(self):
         '''
@@ -45,6 +35,6 @@ class BaseRepository(ABC):
         '''
         Starts and closes a SQLAlchemy session for one-off inserting rows into a table.
         '''
-        log.info(f'inserting {len(rows)} rows into {rows[0].__tablename__}')
+        log.info(f'inserting {len(rows)} rows into {rows[0].__tablename__ if rows else None}')
         with Session(self.engine) as session, session.begin():
             session.add_all(rows)

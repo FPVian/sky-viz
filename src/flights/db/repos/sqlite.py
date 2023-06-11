@@ -14,11 +14,5 @@ https://docs.sqlalchemy.org/en/20/core/engines.html
 class SqliteRepository(BaseRepository):
     def __init__(self, database_path: str, alembic_ini_path: str, alembic_folder_path: str):
         log.info('instantiating sqlite repo')
-        self.db_path = database_path
-        self.alembic_ini_path = alembic_ini_path
-        self.alembic_folder_path = alembic_folder_path
-
-    @property
-    def engine(self) -> Engine:
-        log.info('creating sqlite engine')
-        return create_engine(f'sqlite:///{self.db_path}', echo=False)
+        engine = create_engine(f'sqlite:///{database_path}', echo=False)
+        super().__init__(engine, alembic_ini_path, alembic_folder_path)

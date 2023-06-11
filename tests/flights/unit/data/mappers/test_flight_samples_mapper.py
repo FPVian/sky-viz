@@ -49,7 +49,10 @@ def flight_data():
     ]
 
 
-def test_map_scatter_data(flight_data):
+def test_map_scatter_data(flight_data: list[dict]):
+    '''
+    Test that map_scatter_data returns a list of FlightSamples objects with the correct values.
+    '''
     mapper = FlightSamplesMapper()
     result = list(mapper.map_scatter_data(flight_data))
     expected_result = [
@@ -80,7 +83,10 @@ def test_map_scatter_data(flight_data):
     assert result_dict == expected_result_dict
 
 
-def test_filter_flight(flight_data):
+def test_filter_flight(flight_data: list[dict]):
+    '''
+    Test that filter_flight returns True if the flight is valid and False if it is not.
+    '''
     mapper = FlightSamplesMapper()
     valid_flight = mapper._filter_flight(flight_data[0])
     invalid_flight = mapper._filter_flight(flight_data[1])
@@ -88,7 +94,10 @@ def test_filter_flight(flight_data):
     assert invalid_flight is False
 
 
-def test_map_flight(flight_data):
+def test_map_flight(flight_data: list[dict]):
+    '''
+    Test that map_flight returns a FlightSamples object with the correct values.
+    '''
     mapper = FlightSamplesMapper()
     result = mapper._map_flight(flight_data[0])
     expected_result = FlightSamples(
@@ -117,6 +126,9 @@ def test_map_flight(flight_data):
 
 
 def test_map_empty_list():
+    '''
+    Test that map_scatter_data returns an empty list if the input is an empty list.
+    '''
     result = list(FlightSamplesMapper().map_scatter_data([]))
     expected_result = []
     assert result == expected_result

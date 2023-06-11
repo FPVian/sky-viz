@@ -1,6 +1,6 @@
 from flights.config.env import Environs
 from flights.config.groups.general import General, GeneralDev, GeneralProd
-from flights.config.groups.db import Db, PostgresDocker, Sqlite
+from flights.config.groups.db import Db, PostgresDocker, SqliteDev, SqliteTest
 from flights.config.groups.api import Api, ApiDev, ApiProd
 from flights.config.groups.api_subgroup.adsb_exchange import AdsbExchangeDev, AdsbExchangeProd
 from flights.config.groups.logs import Logs, LogsDev, LogsProd, LogsDebug
@@ -46,7 +46,8 @@ def register_config_options():
     cs.store(group='override hydra/job_logging', name='none', node='none')
     cs.store(group='general', name='general_dev', node=GeneralDev)
     cs.store(group='general', name='general_prod', node=GeneralProd)
-    cs.store(group='db', name='sqlite', node=Sqlite)
+    cs.store(group='db', name='sqlite_dev', node=SqliteDev)
+    cs.store(group='db', name='sqlite_test', node=SqliteTest)
     cs.store(group='db', name='postgres_docker', node=PostgresDocker)
     cs.store(group='api', name='api_dev', node=ApiDev)
     cs.store(group='api', name='api_prod', node=ApiProd)
