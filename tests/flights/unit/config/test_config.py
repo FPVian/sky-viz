@@ -15,7 +15,6 @@ def test_config_compilation(environment):
     If all tests fail, there is likely an issue with the current environment.
     Disable building s in settings.py and run tests again to narrow down the issue.
     '''
-    
     GlobalHydra.instance().clear()
     os.environ[Environs.environment_variable] = environment
     build_config()

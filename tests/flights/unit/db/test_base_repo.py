@@ -22,7 +22,8 @@ def sqlite_repo():
         pass
     db: SqliteRepository = instantiate(s.db)
     db.upgrade_db()
-    return db
+    yield db
+    os.remove(s.db.database_path)
 
 
 def test_insert_rows(sqlite_repo: SqliteRepository):
