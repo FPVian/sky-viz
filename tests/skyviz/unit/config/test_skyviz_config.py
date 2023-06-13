@@ -1,7 +1,5 @@
-from skyviz.config.settings import build_config
+from skyviz.config.settings import Settings
 from skyviz.config.env import Environs
-
-from hydra.core.global_hydra import GlobalHydra
 
 import pytest
 import os
@@ -15,7 +13,6 @@ def test_config_compilation(environment):
     If all tests fail, there is likely an issue with the current environment.
     Disable building s in settings.py and run tests again to narrow down the issue.
     '''
-    
-    GlobalHydra.instance().clear()
     os.environ[Environs.environment_variable] = environment
-    build_config()
+    Settings().build_config()
+    del os.environ['SKYVIZ_ENV']

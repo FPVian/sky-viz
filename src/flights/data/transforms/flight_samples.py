@@ -19,6 +19,7 @@ class FlightSamplesTransform:
             flights.append(table_row)
         self._remove_duplicates()
         log.info(f'mapped {len(flights)} rows of scatter data to flights table model')
+        log.debug(f'transformed data:\n\n\n{[flight.__dict__ for flight in flights]}\n\n\n')
         return flights
 
     def _remove_duplicates(self):

@@ -17,4 +17,4 @@ Check it out! [skyviz.app](https://skyviz.app)
 #
 
 ### Testing
-- There is a switch in the pyproject.toml folder for switching pytest between the flights module and skyviz module. This is a limitation of Hydra that two configurations cannot be active at the same time.
+- Run `pytest` in the project root to run all tests

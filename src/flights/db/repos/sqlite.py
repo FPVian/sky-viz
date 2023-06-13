@@ -1,7 +1,7 @@
 from flights.utils import logger
 from flights.db.base_repo import BaseRepository
 
-from sqlalchemy import create_engine, Engine
+from sqlalchemy import create_engine
 
 log = logger.create(__name__)
 

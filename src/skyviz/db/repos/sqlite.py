@@ -1,5 +1,5 @@
-from flights.utils import logger
-from flights.db.base_repo import BaseRepository
+from skyviz.utils import logger
+from skyviz.db.base_repo import BaseRepository
 
 from sqlalchemy import create_engine
 
@@ -12,10 +12,7 @@ https://docs.sqlalchemy.org/en/20/core/engines.html
 
 
 class SqliteRepository(BaseRepository):
-    def __init__(self, database):
-        self.db_path = database
-
-    @property
-    def engine(self):
-        log.info('creating sqlite engine')
-        return create_engine(f'sqlite:///{self.db_path}', echo=False)
+    def __init__(self, database_path: str):
+        log.info('instantiating sqlite repo')
+        engine = create_engine(f'sqlite:///{database_path}', echo=False)
+        super().__init__(engine)

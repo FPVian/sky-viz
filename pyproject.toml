@@ -20,8 +20,3 @@ dependencies = [
     "types-requests",
     "types-pytz",
 ]
-
-[tool.pytest.ini_options]
-# switch commented line to test other module
-addopts = "--ignore=tests/skyviz"
-# addopts = "--ignore=tests/flights"

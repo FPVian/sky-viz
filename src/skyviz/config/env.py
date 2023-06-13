@@ -34,7 +34,7 @@ class Environs:
         'default': [
             '_self_',
             {'general': 'general_dev'},
-            {'db': 'sqlite'},
+            {'db': 'sqlite_dev'},
             {'logs': 'logs_dev'},
         ],
 
@@ -52,10 +52,10 @@ class Environs:
             {'logs': 'logs_prod'},
         ],
 
-        'debug': [
+        'test': [
             '_self_',
             {'general': 'general_dev'},
-            {'db': 'postgres_docker'},
+            {'db': 'sqlite_test'},
             {'logs': 'logs_debug'},
         ]
     }

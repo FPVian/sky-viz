@@ -3,14 +3,12 @@ from skyviz.sections.sidebar import sidebar
 from skyviz.utils.temp import DemoData
 
 import streamlit as st
-from hydra.core.global_hydra import GlobalHydra
 
 from datetime import timedelta
 
 log = logger.create(__name__)
 
 
-# @hydra.main(version_base=None, config_name='config')
 def main():
     st.set_page_config(
         page_title='Flight Data',
@@ -67,7 +65,6 @@ def main():
 
 if __name__ == '__main__':
     try:
-        GlobalHydra.instance().clear()  # does this break logging or anything?
         main()
     except Exception as e:
         log.error(e)

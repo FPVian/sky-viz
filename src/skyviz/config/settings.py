@@ -1,6 +1,6 @@
 from skyviz.config.env import Environs
 from skyviz.config.groups.general import General, GeneralDev, GeneralProd
-from skyviz.config.groups.db import Db, PostgresDocker, Sqlite
+from skyviz.config.groups.db import Db, PostgresDocker, SqliteDev, SqliteTest
 from skyviz.config.groups.logs import Logs, LogsDev, LogsProd, LogsDebug
 
 import hydra
@@ -13,7 +13,6 @@ from omegaconf.dictconfig import DictConfig
 from typing import Optional, Any
 from dataclasses import dataclass, field
 
-
 '''
 Add new groups and static configs to the Config class.
 Add new dataclasses which belong to groups to the ConfigStore in register_config_options().
@@ -25,6 +24,9 @@ Structured configs in Hydra: https://hydra.cc/docs/tutorials/structured_config/i
 
 @dataclass
 class Config:
+    '''
+    Top-level settings and setting groups to be set at runtime
+    '''
     defaults: list[Any] = field(default_factory=Environs().defaults_list)
     hydra: Any = field(default_factory=lambda: {  # routes hydra output to .hydra folder
         'run': {'dir': '.hydra/outputs'},
@@ -36,30 +38,35 @@ class Config:
     logs: Logs = MISSING
 
 
-def register_config_options():
-    cs = ConfigStore.instance()
-    cs.store(name='config', node=Config)
-    cs.store(group='override hydra/hydra_logging', name='none', node='none')
-    cs.store(group='override hydra/job_logging', name='none', node='none')
-    cs.store(group='general', name='general_dev', node=GeneralDev)
-    cs.store(group='general', name='general_prod', node=GeneralProd)
-    cs.store(group='db', name='sqlite', node=Sqlite)
-    cs.store(group='db', name='postgres_docker', node=PostgresDocker)
-    cs.store(group='logs', name='logs_dev', node=LogsDev)
-    cs.store(group='logs', name='logs_prod', node=LogsProd)
-    cs.store(group='logs', name='logs_debug', node=LogsDebug)
+class Settings:
+    '''
+    Configures Hydra and then builds a new, independent/persistent, read-only OmegaConf object
+    '''
+    def register_config_options(self):
+        GlobalHydra.instance().clear()  # must clear the current Hydra config, if any, before creating another
+        cs = ConfigStore.instance()
+        cs.store(name='config', node=Config)
+        cs.store(group='override hydra/hydra_logging', name='none', node='none')
+        cs.store(group='override hydra/job_logging', name='none', node='none')
+        cs.store(group='general', name='general_dev', node=GeneralDev)
+        cs.store(group='general', name='general_prod', node=GeneralProd)
+        cs.store(group='db', name='sqlite_dev', node=SqliteDev)
+        cs.store(group='db', name='sqlite_test', node=SqliteTest)
+        cs.store(group='db', name='postgres_docker', node=PostgresDocker)
+        cs.store(group='logs', name='logs_dev', node=LogsDev)
+        cs.store(group='logs', name='logs_prod', node=LogsProd)
+        cs.store(group='logs', name='logs_debug', node=LogsDebug)
+
+    def build_config(self, overrides: Optional[list[str]] = None) -> DictConfig:
+        self.register_config_options()
+        initialize(version_base=None)
+        cfg = compose(config_name='config', overrides=overrides)
+        OmegaConf.set_readonly(cfg, True)  # prevents cfg from being modified at runtime
+        OmegaConf.to_object(cfg)  # converts cfg to a dataclass, which forces MISSING values to be set
+        return cfg
 
 
-def build_config(overrides: Optional[list[str]] = None) -> DictConfig:
-    register_config_options()
-    initialize(version_base=None)
-    cfg = compose(config_name='config', overrides=overrides)
-    OmegaConf.set_readonly(cfg, True)  # prevents cfg from being modified at runtime
-    OmegaConf.to_object(cfg)  # converts cfg to a dataclass, which forces MISSING values to be set
-    return cfg
-
-
-s = build_config()
+s = Settings().build_config()  # Global config object. Evironment is set the first time this file is imported.
 
 
 @hydra.main(version_base=None, config_name='config')
@@ -67,7 +74,6 @@ def save_config_to_file(cfg: DictConfig):
     print(OmegaConf.to_yaml(cfg))
 
 
-if __name__ == '__main__':
-    GlobalHydra.instance().clear()
-    register_config_options()
+if __name__ == '__main__':  # Prints and exports the current configuration to a gitignored folder (.hydra)
+    Settings().register_config_options()
     save_config_to_file()

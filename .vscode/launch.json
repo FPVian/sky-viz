@@ -41,7 +41,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "env": { "SKYVIZ_ENV": "debug" }
+            "env": { "SKYVIZ_ENV": "test" }
         },
     ]
 }

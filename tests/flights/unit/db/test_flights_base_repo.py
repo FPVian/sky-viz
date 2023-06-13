@@ -15,6 +15,7 @@ from datetime import datetime
 def sqlite_repo():
     '''
     Warning! This will delete a local sqlite database file, if any.
+    Make sure environment is set to 'test' in conftest.py
     '''
     try:
         os.remove(s.db.database_path)

@@ -19,6 +19,7 @@ class RestApi:
         try:
             response = requests.request(method, self.url, params=params, headers=self.headers, timeout=s.api.timeout)
             response.raise_for_status()
+            log.debug(f'api response:\n\n\n{response}\n\n\n')
             return response
         except requests.exceptions.RequestException as error:
             self._log_error(error)
