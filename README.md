@@ -20,7 +20,7 @@ $~$
 ## Manipulating databases:
 
 Open the terminal and navigate to folder with alembic.ini file
-> `cd src/flights/db/`
+> cd src/flights/db/
 
 Set environment variable to select correct database. For a local postgres docker container:
 > `export SKYVIZ_ENV='dev'`
