@@ -1,12 +1,20 @@
+from skyviz.config.settings import s
+from database.models import FlightSamples
+from skyviz.db.base_repo import BaseRepository
 from skyviz.utils import logger
 from skyviz.sections.sidebar import sidebar
-from skyviz.utils.temp import DemoData
 
 import streamlit as st
+import pandas as pd
+from hydra.utils import instantiate
 
 from datetime import timedelta
 
 log = logger.create(__name__)
+
+'''
+Streamlit API reference: https://docs.streamlit.io/library/api-reference
+'''
 
 
 def main():
@@ -31,36 +39,33 @@ def main():
 
     st.title('Flight Data')
 
+    @st.cache_resource
+    def init_db_connection() -> BaseRepository:
+        log.info('caching database connection')
+        return instantiate(s.db)
 
-    # @st.cache_resource
-    # def init_db_connection():
-    #     pass
+    @st.cache_data(ttl=timedelta(minutes=30))
+    def read_flight_samples() -> pd.DataFrame:
+        log.info('caching flight samples table')
+        db = init_db_connection()
+        table = pd.read_sql_table(FlightSamples.__tablename__, db.engine)
+        return table
 
+    flight_samples_data = read_flight_samples()
 
-    @st.cache_data(ttl=timedelta(minutes=60))
-    def fetch_data():
-        latitude = 39.8564  # Denver International Airport
-        longitude = -104.6764  # Denver International Airport
-        response = DemoData().get_aircraft_scatter(latitude, longitude)
-        return response
-
-
-    data = fetch_data()
-
-
-    st.subheader('Map of current flights within 1,000km of Denver International Airport')
-    st.map(data)
+    st.subheader('Map of flights within 1,000km of Denver International Airport')
+    st.map(flight_samples_data)
 
     with st.sidebar:
         sidebar()
 
-    # left_column, right_column = st.columns(2)
+    left_column, right_column = st.columns(2)
 
-    # with left_column:
-    #     pass
+    with left_column:
+        st.write('this is a left column')
 
-    # with right_column:
-    #     pass
+    with right_column:
+        st.write('this is a right column')
 
 
 if __name__ == '__main__':

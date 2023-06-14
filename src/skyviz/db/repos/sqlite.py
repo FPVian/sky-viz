@@ -12,6 +12,9 @@ https://docs.sqlalchemy.org/en/20/core/engines.html
 
 
 class SqliteRepository(BaseRepository):
+    '''
+    Creates a Sqlite connectable and executes database operations. 
+    '''
     def __init__(self, database_path: str):
         log.info('instantiating sqlite repo')
         engine = create_engine(f'sqlite:///{database_path}', echo=False)

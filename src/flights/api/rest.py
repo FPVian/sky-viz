@@ -8,9 +8,15 @@ import time
 
 log = logger.create(__name__)
 
+'''
+Requests docs: https://requests.readthedocs.io/en/latest/
+'''
+
 
 class RestApi:
-
+    '''
+    Handles API calls using the requests library.
+    '''
     def __init__(self, url: str, headers: Optional[dict] = None):
         self.url = url
         self.headers = headers or {}

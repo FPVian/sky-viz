@@ -1,5 +1,6 @@
 import streamlit as st
 
+
 def sidebar():
     # Add a selectbox to the sidebar:
     add_selectbox = st.selectbox(

@@ -7,6 +7,7 @@ log = logger.create(__name__)
 
 class AdsbExchangeClient():
     '''
+    Handles calls to AdsbExchange API.
     Fields reference: https://www.adsbexchange.com/version-2-api-wip/
     '''
     def __init__(self) -> None:

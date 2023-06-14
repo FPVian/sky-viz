@@ -12,6 +12,9 @@ https://docs.sqlalchemy.org/en/20/core/engines.html
 
 
 class PostgresRepository(BaseRepository):
+    '''
+    Creates a Postgres connectable and executes database operations.
+    '''
     def __init__(self, driver: str, username: str, password: str, host: str, port: int, database: str):
         log.info('instantiating postgres repo')
         db_url = URL.create(

@@ -7,6 +7,11 @@ from hydra.utils import instantiate
 from logging.config import fileConfig
 import logging
 
+'''
+Alembic docs: https://alembic.sqlalchemy.org/en/latest/index.html
+Commands API: https://alembic.sqlalchemy.org/en/latest/api/commands.html
+'''
+
 config = context.config
 
 if not logging.getLogger('__main__').hasHandlers():  # prevents logging setup if the app is already running

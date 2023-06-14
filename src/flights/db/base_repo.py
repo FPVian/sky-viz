@@ -8,13 +8,17 @@ from alembic import command
 
 log = logger.create(__name__)
 
+'''
+See the docs for writing SQL statements with SQLAlchemy 2.0 here:
+https://docs.sqlalchemy.org/en/20/orm/queryguide/index.html
+
+Unit of work pattern: https://docs.sqlalchemy.org/en/20/tutorial/orm_data_manipulation.html
+'''
+
 
 class BaseRepository():
     '''
-    See the docs for writing SQL statements with SQLAlchemy 2.0 here:
-    https://docs.sqlalchemy.org/en/20/orm/queryguide/index.html
-
-    Unit of work pattern: https://docs.sqlalchemy.org/en/20/tutorial/orm_data_manipulation.html
+    Base class for database interfaces.
     '''
     def __init__(self, engine: Engine, alembic_ini_path: str, alembic_folder_path: str):
         self.engine = engine
