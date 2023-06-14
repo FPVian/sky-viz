@@ -56,7 +56,7 @@ class Environs:
             '_self_',
             {'general': 'general_dev'},
             {'db': 'sqlite_test'},
-            {'logs': 'logs_debug'},
+            {'logs': 'logs_dev'},
         ]
     }
 
