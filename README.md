@@ -20,31 +20,31 @@ $~$
 ## Manipulating databases:
 
 Open the terminal and navigate to folder with alembic.ini file
-- > `cd src/flights/db/`
+> `cd src/flights/db/`
 
 Set environment variable to select correct database. For a local postgres docker container:
-- > `export SKYVIZ_ENV='dev'`
+> `export SKYVIZ_ENV='dev'`
 
 Check that the enviroment variable is set:
-- > `printenv SKYVIZ_ENV`
+> `printenv SKYVIZ_ENV`
 
 Check for changes to the database model:
-- > `alembic check`
+> `alembic check`
 
 Create a new revision:
-- > `alembic revision --autogenerate -m "<name of commit>"`
+> `alembic revision --autogenerate -m "<name of commit>"`
 
 Run migration:
-- > `alembic upgrade heads`
+> `alembic upgrade heads`
 
 Undo the last migration:
-- > `alembic downgrade -1`
+> `alembic downgrade -1`
 
 Restore database to its initial state:
-- > `alembic downgrade base`
+> `alembic downgrade base`
 
 $~$
 
 ## Testing:
 Open terminal in project root and run all tests:
-- > `pytest`
+> `pytest`
