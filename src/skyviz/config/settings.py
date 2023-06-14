@@ -43,7 +43,7 @@ class Settings:
     Configures Hydra and then builds a new, independent/persistent, read-only OmegaConf object
     '''
     def register_config_options(self):
-        GlobalHydra.instance().clear()  # must clear the current Hydra config, if any, before creating another
+        GlobalHydra.instance().clear()  # must clear the current Hydra config, if any, before creation
         cs = ConfigStore.instance()
         cs.store(name='config', node=Config)
         cs.store(group='override hydra/hydra_logging', name='none', node='none')
@@ -66,7 +66,7 @@ class Settings:
         return cfg
 
 
-s = Settings().build_config()  # Global config object. Evironment is set the first time this file is imported.
+s = Settings().build_config()  # Global config object. Set the first time this file is imported.
 
 
 @hydra.main(version_base=None, config_name='config')
@@ -74,6 +74,6 @@ def save_config_to_file(cfg: DictConfig):
     print(OmegaConf.to_yaml(cfg))
 
 
-if __name__ == '__main__':  # Prints and exports the current configuration to a gitignored folder (.hydra)
+if __name__ == '__main__':  # Prints and exports the current configuration to .hydra folder
     Settings().register_config_options()
     save_config_to_file()

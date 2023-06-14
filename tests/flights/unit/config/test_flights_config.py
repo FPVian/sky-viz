@@ -9,7 +9,8 @@ import os
 def test_config_compilation(environment):
     '''
     Builds config with all available config options.
-    If no error is raised, then all config groups and all base class attributes are implemented in each environment.
+    If no error is raised, then all config groups and
+    all base class attributes are implemented in each environment.
     If all tests fail, there is likely an issue with the current environment.
     Disable building s in settings.py and run tests again to narrow down the issue.
     '''

@@ -23,7 +23,8 @@ class RestApi:
 
     def _make_request(self, method: str, params: Optional[dict] = None) -> Optional[requests.Response]:
         try:
-            response = requests.request(method, self.url, params=params, headers=self.headers, timeout=s.api.timeout)
+            response = requests.request(method, self.url, params=params,
+                                        headers=self.headers, timeout=s.api.timeout)
             response.raise_for_status()
             log.debug(f'api response:\n\n\n{response}\n\n\n')
             return response
@@ -45,7 +46,7 @@ class RestApi:
                 log.debug(response.json())
                 return response.json()
             time.sleep(s.api.wait_before_retry)
-        log.critical(f'Failed to GET 200 status after {s.api.number_of_tries} tries. Url: {self.url} Params: {params}')
+        log.critical(f'Failed to GET 200 status after multiple tries. Url: {self.url} Params: {params}')
         if response:
             log.critical(f'Status code {response.status_code}, response text:\n{response.text}')
         return None

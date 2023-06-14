@@ -15,7 +15,7 @@ class AdsbExchangeClient():
 
     def get_aircraft_scatter(self, latitude: float, longitude: float) -> list:
         '''
-        Returns a dict of aircraft within 1,000 km of a given lat/lon, flying at an elevation of 10,000 feet or higher.
+        Returns a dict of aircraft within 1,000 km of a given lat/lon.
         Rate limit: 10 requests/min, 60,000 requests/month
 
         Response is in the following format:
@@ -70,7 +70,7 @@ class AdsbExchangeClient():
             'wd': 343,
             'ws': 20},]
         '''
-        log.info(f'Getting aircraft scatter data from AdsbExchange API at lat: {latitude}, lon: {longitude}')
+        log.info(f'Getting aircraft scatter data from AdsbExchange at lat: {latitude}, lon: {longitude}')
         url = f'https://aircraftscatter.p.rapidapi.com/lat/{latitude}/lon/{longitude}/'
         headers = {
             'X-RapidAPI-Host': 'aircraftscatter.p.rapidapi.com',
@@ -123,8 +123,9 @@ class AdsbExchangeClient():
             'vsit': '0',
             'wtc': '0'}]
         '''
-        log.info(f'Getting aircraft traffic data from AdsbExchange API at lat: {latitude}, lon: {longitude}')
-        url = f'https://adsbx-flight-sim-traffic.p.rapidapi.com/api/aircraft/json/lat/{latitude}/lon/{longitude}/dist/25/'
+        log.info(f'Getting aircraft traffic data from AdsbExchange at lat: {latitude}, lon: {longitude}')
+        url = ('https://adsbx-flight-sim-traffic.p.rapidapi.com/'
+               + f'api/aircraft/json/lat/{latitude}/lon/{longitude}/dist/25/')
         headers = {
             'X-RapidAPI-Host': 'adsbx-flight-sim-traffic.p.rapidapi.com',
             'X-RapidAPI-Key': self.api_key

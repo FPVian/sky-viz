@@ -14,7 +14,8 @@ Commands API: https://alembic.sqlalchemy.org/en/latest/api/commands.html
 
 config = context.config
 
-if not logging.getLogger('__main__').hasHandlers():  # prevents logging setup if the app is already running
+if not logging.getLogger('__main__').hasHandlers():
+    '''Alembic will disable existing loggers, so logging is disabled if loggers already exist'''
     if config.config_file_name is not None:
         fileConfig(config.config_file_name)
 

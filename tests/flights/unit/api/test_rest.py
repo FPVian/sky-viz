@@ -21,7 +21,8 @@ def test_get_success(mock_request):
 @patch('requests.request')
 def test_get_failure(mock_request, mock_log):
     '''
-    Test that get() returns None when the status code is not 200 and logs the response after a preset # of retries
+    Test that get() returns None when the status code is not 200 and
+    logs the response after a preset # of retries.
     '''
     mock_request.return_value.status_code = 204
     response = RestApi('https://fakeurl2.com').get()

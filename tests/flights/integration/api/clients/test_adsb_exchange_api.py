@@ -37,7 +37,8 @@ def test_adsb_exchange_traffic_response_format(cfg) -> None:
     The ADSB Exchange Aircraft Traffic API must have 'ac' as a the key in the response
     If less items then the stated 'total' are returned, the method is not working properly
     '''
-    url = 'https://adsbx-flight-sim-traffic.p.rapidapi.com/api/aircraft/json/lat/37.3387/lon/-122.8853/dist/25/'
+    url = ('https://adsbx-flight-sim-traffic.p.rapidapi.com/'
+           + 'api/aircraft/json/lat/37.3387/lon/-122.8853/dist/25/')
     headers = {
         'X-RapidAPI-Host': 'adsbx-flight-sim-traffic.p.rapidapi.com',
         'X-RapidAPI-Key': cfg.api.adsb_exchange.api_key

@@ -18,7 +18,8 @@ def app_routine(db: BaseRepository):
     sample_collection_date = datetime.utcnow().replace(tzinfo=pytz.utc)
     scatter_api_response = AdsbExchangeClient().get_aircraft_scatter(39.8564, -104.6764)  # take_sample()
     flights_rows = FlightSamplesMapper().map_scatter_data(scatter_api_response)
-    flights_transformed = FlightSamplesTransform().transform_flight_sample(flights_rows, sample_collection_date)
+    flights_transformed = FlightSamplesTransform().transform_flight_sample(flights_rows,
+                                                                           sample_collection_date)
     db.insert_rows(flights_transformed)
 
 

@@ -9,9 +9,11 @@ log = logger.create(__name__)
 
 class FlightSamplesTransform:
     '''
-    Takes data mapped to the flight samples table model and transforms it into a format that can be used for visualizations.
+    Transforms a sample of flight scatter data into a format that can be used for visualizations.
     '''
-    def transform_flight_sample(self, flight_sample: Iterator[FlightSamples], sample_entry_date: datetime) -> list[FlightSamples]:
+    def transform_flight_sample(
+            self, flight_sample: Iterator[FlightSamples], sample_entry_date: datetime
+    ) -> list[FlightSamples]:
         log.info('starting get_current_flights')
         flights = []
         for table_row in flight_sample:
