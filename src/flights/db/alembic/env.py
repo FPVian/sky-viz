@@ -1,18 +1,26 @@
-from flights.db import model
+from database import models
 from flights.config.settings import s
 
 from alembic import context
 from hydra.utils import instantiate
 
 from logging.config import fileConfig
+import logging
+
+'''
+Alembic docs: https://alembic.sqlalchemy.org/en/latest/index.html
+Commands API: https://alembic.sqlalchemy.org/en/latest/api/commands.html
+'''
 
 config = context.config
 
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+if not logging.getLogger('__main__').hasHandlers():
+    '''Alembic will disable existing loggers, so logging is disabled if loggers already exist'''
+    if config.config_file_name is not None:
+        fileConfig(config.config_file_name)
 
 
-target_metadata = model.Base.metadata
+target_metadata = models.Base.metadata
 
 
 def run_migrations_offline() -> None:

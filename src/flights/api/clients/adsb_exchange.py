@@ -1,18 +1,21 @@
 from flights.utils import logger
 from flights.config.settings import s
-from flights.api.rest import BaseApi
+from flights.api.rest import RestApi
 
 log = logger.create(__name__)
 
 
 class AdsbExchangeClient():
-
+    '''
+    Handles calls to AdsbExchange API.
+    Fields reference: https://www.adsbexchange.com/version-2-api-wip/
+    '''
     def __init__(self) -> None:
         self.api_key: str = s.api.adsb_exchange.api_key
 
-    def get_aircraft_scatter(self, lat: float, lon: float) -> list:
+    def get_aircraft_scatter(self, latitude: float, longitude: float) -> list:
         '''
-        Returns a dict of aircraft within 1,000 km of a given lat/lon, flying at an elevation of 10,000 feet or higher.
+        Returns a dict of aircraft within 1,000 km of a given lat/lon.
         Rate limit: 10 requests/min, 60,000 requests/month
 
         Response is in the following format:
@@ -67,13 +70,13 @@ class AdsbExchangeClient():
             'wd': 343,
             'ws': 20},]
         '''
-        log.info(f'Getting aircraft scatter data from AdsbExchange API at lat: {lat}, lon: {lon}')
-        url = f'https://aircraftscatter.p.rapidapi.com/lat/{lat}/lon/{lon}/'
+        log.info(f'Getting aircraft scatter data from AdsbExchange at lat: {latitude}, lon: {longitude}')
+        url = f'https://aircraftscatter.p.rapidapi.com/lat/{latitude}/lon/{longitude}/'
         headers = {
             'X-RapidAPI-Host': 'aircraftscatter.p.rapidapi.com',
             'X-RapidAPI-Key': self.api_key
         }
-        response: dict[str, list] = BaseApi(url, headers).get()
+        response: dict[str, list] = RestApi(url, headers).get()
         aircraft = None
         if response:
             aircraft = response.get('ac')
@@ -83,7 +86,7 @@ class AdsbExchangeClient():
         log.info(f'Found {len(aircraft)} aircraft scatter data points')
         return aircraft
 
-    def get_aircraft_traffic(self, lat: float, lon: float) -> list:
+    def get_aircraft_traffic(self, latitude: float, longitude: float) -> list:
         '''
         Returns a dict of all aircraft within 25 nautical mile radius of a given lat/lon.
         Rate limit: 5,760 requests/month
@@ -120,13 +123,14 @@ class AdsbExchangeClient():
             'vsit': '0',
             'wtc': '0'}]
         '''
-        log.info(f'Getting aircraft traffic data from AdsbExchange API at lat: {lat}, lon: {lon}')
-        url = f'https://adsbx-flight-sim-traffic.p.rapidapi.com/api/aircraft/json/lat/{lat}/lon/{lon}/dist/25/'
+        log.info(f'Getting aircraft traffic data from AdsbExchange at lat: {latitude}, lon: {longitude}')
+        url = ('https://adsbx-flight-sim-traffic.p.rapidapi.com/'
+               + f'api/aircraft/json/lat/{latitude}/lon/{longitude}/dist/25/')
         headers = {
             'X-RapidAPI-Host': 'adsbx-flight-sim-traffic.p.rapidapi.com',
             'X-RapidAPI-Key': self.api_key
         }
-        response: dict[str, list] = BaseApi(url, headers).get()
+        response: dict[str, list] = RestApi(url, headers).get()
         aircraft = None
         if response:
             aircraft = response.get('ac')

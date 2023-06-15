@@ -1,13 +1,11 @@
 from skyviz.config.groups.secrets import PostgresSecrets
 
-from omegaconf import MISSING
-
 from dataclasses import dataclass
 
 
 @dataclass
 class Db:
-    database: str = MISSING
+    pass
 
 
 @dataclass
@@ -22,6 +20,12 @@ class PostgresDocker(Db):
 
 
 @dataclass
-class Sqlite(Db):
+class SqliteDev(Db):
     _target_: str = 'skyviz.db.repos.sqlite.SqliteRepository'
-    database: str = '${general.project_root}/src/flights/db/flights_db.sqlite3'
+    database_path: str = '${general.project_root}/src/database/flights_db.sqlite3'
+
+
+@dataclass
+class SqliteTest(Db):
+    _target_: str = 'skyviz.db.repos.sqlite.SqliteRepository'
+    database_path: str = '${general.project_root}/src/database/test_db.sqlite3'

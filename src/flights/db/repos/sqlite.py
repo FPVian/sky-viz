@@ -12,10 +12,10 @@ https://docs.sqlalchemy.org/en/20/core/engines.html
 
 
 class SqliteRepository(BaseRepository):
-    def __init__(self, database):
-        self.db_path = database
-
-    @property
-    def engine(self):
-        log.info('creating sqlite engine')
-        return create_engine(f'sqlite:///{self.db_path}', echo=False)
+    '''
+    Creates a Sqlite connectable and executes database operations. 
+    '''
+    def __init__(self, database_path: str, alembic_ini_path: str, alembic_folder_path: str):
+        log.info('instantiating sqlite repo')
+        engine = create_engine(f'sqlite:///{database_path}', echo=False)
+        super().__init__(engine, alembic_ini_path, alembic_folder_path)

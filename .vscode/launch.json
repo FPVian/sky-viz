@@ -14,7 +14,6 @@
                 "${workspaceFolder}/src/skyviz/Home.py"
             ],
             "console": "integratedTerminal",
-            "env": { "SKYVIZ_ENV": "dev" }
         },
         {
             "name": "Dev Current File",
@@ -41,7 +40,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "env": { "SKYVIZ_ENV": "debug" }
+            "env": { "SKYVIZ_ENV": "test" }
         },
     ]
 }

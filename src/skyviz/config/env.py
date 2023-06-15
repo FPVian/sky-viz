@@ -10,11 +10,11 @@ class Environs:
     Use this class to create different combinations of settings for different environments.
     New environments can be created by adding a new entry in the environments dict.
     
-    New groups and grouped dataclasses should be added to the defaults list for the appropriate environment(s).
+    New groups and grouped dataclasses should be added to the defaults list in the environments dict.
     Don't forget to add new groups and dataclasses in settings.py.
 
     The '__self__' string is a placeholder for the Config class.
-    '_self_' at the top of a list indicates that the settings in the Config class will be overwritten by other classes.
+    '_self_' at the top of a list indicates that the settings in the Config class can be overwritten.
     Matching dictionaries will always be merged.
     '''
     environment_variable: str = 'SKYVIZ_ENV'
@@ -34,7 +34,7 @@ class Environs:
         'default': [
             '_self_',
             {'general': 'general_dev'},
-            {'db': 'sqlite'},
+            {'db': 'sqlite_dev'},
             {'logs': 'logs_dev'},
         ],
 
@@ -52,11 +52,11 @@ class Environs:
             {'logs': 'logs_prod'},
         ],
 
-        'debug': [
+        'test': [
             '_self_',
             {'general': 'general_dev'},
-            {'db': 'postgres_docker'},
-            {'logs': 'logs_debug'},
+            {'db': 'sqlite_test'},
+            {'logs': 'logs_dev'},
         ]
     }
 
