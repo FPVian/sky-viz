@@ -1,7 +1,7 @@
 import streamlit as st
 
 
-def configure_page():
+def configure_home_page():
     st.set_page_config(
         page_title='Flight Data',
         page_icon='✈️',

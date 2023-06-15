@@ -1,4 +1,4 @@
-from skyviz.sections.page_config import configure_page
+from skyviz.sections.page_configs import configure_home_page
 from skyviz.sections.sidebar import sidebar
 from skyviz.data.cached_functions import read_table
 from skyviz.utils import logger
@@ -10,7 +10,7 @@ log = logger.create(__name__)
 
 
 def main():
-    configure_page()
+    configure_home_page()
 
     flight_samples_data = read_table(FlightSamples)
     st.subheader('Map of flights within 1,000km of Denver International Airport')
