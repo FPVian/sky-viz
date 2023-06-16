@@ -97,3 +97,25 @@ class TestGetAircraftTraffic:
         aircraft = AdsbExchangeClient().get_aircraft_traffic(0, 0)
         assert aircraft == []
         mock_log.warning.assert_called_once
+
+
+class TestCollectUSScatterSample:
+
+    @patch('flights.api.clients.adsb_exchange.AdsbExchangeClient.get_aircraft_scatter')
+    def test_collect_us_scatter_sample(self, mock_scatter):
+        '''
+        Test that the collect_us_scatter_sample() method returns a list of aircraft scatter data.
+        '''
+        mock_scatter.return_value = [{'foo': 'bar'}]
+        aircraft = AdsbExchangeClient().collect_us_scatter_sample()
+        assert aircraft == [
+            {'foo': 'bar'}, {'foo': 'bar'}, {'foo': 'bar'}, {'foo': 'bar'}, {'foo': 'bar'}]
+
+    @patch('flights.api.clients.adsb_exchange.AdsbExchangeClient.get_aircraft_scatter')
+    def test_collect_us_scatter_sample_no_data(self, mock_scatter):
+        '''
+        Test that the collect_us_scatter_sample() method returns an empty list if there is no data.
+        '''
+        mock_scatter.return_value = []
+        aircraft = AdsbExchangeClient().collect_us_scatter_sample()
+        assert aircraft == []

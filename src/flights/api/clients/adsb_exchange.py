@@ -139,3 +139,18 @@ class AdsbExchangeClient():
             aircraft = []
         log.info(f'Found {len(aircraft)} aircraft traffic data points')
         return aircraft
+
+    def collect_us_scatter_sample(self) -> list:
+        log.info('Collecting sample of aircraft across the US')
+        query_coordinates = [
+            (33.94250107, -118.4079971),  # LAX
+            (40.63980103, -73.77890015),  # JFK
+            (41.97859955, -87.90480042),  # ORD
+            (39.87189865, -75.2410965),  # PHL
+            (32.896801, -97.03800201),  # DFW
+        ]
+        aircraft = []
+        for lat, lon in query_coordinates:
+            aircraft.extend(self.get_aircraft_scatter(lat, lon))
+        log.info(f'Collected {len(aircraft)} total data points in this sample')
+        return aircraft
