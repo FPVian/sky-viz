@@ -9,19 +9,16 @@ from flights.db.base_repo import BaseRepository
 from hydra.utils import instantiate
 
 import asyncio
-from datetime import datetime
-import pytz
+
 
 log = logger.create(__name__)
 
 
 def app_routine(db: BaseRepository):
-    sample_collection_date = datetime.utcnow().replace(tzinfo=pytz.utc)
     scatter_api_sample = AdsbExchangeClient().collect_usa_scatter_sample()
     clean_scatter_sample = FlightSamplesCleaner().clean_flight_sample(scatter_api_sample)
     flights_rows = FlightSamplesMapper().map_scatter_data(clean_scatter_sample)
-    flights_transformed = FlightSamplesTransform().transform_flight_sample(flights_rows,
-                                                                           sample_collection_date)
+    flights_transformed = FlightSamplesTransform().transform_flight_sample(flights_rows)
     db.insert_rows(flights_transformed)
 
 
@@ -40,7 +37,7 @@ async def main():
                 log.info('restarting flights app')
         else:
             app_routine(db)
-            await asyncio.sleep(1)
+            await asyncio.sleep(s.general.wait_between_runs)
 
 
 if __name__ == '__main__':

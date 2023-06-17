@@ -13,7 +13,7 @@ class AdsbExchangeClient():
     def __init__(self) -> None:
         self.api_key: str = s.api.adsb_exchange.api_key
 
-    def get_aircraft_scatter(self, latitude: float, longitude: float) -> list:
+    def get_aircraft_scatter(self, latitude: float, longitude: float) -> list[dict]:
         '''
         Returns a dict of aircraft within 1,000 km of a given lat/lon.
         Rate limit: 10 requests/min, 60,000 requests/month
@@ -86,7 +86,7 @@ class AdsbExchangeClient():
         log.info(f'Found {len(aircraft)} aircraft scatter data points')
         return aircraft
 
-    def get_aircraft_traffic(self, latitude: float, longitude: float) -> list:
+    def get_aircraft_traffic(self, latitude: float, longitude: float) -> list[dict]:
         '''
         Returns a dict of all aircraft within 25 nautical mile radius of a given lat/lon.
         Rate limit: 5,760 requests/month
@@ -140,7 +140,7 @@ class AdsbExchangeClient():
         log.info(f'Found {len(aircraft)} aircraft traffic data points')
         return aircraft
 
-    def collect_usa_scatter_sample(self) -> list:
+    def collect_usa_scatter_sample(self) -> list[dict]:
         '''
         Runs get_aircraft_scatter over 8 coordinates to collect all flying aircraft in continental US.
         '''

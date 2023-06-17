@@ -3,9 +3,43 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
+    "inputs": [
+        {
+            "id": "FlightsEnvPicker",
+            "type": "pickString",
+            "description": "Choose environment for Flights",
+            "options": [
+                "default",
+                "dev",
+                "prod",
+                "test"
+            ],
+            "default": "default"
+        },
+        {
+            "id": "SkyvizEnvPicker",
+            "type": "pickString",
+            "description": "Choose environment for SkyViz",
+            "options": [
+                "default",
+                "dev",
+                "prod",
+                "test"
+            ],
+            "default": "default"
+        },
+    ],
     "configurations": [
         {
-            "name": "Streamlit",
+            "name": "Flights",
+            "type": "python",
+            "request": "launch",
+            "module": "flights",
+            "console": "integratedTerminal",
+            "env": { "SKYVIZ_ENV": "${input:FlightsEnvPicker}" }
+        },
+        {
+            "name": "SkyViz",
             "type": "python",
             "request": "launch",
             "module": "streamlit",
@@ -14,33 +48,22 @@
                 "${workspaceFolder}/src/skyviz/Home.py"
             ],
             "console": "integratedTerminal",
+            "env": { "SKYVIZ_ENV": "${input:SkyvizEnvPicker}" },
         },
         {
-            "name": "Dev Current File",
+            "name": "Run Current File",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "env": { "SKYVIZ_ENV": "dev" }
+            "env": { "SKYVIZ_ENV": "${input:FlightsEnvPicker}" },
         },
+    ],
+    "compounds": [
         {
-            "name": "Prod Current File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "env": { "SKYVIZ_ENV": "prod" }
-        },
-        {
-            "name": "Debug Current File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "env": { "SKYVIZ_ENV": "test" }
-        },
-    ]
+            "name": "Flights & SkyViz",
+            "configurations": ["Flights", "SkyViz"]
+        }
+    ],
 }

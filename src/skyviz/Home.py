@@ -13,19 +13,19 @@ def main():
     configure_home_page()
 
     flight_samples_data = read_table(FlightSamples)
-    st.subheader('Map of flights within 1,000km of Denver International Airport')
+    st.subheader('Recent Flights in the Continental US')
     st.map(flight_samples_data)
 
-    with st.sidebar:
-        sidebar()
+    # with st.sidebar:
+    #     sidebar()
 
-    left_column, right_column = st.columns(2)
+    # left_column, right_column = st.columns(2)
 
-    with left_column:
-        st.write('this is a left column')
+    # with left_column:
+    #     st.write('this is a left column')
 
-    with right_column:
-        st.write('this is a right column')
+    # with right_column:
+    #     st.write('this is a right column')
 
 
 if __name__ == '__main__':

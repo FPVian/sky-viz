@@ -3,16 +3,14 @@ import streamlit as st
 
 def configure_home_page():
     st.set_page_config(
-        page_title='Flight Data',
+        page_title='SkyViz',
         page_icon='✈️',
         layout='wide',
         menu_items={
             'Get help': 'mailto:ian@skyviz.app?subject=SkyViz%20Help',
+            'Report a Bug': 'https://www.github.com/fpvian/flight-data',
             'About': '''
-                ### Github
-                - [Source](https://www.github.com/fpvian/flight-data)
-
-                - [Creator's Profile](https://www.github.com/fpvian)
+                ### [Creator's Github Profile](https://www.github.com/fpvian)
 
                 ### Data Source
                 - ADSBexchange.com, https://ADSBexchange.com
@@ -20,4 +18,4 @@ def configure_home_page():
                 ''',
         },
     )
-    st.title('Flight Data')
+    st.title('Where to go Plane Spotting?')

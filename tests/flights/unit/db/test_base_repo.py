@@ -45,7 +45,7 @@ def test_insert_rows(sqlite_repo: SqliteRepository):
             longitude=-4.4,
         ),
     ]
-    sqlite_repo.insert_rows(rows)
+    sqlite_repo.insert_rows(iter(rows))
     with Session(sqlite_repo.engine) as session:
         result = session.execute(text('SELECT * FROM flight_samples')).fetchall()
     assert 'abc123' in result[0]
