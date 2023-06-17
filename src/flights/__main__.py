@@ -1,8 +1,9 @@
 from flights.config.settings import s
 from flights.utils import logger
 from flights.api.clients.adsb_exchange import AdsbExchangeClient
-from flights.data.mappers.flight_samples import FlightSamplesMapper
-from flights.data.transforms.flight_samples import FlightSamplesTransform
+from flights.data.mappers.flight_samples_map import FlightSamplesMapper
+from flights.data.transforms.flight_samples_transform import FlightSamplesTransform
+from flights.data.cleaners.flight_samples_clean import FlightSamplesCleaner
 from flights.db.base_repo import BaseRepository
 
 from hydra.utils import instantiate
@@ -16,8 +17,9 @@ log = logger.create(__name__)
 
 def app_routine(db: BaseRepository):
     sample_collection_date = datetime.utcnow().replace(tzinfo=pytz.utc)
-    scatter_api_response = AdsbExchangeClient().get_aircraft_scatter(39.8564, -104.6764)  # take_sample()
-    flights_rows = FlightSamplesMapper().map_scatter_data(scatter_api_response)
+    scatter_api_sample = AdsbExchangeClient().collect_usa_scatter_sample()
+    clean_scatter_sample = FlightSamplesCleaner().clean_flight_sample(scatter_api_sample)
+    flights_rows = FlightSamplesMapper().map_scatter_data(clean_scatter_sample)
     flights_transformed = FlightSamplesTransform().transform_flight_sample(flights_rows,
                                                                            sample_collection_date)
     db.insert_rows(flights_transformed)
