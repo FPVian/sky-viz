@@ -109,7 +109,9 @@ class TestCollectUSScatterSample:
         mock_scatter.return_value = [{'foo': 'bar'}]
         aircraft = AdsbExchangeClient().collect_us_scatter_sample()
         assert aircraft == [
-            {'foo': 'bar'}, {'foo': 'bar'}, {'foo': 'bar'}, {'foo': 'bar'}, {'foo': 'bar'}]
+            {'foo': 'bar'}, {'foo': 'bar'}, {'foo': 'bar'}, {'foo': 'bar'},
+            {'foo': 'bar'}, {'foo': 'bar'}, {'foo': 'bar'}, {'foo': 'bar'}
+        ]
 
     @patch('flights.api.clients.adsb_exchange.AdsbExchangeClient.get_aircraft_scatter')
     def test_collect_us_scatter_sample_no_data(self, mock_scatter):

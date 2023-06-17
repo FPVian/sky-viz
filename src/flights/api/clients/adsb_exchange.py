@@ -143,11 +143,14 @@ class AdsbExchangeClient():
     def collect_us_scatter_sample(self) -> list:
         log.info('Collecting sample of aircraft across the US')
         query_coordinates = [
-            (33.94250107, -118.4079971),  # LAX
-            (40.63980103, -73.77890015),  # JFK
-            (41.97859955, -87.90480042),  # ORD
-            (39.87189865, -75.2410965),  # PHL
-            (32.896801, -97.03800201),  # DFW
+            (43, -119),
+            (43, -105.5),
+            (43, -92),
+            (43, -78.5),
+            (31, -119),
+            (31, -106),
+            (31, -93),
+            (31, -80),
         ]
         aircraft = []
         for lat, lon in query_coordinates:
