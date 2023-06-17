@@ -22,6 +22,9 @@ def test_transform_flight_sample():
 
 
 def test_transform_flight_sample_without_data():
+    '''
+    Test that the transform_flight_sample method returns an empty iterator when no data is provided.
+    '''
     flight_sample = iter([])
     transformed_sample = FlightSamplesTransform().transform_flight_sample(flight_sample)
 
