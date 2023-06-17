@@ -8,7 +8,7 @@ log = logger.create(__name__)
 
 class FlightSamplesMapper:
     '''
-    Takes the scatter data from the ADSB exchange API and maps it to the flight samples table model.
+    Takes the cleaned scatter data from ADSB exchange and maps it to the flight samples table model.
     '''
     def map_scatter_data(self, scatter_data: list[dict]) -> Iterator[FlightSamples]:
         log.info(f'mapping {len(scatter_data)} rows of scatter data to flight samples table model')

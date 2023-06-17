@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 from alembic.config import Config
 from alembic import command
 
+from typing import Iterator
+
 log = logger.create(__name__)
 
 '''
@@ -35,10 +37,13 @@ class BaseRepository():
         alembic_config.set_main_option('script_location', self.alembic_folder_path)
         command.upgrade(alembic_config, 'head')
 
-    def insert_rows(self, rows: list[Base]):
+    def insert_rows(self, rows: Iterator[Base]):
         '''
         Starts and closes a SQLAlchemy session for one-off inserting rows into a table.
         '''
-        log.info(f'inserting {len(rows)} rows into {rows[0].__tablename__ if rows else None}')
+        rows_to_insert = list(rows)
+        log.info('inserting %s rows into %s table',
+                 len(rows_to_insert), rows_to_insert[0].__tablename__ if rows else None)
         with Session(self.engine) as session, session.begin():
-            session.add_all(rows)
+            session.add_all(rows_to_insert)
+        log.info('inserted all rows')
