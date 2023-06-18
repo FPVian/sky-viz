@@ -9,7 +9,7 @@ log = logger.create(__name__)
 
 @pytest.fixture
 def cfg():
-    return Settings().build_config(overrides=['api/adsb_exchange=adsb_exchange_dev'])
+    return Settings().build_config(overrides=['api/adsb_exchange=adsb_exchange_test'])
 
 
 def test_adsb_exchange_scatter_response_format(cfg) -> None:

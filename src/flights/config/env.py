@@ -63,7 +63,7 @@ class Environs:
             {'general': 'general_dev'},
             {'db': 'sqlite_test'},
             {'api': 'api_dev'},
-            {'api/adsb_exchange': 'adsb_exchange_dev'},
+            {'api/adsb_exchange': 'adsb_exchange_test'},
             {'logs': 'logs_dev'},
         ]
     }
