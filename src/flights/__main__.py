@@ -41,7 +41,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    # asyncio.run(main())
-    db: BaseRepository = instantiate(s.db)
-    db.upgrade_db()
-    app_routine(db)
+    asyncio.run(main())
