@@ -16,7 +16,7 @@ class General:
 @dataclass
 class GeneralDev(General):
     suppress_errors: bool = False
-    wait_between_runs: int = 65
+    wait_between_runs: int = 120
 
 
 @dataclass

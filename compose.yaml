@@ -4,43 +4,41 @@ services:
   flights:
     build:
       context: .
-    expose:
-      - "8000"
+      dockerfile: deployment/flights.Dockerfile
+    environment:
+      - SKYVIZ_ENV=dev
     depends_on:
       db:
         condition: service_healthy
     restart: always
   db:
     image: postgres:15.3
-    restart: always
     user: postgres
-    secrets:
-      - db-password
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=flights_db
       - POSTGRES_USER=dbuser
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+      - POSTGRES_PASSWORD=secret
     ports:
-      - "5432:5432"
+      - 5432:5432
+    restart: always
     healthcheck:
       test: [ "CMD", "pg_isready" ]
       interval: 10s
       timeout: 5s
       retries: 5
-  streamlit:
-    image: streamlit/streamlit:latest
+  skyviz:
+    build:
+      context: .
+      dockerfile: deployment/skyviz.Dockerfile
+    environment:
+      - SKYVIZ_ENV=dev
     ports:
       - 8501:8501
-    volumes:
-      - .:/app
-    command: streamlit run app.py
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      - FLIGHTS_API_URL=http://flights:8000
     restart: always
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8501" ]
@@ -49,6 +47,3 @@ services:
       retries: 5
 volumes:
   db-data:
-secrets:
-  db-password:
-    file: .env

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 class Logs():
     level: str = 'INFO'
     log_to_console: bool = True
+    log_to_file: bool = True
     path: str = '${general.project_root}/logs'
     name: str = 'skyviz.log'
     file_path: str = '${.path}/${.name}'
@@ -16,14 +17,14 @@ class Logs():
 
 
 @dataclass
-class LogsDev(Logs):
+class LogsDefault(Logs):
     pass
 
 
 @dataclass
 class LogsProd(Logs):
-    log_to_console: bool = False
-    bytes_per_file: int = 100000000
+    level: str = 'INFO'
+    log_to_file: bool = False
 
 
 @dataclass

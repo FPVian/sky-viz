@@ -4,7 +4,7 @@ from flights.config.groups.db import Db, PostgresDocker, SqliteDev, SqliteTest
 from flights.config.groups.api import Api, ApiDev, ApiProd
 from flights.config.groups.api_subgroup.adsb_exchange import (
     AdsbExchangeDev, AdsbExchangeProd, AdsbExchangeTest)
-from flights.config.groups.logs import Logs, LogsDev, LogsProd, LogsDebug
+from flights.config.groups.logs import Logs, LogsDefault, LogsProd, LogsDebug
 
 import hydra
 from hydra import compose, initialize
@@ -62,7 +62,7 @@ class Settings:
         cs.store(group='api/adsb_exchange', name='adsb_exchange_dev', node=AdsbExchangeDev)
         cs.store(group='api/adsb_exchange', name='adsb_exchange_prod', node=AdsbExchangeProd)
         cs.store(group='api/adsb_exchange', name='adsb_exchange_test', node=AdsbExchangeTest)
-        cs.store(group='logs', name='logs_dev', node=LogsDev)
+        cs.store(group='logs', name='logs_default', node=LogsDefault)
         cs.store(group='logs', name='logs_prod', node=LogsProd)
         cs.store(group='logs', name='logs_debug', node=LogsDebug)
 

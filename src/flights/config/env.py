@@ -37,7 +37,7 @@ class Environs:
             {'db': 'sqlite_dev'},
             {'api': 'api_dev'},
             {'api/adsb_exchange': 'adsb_exchange_dev'},
-            {'logs': 'logs_dev'},
+            {'logs': 'logs_default'},
         ],
 
         'dev': [
@@ -46,7 +46,7 @@ class Environs:
             {'db': 'postgres_docker'},
             {'api': 'api_dev'},
             {'api/adsb_exchange': 'adsb_exchange_dev'},
-            {'logs': 'logs_dev'},
+            {'logs': 'logs_prod'},
         ],
 
         'prod': [
@@ -64,7 +64,7 @@ class Environs:
             {'db': 'sqlite_test'},
             {'api': 'api_dev'},
             {'api/adsb_exchange': 'adsb_exchange_test'},
-            {'logs': 'logs_dev'},
+            {'logs': 'logs_default'},
         ]
     }
 

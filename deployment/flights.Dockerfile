@@ -26,7 +26,8 @@ RUN adduser \
     appuser
 
 # Copy the source code into the container.
-COPY ./src ./src
+COPY ./src/flights ./src/flights
+COPY ./src/database ./src/database
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
@@ -34,13 +35,10 @@ COPY ./src ./src
 # into this layer.
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    python -m pip install .
+    python -m pip install -e .
 
 # Switch to the non-privileged user to run the application.
 USER appuser
-
-# Expose the port that the application listens on.
-EXPOSE 8000
 
 # Run the application.
 CMD python -m flights
