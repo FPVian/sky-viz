@@ -10,10 +10,21 @@ $~$
 
 # Instructions
 - create a subsciption to [ADSBexchange](https://adsbexchange.com/) APIs on [RapidAPI](https://rapidapi.com)
-- rename `secrets.template.py` to `secrets.py` and fill in required values
-- set environment variable if needed (defined in config/env.py)
-- run setup.sh
-- run `python3 -m flights` and `python3 -m skyviz`
+- Rename `secrets.template.py` to `secrets.py` and fill in required values
+- Install Docker
+- Run `docker compose up`
+- Navigate to [localhost:8501](localhost:8501)
+
+$~$
+
+## Development:
+- Run setup.sh to install dependencies on linux
+- Run `python3 -m flights` and `python3 -m skyviz`
+
+$~$
+
+## Testing:
+- Run `pytest`
 
 $~$
 
@@ -34,7 +45,7 @@ Check for changes to the database model:
 Create a new revision:
 > `alembic revision --autogenerate -m "<name of commit>"`
 
-Run migration:
+Test migration (migrations are handled automatically):
 > `alembic upgrade heads`
 
 Undo the last migration:
@@ -42,9 +53,3 @@ Undo the last migration:
 
 Restore database to its initial state:
 > `alembic downgrade base`
-
-$~$
-
-## Testing:
-Open terminal in project root and run all tests:
-> `pytest`
