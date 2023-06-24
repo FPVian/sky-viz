@@ -13,7 +13,7 @@ class Db:
 class PostgresDocker(Db):
     _target_: str = 'flights.db.repos.postgres.PostgresRepository'
     driver: str = 'postgresql+psycopg'
-    host: str = 'localhost'
+    host: str = 'db'
     port: int = 5432
     database: str = 'flights_db'
     username: str = 'dbuser'

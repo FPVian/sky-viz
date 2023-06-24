@@ -26,3 +26,9 @@ class AdsbExchangeDev(AdsbExchange):
 @dataclass
 class AdsbExchangeProd(AdsbExchange):
     api_key: str = AdsbExchangeSecrets.api_key_prod
+
+
+@dataclass
+class AdsbExchangeTest(AdsbExchange):
+    api_key: str = AdsbExchangeSecrets.api_key_dev
+    usa_sample_coordinates: list = field(default_factory=lambda: [(43, -105.5), (31, -106)])

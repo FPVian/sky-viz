@@ -27,21 +27,16 @@ async def main():
     db: BaseRepository = instantiate(s.db)
     db.upgrade_db()
     while True:
-        if s.general.suppress_errors:
-            try:
-                app_routine(db)
-                await asyncio.sleep(s.general.wait_between_runs)
-            except Exception as e:
-                log.error(e)
-                await asyncio.sleep(s.general.wait_between_runs)
-                log.info('restarting flights app')
-        else:
+        try:
             app_routine(db)
-            await asyncio.sleep(s.general.wait_between_runs)
+        except Exception as e:
+            log.error(e)
+            if s.general.suppress_errors is False:
+                raise e
+            log.info('restarting flights app')
+        log.info(f'sleeping for {s.general.wait_between_runs // 60} minutes')
+        await asyncio.sleep(s.general.wait_between_runs)
 
 
 if __name__ == '__main__':
-    # asyncio.run(main())
-    db: BaseRepository = instantiate(s.db)
-    db.upgrade_db()
-    app_routine(db)
+    asyncio.run(main())

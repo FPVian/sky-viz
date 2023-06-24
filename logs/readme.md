@@ -1,1 +1,1 @@
-log files are stored here during development
+log files are stored here during testing

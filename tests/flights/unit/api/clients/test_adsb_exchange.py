@@ -1,4 +1,5 @@
 from flights.api.clients.adsb_exchange import AdsbExchangeClient
+from flights.config.settings import s
 
 from unittest.mock import patch
 
@@ -105,13 +106,11 @@ class TestCollectUSAScatterSample:
     def test_collect_usa_scatter_sample(self, mock_scatter):
         '''
         Test that the collect_usa_scatter_sample() method returns a list of aircraft scatter data.
+        The mock return value is repeated for every coordinate pair in the usa_sample_coordinates list.
         '''
         mock_scatter.return_value = [{'foo': 'bar'}]
         aircraft = AdsbExchangeClient().collect_usa_scatter_sample()
-        assert aircraft == [  # 8 dicts for 8 sets of coordinates
-            {'foo': 'bar'}, {'foo': 'bar'}, {'foo': 'bar'}, {'foo': 'bar'},
-            {'foo': 'bar'}, {'foo': 'bar'}, {'foo': 'bar'}, {'foo': 'bar'}
-        ]
+        assert aircraft == [{'foo': 'bar'}] * len(s.api.adsb_exchange.usa_sample_coordinates)
 
     @patch('flights.api.clients.adsb_exchange.AdsbExchangeClient.get_aircraft_scatter')
     def test_collect_usa_scatter_sample_no_data(self, mock_scatter):
