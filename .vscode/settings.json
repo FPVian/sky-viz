@@ -3,6 +3,7 @@
     "python.linting.flake8Args": [
         "--max-line-length=105",
         "--ignore=W292,W293,W503",
+        "--exclude=**/versions/*",
     ],
     "python.linting.mypyEnabled": true,
     "python.testing.pytestArgs": [
