@@ -1,5 +1,5 @@
 from skyviz.sections.page_configs import configure_home_page
-from skyviz.sections.sidebar import sidebar
+# from skyviz.sections.sidebar import sidebar
 from skyviz.data.cached_functions import read_table
 from skyviz.utils import logger
 from database.models import FlightSamples
