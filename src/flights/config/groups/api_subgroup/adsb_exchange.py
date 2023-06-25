@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 import os
 from typing import Optional
 
+
 @dataclass
 class AdsbExchange:
     api_key: Optional[str] = MISSING
