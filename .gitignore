@@ -1,5 +1,4 @@
 # User-Defined
-*secrets.py
 *.log*
 .hydra/
 *.sqlite3
