@@ -1,7 +1,9 @@
-from pathlib import Path
+from dotenv import load_dotenv
+
 from dataclasses import dataclass
 import os
-from typing import Optional
+
+load_dotenv()
 
 
 @dataclass
@@ -18,17 +20,6 @@ class Environs:
     Matching dictionaries will always be merged.
     '''
     environment_variable: str = 'SKYVIZ_ENV'
-    project_root: Path = Path(__file__).resolve().parents[3]
-
-    @property
-    def env(self) -> Optional[str]:
-        env = os.environ.get(self.environment_variable)
-        if env is None:
-            try:
-                env = open(f'{self.project_root}/.env').read().strip()
-            except FileNotFoundError:
-                pass
-        return env
 
     environments = {
         'default': [
@@ -70,8 +61,9 @@ class Environs:
 
     def defaults_list(self) -> list:
         defaults = self.environments['default']
-        if self.env:
-            defaults = self.environments[self.env]
+        env = os.environ.get(self.environment_variable)
+        if env:
+            defaults = self.environments[env]
         hydra_overrides = [
             {'override hydra/hydra_logging': 'none'},
             {'override hydra/job_logging': 'none'},

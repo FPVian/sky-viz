@@ -1,11 +1,12 @@
-from flights.config.groups.secrets import AdsbExchangeSecrets
+from omegaconf import MISSING
 
 from dataclasses import dataclass, field
-
+import os
+from typing import Optional
 
 @dataclass
 class AdsbExchange:
-    api_key: str
+    api_key: Optional[str] = MISSING
     usa_sample_coordinates: list = field(default_factory=lambda: [
         (43, -119),
         (43, -105.5),
@@ -20,15 +21,15 @@ class AdsbExchange:
 
 @dataclass
 class AdsbExchangeDev(AdsbExchange):
-    api_key: str = AdsbExchangeSecrets.api_key_dev
+    api_key: Optional[str] = os.environ.get('ADSB_EXCHANGE_API_KEY_DEV')
 
 
 @dataclass
 class AdsbExchangeProd(AdsbExchange):
-    api_key: str = AdsbExchangeSecrets.api_key_prod
+    api_key: Optional[str] = os.environ.get('ADSB_EXCHANGE_API_KEY_PROD')
 
 
 @dataclass
 class AdsbExchangeTest(AdsbExchange):
-    api_key: str = AdsbExchangeSecrets.api_key_dev
+    api_key: Optional[str] = os.environ.get('ADSB_EXCHANGE_API_KEY_DEV')
     usa_sample_coordinates: list = field(default_factory=lambda: [(43, -105.5), (31, -106)])

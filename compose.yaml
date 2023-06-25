@@ -7,10 +7,7 @@ services:
       dockerfile: deployment/flights.Dockerfile
     environment:
       - SKYVIZ_ENV=dev
-    volumes:
-      - type: bind
-        source: ./src/flights/config/groups/secrets.py
-        target: /app/src/flights/config/groups/secrets.py
+      - ADSB_EXCHANGE_API_KEY_DEV=${ADSB_EXCHANGE_API_KEY_DEV}
     depends_on:
       db:
         condition: service_healthy
@@ -38,10 +35,6 @@ services:
       dockerfile: deployment/skyviz.Dockerfile
     environment:
       - SKYVIZ_ENV=dev
-    volumes:
-      - type: bind
-        source: ./src/skyviz/config/groups/secrets.py
-        target: /app/src/flights/config/groups/secrets.py
     ports:
       - 8501:8501
     depends_on:

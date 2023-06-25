@@ -16,4 +16,4 @@ def test_config_compilation(environment):
     '''
     os.environ[Environs.environment_variable] = environment
     Settings().build_config()
-    del os.environ['SKYVIZ_ENV']
+    del os.environ[Environs.environment_variable]

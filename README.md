@@ -9,8 +9,8 @@ $~$
 $~$
 
 # Instructions
-- create a subsciption to [ADSBexchange](https://adsbexchange.com/) APIs on [RapidAPI](https://rapidapi.com)
-- Rename `secrets.template.py` to `secrets.py` and fill in required values
+- Create a subsciption to [ADSBexchange](https://adsbexchange.com/) APIs on [RapidAPI](https://rapidapi.com)
+- Rename `.env.template` to `.env` and fill with api key
 - Install Docker
 - Run `docker compose up`
 - Navigate to [localhost:8501](localhost:8501)
@@ -25,6 +25,7 @@ $~$
 
 ## Testing:
 - Run `pytest`
+- Tests are run automatically when opening a PR and merging to main
 
 $~$
 

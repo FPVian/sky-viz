@@ -1,5 +1,3 @@
-from skyviz.config.groups.secrets import PostgresSecrets
-
 from dataclasses import dataclass
 
 
@@ -16,7 +14,7 @@ class PostgresDocker(Db):
     port: int = 5432
     database: str = 'flights_db'
     username: str = 'dbuser'
-    password: str = PostgresSecrets.password
+    password: str = 'secret'
 
 
 @dataclass
