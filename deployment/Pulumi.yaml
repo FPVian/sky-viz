@@ -1,0 +1,6 @@
+name: sky-viz
+main: pulumi.py
+runtime:
+  name: python
+  options:
+    virtualenv: ../.venv

@@ -18,7 +18,7 @@ $~$
 $~$
 
 ## Development:
-- Run setup.sh to install dependencies on linux
+- Run `bash ./scripts/setup.sh` to install dependencies on linux
 - Run `python3 -m flights` and `python3 -m skyviz`
 
 $~$
@@ -26,6 +26,16 @@ $~$
 ## Testing:
 - Run `pytest`
 - Tests are run automatically when opening a PR and merging to main
+
+$~$
+
+## Deployment:
+- Create Pulumi account and access token
+- Create Azure account and service principal
+- Populate ARM and PULUMI fields in .env file
+- Install Pulumi `curl -fsSL https://get.pulumi.com | sh`
+- `cd deployment/`
+- `pulumi up`
 
 $~$
 
