@@ -1,8 +1,5 @@
 from flights.api.clients.adsb_exchange import AdsbExchangeClient
 import pandas as pd
-'''
-pip install openpyxl. openpyxl is not a project dependency, but it is a dependency for this script.
-'''
 
 
 def main():
