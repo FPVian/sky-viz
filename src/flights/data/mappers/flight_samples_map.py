@@ -20,8 +20,8 @@ class FlightSamplesMapper:
     def _filter_flight(self, flight: dict) -> bool:
         valid_flight = all([flight.get('alt_baro') != 'ground',
                             flight.get('hex'),
-                            flight.get('lat'),
-                            flight.get('lon'),
+                            self._safe_cast_to_float(flight.get('lat')),
+                            self._safe_cast_to_float(flight.get('lon')),
                             ])
         return valid_flight
 

@@ -8,30 +8,26 @@ from pulumi_azure_native import resources, network, compute, app
 Pulumi Azure Native API docs: https://www.pulumi.com/registry/packages/azure-native/api-docs/
 '''
 
-resource_group = resources.ResourceGroup("sky-viz", location='eastus')
-
 ## Key Vault
-## Azure Container Registry?
 
-## Virtual Network
+resource_group = resources.ResourceGroup("sky-viz", location='eastus')  # done
+
 net = network.VirtualNetwork(
-    "server-network",
+    "skyviz-network",
     resource_group_name=resource_group.name,
     address_space=network.AddressSpaceArgs(
         address_prefixes=["10.0.0.0/16"],
     ),
     subnets=[network.SubnetArgs(
-        name="default",
+        name="public",
         address_prefix="10.0.1.0/24",
     )])
 
-
-## Virtual Machine
 vm = build_vm(resource_group)
 
 ## install postgres
 
-## Virtual Network
+## Azure Container Registry?
 
 ## Static IP
 public_ip = network.PublicIPAddress(
