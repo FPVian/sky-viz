@@ -12,6 +12,7 @@ class FlightSamplesMapper:
     '''
     def map_scatter_data(self, scatter_data: list[dict]) -> Iterator[FlightSamples]:
         log.info(f'mapping {len(scatter_data)} rows of scatter data to flight samples table model')
+        log.info('filtering out irrelevant scatter data')
         filtered_flights = filter(self._filter_flight, scatter_data)
         flights = map(self._map_flight, filtered_flights)
         log.info('mapped scatter data to flight samples table model')

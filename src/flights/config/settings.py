@@ -1,6 +1,6 @@
 from flights.config.env import Environs
 from flights.config.groups.general import General, GeneralDev, GeneralProd
-from flights.config.groups.db import Db, PostgresDocker, SqliteDev, SqliteTest
+from flights.config.groups.db import Db, PostgresProd, PostgresDocker, SqliteDev, SqliteTest
 from flights.config.groups.api import Api, ApiDev, ApiProd
 from flights.config.groups.api_subgroup.adsb_exchange import (
     AdsbExchangeDev, AdsbExchangeProd, AdsbExchangeTest)
@@ -56,6 +56,7 @@ class Settings:
         cs.store(group='general', name='general_prod', node=GeneralProd)
         cs.store(group='db', name='sqlite_dev', node=SqliteDev)
         cs.store(group='db', name='sqlite_test', node=SqliteTest)
+        cs.store(group='db', name='postgres_prod', node=PostgresProd)
         cs.store(group='db', name='postgres_docker', node=PostgresDocker)
         cs.store(group='api', name='api_dev', node=ApiDev)
         cs.store(group='api', name='api_prod', node=ApiProd)

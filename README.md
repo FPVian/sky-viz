@@ -29,7 +29,7 @@ $~$
 
 $~$
 
-## Deployment:
+## Deployment (WIP):
 - Create Pulumi account and access token
 - Create Azure account and service principal
 - Populate ARM and PULUMI fields in .env file

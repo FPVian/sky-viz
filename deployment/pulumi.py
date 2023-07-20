@@ -18,14 +18,43 @@ net = network.VirtualNetwork(
     address_space=network.AddressSpaceArgs(
         address_prefixes=["10.0.0.0/16"],
     ),
-    subnets=[network.SubnetArgs(
-        name="public",
-        address_prefix="10.0.1.0/24",
-    )])
+    subnets=[
+        network.SubnetArgs(
+            name="public",
+            address_prefix="10.0.1.0/24",
+        ),
+        network.SubnetArgs(
+            name="private",
+            address_prefix="10.0.1.0/24",
+        )])
 
 vm = build_vm(resource_group)
 
-## install postgres
+
+# Azure Database for PostgreSQL
+# Flexible Server
+# resource_group_name=resource_group.name,
+# server_name="flights-db-server",
+# version = "15",
+# workload_type = "Development",
+# compute = database.ComputeStorageArgs(
+#   tier="Burstable",
+#   compute_size="Standard_B1ms",
+#   storage_size_gb=32,
+#   storage_auto_growth_enabled=True,
+# ),
+# authentication=database.ServerPropertiesForDefaultCreateArgs(
+#   authentication_method="PostgreSQL and Azure Active Directory authentication",
+#   administrator_login=os.environ.get('POSTGRES_PROD_ADMIN_USERNAME'),
+#   administrator_login_password=os.environ.get('POSTGRES_PROD_ADMIN_PASSWORD'),
+#   azure_admin="email@address",
+# ),
+# network_connectivity=private_access,
+# vnet = net,
+# subnet_name = private,
+# private_dns_zone = network.PrivateDnsZone("flights-db-server.private.postgres.database.azure.com"),
+
+
 
 ## Azure Container Registry?
 
