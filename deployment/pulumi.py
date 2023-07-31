@@ -8,30 +8,38 @@ from pulumi_azure_native import resources, network, compute, app
 Pulumi Azure Native API docs: https://www.pulumi.com/registry/packages/azure-native/api-docs/
 '''
 
-## Key Vault
 
 resource_group = resources.ResourceGroup("sky-viz", location='eastus')  # done
 
+
 net = network.VirtualNetwork(
-    "skyviz-network",
+    "skyviz-vnet",
     resource_group_name=resource_group.name,
     address_space=network.AddressSpaceArgs(
         address_prefixes=["10.0.0.0/16"],
     ),
     subnets=[
         network.SubnetArgs(
-            name="public",
-            address_prefix="10.0.1.0/24",
-        ),
-        network.SubnetArgs(
-            name="private",
-            address_prefix="10.0.1.0/24",
+            name="default",
+            address_prefix="10.0.0.0/24",
+            # service_endpoints=["Microsoft.KeyVault"],
         )])
 
-vm = build_vm(resource_group)
+
+vm = build_vm(resource_group)  # example
 
 
-# Azure Database for PostgreSQL
+# Key Vault
+# resource_group_name=resource_group.name,
+# name="skyviz-key-vault",
+# permission model = vault access policy
+# enable public access = False
+# Allow access from specific vnets -> skyviz-vnet -> default subnet
+# create secrets: POSTGRES-PROD-ADMIN-USERNAME, POSTGRES-PROD-ADMIN-PASSWORD, ADSB-EXCHANGE-API-KEY-PROD
+# create access policy (get secrets) for skyviz and flights managed identities
+
+
+# Azure Database for PostgreSQL (need to change db server name in settings)
 # Flexible Server
 # resource_group_name=resource_group.name,
 # server_name="flights-db-server",
@@ -44,51 +52,72 @@ vm = build_vm(resource_group)
 #   storage_auto_growth_enabled=True,
 # ),
 # authentication=database.ServerPropertiesForDefaultCreateArgs(
-#   authentication_method="PostgreSQL and Azure Active Directory authentication",
+#   authentication_method="PostgreSQL Authentication Only",
 #   administrator_login=os.environ.get('POSTGRES_PROD_ADMIN_USERNAME'),
 #   administrator_login_password=os.environ.get('POSTGRES_PROD_ADMIN_PASSWORD'),
-#   azure_admin="email@address",
 # ),
-# network_connectivity=private_access,
-# vnet = net,
-# subnet_name = private,
-# private_dns_zone = network.PrivateDnsZone("flights-db-server.private.postgres.database.azure.com"),
+# network_connectivity=public_access,
+# azure_access_enabled=True,
 
 
+# App Service Plan - SkyViz
+# resource_group_name=resource_group.name,
+# name="skyviz-app-service-plan",
+# pricing_plan = "Basic B1",
 
-## Azure Container Registry?
+# Web App - SkyViz (delete before deploying)
+# resource_group_name=resource_group.name,
+# name="skyviz",
+# publish="Docker Container",
+# linux_plan = app_service_plan.id,
+# image_source = app.ImageSourceArgs(
+#   registry = "Docker Hub",
+#   image = "fpvian/sky-viz-skyviz:latest",
 
-## Static IP
-public_ip = network.PublicIPAddress(
-    "skyviz.app-ip",
-    resource_group_name=resource_group.name,
-    public_ip_allocation_method=network.IPAllocationMethod.STATIC)
+# post-deploy:
+# Add application settings:
+# SKYVIZ_ENV=prod
+# POSTGRES_PROD_ADMIN_USERNAME = @Microsoft.KeyVault(SecretUri=pg_user_secret.identifier)
+# POSTGRES_PROD_ADMIN_PASSWORD = @Microsoft.KeyVault(SecretUri=pg_pass_secret.identifier)
+# Always On = True
+# ARR Affinity = True
+# system assigned managed identity = enabled
+# continuous_deployment = on, (copy webhook url to docker repo)
+# vnet_integration = skyviz-vnet -> default subnet
+# health check = enabled, path = /healthz
+# app service logs -> application logging = file system, quota = 100 MB
+
+# Add Custom Domains
+# domain provider = all other domain services
+# certificate = app service managed certificate
+# type = SNI SSL
+# domain = skyviz.app
+# Repeat for www.skyviz.app
 
 
-## Container App - certificate
-container_app = app.ContainerApp("app",
-    resource_group_name=resource_group.name,
-    managed_environment_id=managed_env.id,
-    configuration=app.ConfigurationArgs(
-        ingress=app.IngressArgs(
-            external=True,
-            target_port=80
-        ),
-        registries=[
-            app.RegistryCredentialsArgs(
-                server=registry.login_server,
-                username=admin_username,
-                password_secret_ref="pwd")
-        ],
-        secrets=[
-            app.SecretArgs(
-                name="pwd",
-                value=admin_password)
-        ],
-    ),
-    template=app.TemplateArgs(
-        containers = [
-            app.ContainerArgs(
-                name="myapp",
-                image=my_image.image_name)
-        ]))
+# App Service Plan - Flights
+# resource_group_name=resource_group.name,
+# name="flights-app-service-plan",
+# pricing_plan = "Free F1",
+
+# Web App - Flights
+# resource_group_name=resource_group.name,
+# name="flights",
+# publish="Docker Container",
+# linux_plan = app_service_plan.id,
+# image_source = app.ImageSourceArgs(
+#   registry = "Docker Hub",
+#   image = "fpvian/sky-viz-flights:latest",
+# enable_public_access = False,
+
+# post-deploy:
+# Add application settings:
+# SKYVIZ_ENV=prod
+# POSTGRES_PROD_ADMIN_USERNAME = @Microsoft.KeyVault(SecretUri=pg_user_secret.identifier)
+# POSTGRES_PROD_ADMIN_PASSWORD = @Microsoft.KeyVault(SecretUri=pg_pass_secret.identifier)
+# ADSB_EXCHANGE_API_KEY_PROD = @Microsoft.KeyVault(SecretUri=adsb_api_key_secret.identifier)
+# Always On = True???
+# system assigned managed identity = enabled
+# continuous_deployment = on, (copy webhook url to docker repo)
+# vnet_integration = skyviz-vnet -> default subnet
+# app service logs -> application logging = file system, quota = 100 MB

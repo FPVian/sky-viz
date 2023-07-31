@@ -1,6 +1,6 @@
 from skyviz.config.env import Environs
 from skyviz.config.groups.general import General, GeneralDev, GeneralProd
-from skyviz.config.groups.db import Db, PostgresDocker, SqliteDev, SqliteTest
+from skyviz.config.groups.db import Db, PostgresProd, PostgresDocker, SqliteDev, SqliteTest
 from skyviz.config.groups.logs import Logs, LogsDefault, LogsProd, LogsDebug
 
 import hydra
@@ -52,6 +52,7 @@ class Settings:
         cs.store(group='general', name='general_prod', node=GeneralProd)
         cs.store(group='db', name='sqlite_dev', node=SqliteDev)
         cs.store(group='db', name='sqlite_test', node=SqliteTest)
+        cs.store(group='db', name='postgres_prod', node=PostgresProd)
         cs.store(group='db', name='postgres_docker', node=PostgresDocker)
         cs.store(group='logs', name='logs_default', node=LogsDefault)
         cs.store(group='logs', name='logs_prod', node=LogsProd)

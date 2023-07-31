@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 # https://docs.docker.com/engine/reference/builder/
 
-ARG PYTHON_VERSION=3.11.2
-FROM python:${PYTHON_VERSION} AS base
+ARG PYTHON_VERSION=3.11
+FROM python:${PYTHON_VERSION}-bullseye AS base
 
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1

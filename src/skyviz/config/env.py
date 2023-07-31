@@ -39,7 +39,7 @@ class Environs:
         'prod': [
             '_self_',
             {'general': 'general_prod'},
-            {'db': 'postgres_docker'},
+            {'db': 'postgres_prod'},
             {'logs': 'logs_prod'},
         ],
 

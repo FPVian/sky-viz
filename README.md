@@ -36,6 +36,9 @@ $~$
 - Install Pulumi `curl -fsSL https://get.pulumi.com | sh`
 - `cd deployment/`
 - `pulumi up`
+- Update DNS records for domain
+- Add webhooks to Docker Hub repositories
+- New deployments are automatic on container push to docker hub
 
 $~$
 
