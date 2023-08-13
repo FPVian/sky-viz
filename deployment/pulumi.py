@@ -4,6 +4,8 @@ from flights.config.env import Environs
 from pulumi import ResourceOptions
 from pulumi_azure_native.resources.v20220901 import ResourceGroup
 import pulumi_azure_native.dbforpostgresql.v20230301preview as dbforpostgresql
+import pulumi_azure_native.operationalinsights.v20221001 as operationalinsights
+from pulumi_azure_native.operationalinsights.v20200801 import get_shared_keys
 import pulumi_azure_native.app.v20230501 as app
 
 import os
@@ -47,13 +49,32 @@ class PostgresDB:
     )
 
 
+class LogAnalytics:
+    log_analytics_workspace = operationalinsights.Workspace(
+        "skyviz-log-analytics",
+        resource_group_name=resource_group.name,
+        workspace_capping=operationalinsights.WorkspaceCappingArgs(daily_quota_gb=0.2),
+    )
+
+    workspace_shared_keys = get_shared_keys(
+        resource_group_name=resource_group.name,
+        workspace_name=log_analytics_workspace.name,
+    )
+
+    # flights_warnings_query = operationalinsights.
+
+
 class FlightsContainer:
     flights_container_app_environment = app.ManagedEnvironment(
         "flights-container-app-environment",
         resource_group_name=resource_group.name,
         app_logs_configuration=app.AppLogsConfigurationArgs(
-            destination="azure-monitor",
-        )
+            destination="log-analytics",
+            log_analytics_configuration=app.LogAnalyticsConfigurationArgs(
+                customer_id=LogAnalytics.log_analytics_workspace.customer_id,
+                shared_key=LogAnalytics.workspace_shared_keys.primary_shared_key
+            ),
+        ),
     )
 
     db_username_secret = app.SecretArgs(name="db-username", value=s.db.username)
@@ -61,11 +82,14 @@ class FlightsContainer:
     adsb_exchange_api_key_secret = app.SecretArgs(
         name="adsb-exchange-api-key", value=s.api.adsb_exchange.api_key)
 
-    flights_container_app = app.ContainerApp(  # missing Log Analytics Workspace
+    flights_container_app = app.ContainerApp(  # replace_on_changes?
         "flights-container-app",
         environment_id=flights_container_app_environment.id,
         resource_group_name=resource_group.name,
-        opts=ResourceOptions(depends_on=[PostgresDB.postgres_server]),  # replace_on_changes?
+        opts=ResourceOptions(
+            depends_on=[PostgresDB.postgres_server],
+            delete_before_replace=True,
+        ),
         configuration=app.ConfigurationArgs(
             secrets=[db_username_secret, db_password_secret, adsb_exchange_api_key_secret],
         ),
@@ -94,10 +118,13 @@ class FlightsContainer:
                     ),
                 ),
             ],
+            scale=app.ScaleArgs(min_replicas=1, max_replicas=1),
         ),
     )
 
 
-# skyviz = delete_before_replace
+class SkyVizApp:
+    pass
+# skyviz = depends on flights
 # name = s.general.webapp_name
 # delete old skyviz app
