@@ -34,7 +34,7 @@ $~$
 - Build containers and push to Docker Hub
 - Create Pulumi account and access token
 - Create Azure account and service principal
-- Populate ARM and PULUMI fields in .env file
+- Populate ARM, PULUMI, & POSTGRES fields in .env file
 - Install Pulumi `curl -fsSL https://get.pulumi.com | sh`
 - `cd deployment/`
 - `export SKYVIZ_ENV='prod'`

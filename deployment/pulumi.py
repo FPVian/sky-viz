@@ -16,73 +16,88 @@ Azure API Reference: https://learn.microsoft.com/en-us/azure/templates/
 '''
 
 
-resource_group = ResourceGroup("sky-viz", location='eastus')
+resource_group = ResourceGroup(s.general.webapp_name, location='eastus')
 
 
-postgres_server = dbforpostgresql.Server(
-    s.db.server_name,
-    opts=ResourceOptions(protect=True),
-    server_name=s.db.server_name,
-    resource_group_name=resource_group.name,
-    administrator_login=s.db.admin_username,
-    administrator_login_password=s.db.admin_password,
-    sku=dbforpostgresql.SkuArgs(
-        name="Standard_B1ms",
-        tier=dbforpostgresql.SkuTier.BURSTABLE,
-    ),
-    storage=dbforpostgresql.StorageArgs(
-        auto_grow=dbforpostgresql.StorageAutoGrow.ENABLED,
-        storage_size_gb=32,
-    ),
-    version=dbforpostgresql.ServerVersion.SERVER_VERSION_15,
-)
+class PostgresDB:
+    postgres_server = dbforpostgresql.Server(
+        s.db.server_name,
+        opts=ResourceOptions(protect=True),
+        server_name=s.db.server_name,
+        resource_group_name=resource_group.name,
+        administrator_login=s.db.admin_username,
+        administrator_login_password=s.db.admin_password,
+        sku=dbforpostgresql.SkuArgs(
+            name="Standard_B1ms",
+            tier=dbforpostgresql.SkuTier.BURSTABLE,
+        ),
+        storage=dbforpostgresql.StorageArgs(
+            auto_grow=dbforpostgresql.StorageAutoGrow.ENABLED,
+            storage_size_gb=32,
+        ),
+        version=dbforpostgresql.ServerVersion.SERVER_VERSION_15,
+    )
 
-postgres_firewall_rule = dbforpostgresql.FirewallRule(
-    "postgres-firewall-rule",
-    resource_group_name=resource_group.name,
-    server_name=postgres_server.name,
-    start_ip_address="0.0.0.0",  # azure resources only
-    end_ip_address="0.0.0.0",
-)
+    postgres_firewall_rule = dbforpostgresql.FirewallRule(
+        "postgres-firewall-rule",
+        resource_group_name=resource_group.name,
+        server_name=postgres_server.name,
+        start_ip_address="0.0.0.0",  # azure resources only
+        end_ip_address="0.0.0.0",
+    )
 
 
-flights_container_app = app.ContainerApp(  # missing Log Analytics Workspace
-    "flights-container-app",
-    resource_group_name=resource_group.name,
-    opts=ResourceOptions(depends_on=[postgres_server]),  # replace_on_changes?
-    configuration=app.ConfigurationArgs(
-        secrets=[
-            app.SecretArgs(name=s.db.username_env_var, value=s.db.username),
-            app.SecretArgs(name=s.db.password_env_var, value=s.db.password),
-            app.SecretArgs(name=s.api.adsb_exchange.api_key_env_var, value=s.api.adsb_exchange.api_key),
-        ],
-    ),
-    template=app.TemplateArgs(
-        containers=[
-            app.ContainerArgs(
-                env=[
-                    app.EnvironmentVarArgs(
-                        Environs.environment_variable, value=os.environ[Environs.environment_variable]),
-                    app.EnvironmentVarArgs(
-                        s.db.username_env_var, secret_ref=s.db.username_env_var),
-                    app.EnvironmentVarArgs(
-                        s.db.password_env_var, secret_ref=s.db.password_env_var),
-                    app.EnvironmentVarArgs(
-                        s.api.adsb_exchange.api_key_env_var,
-                        secret_ref=s.api.adsb_exchange.api_key_env_var,
+class FlightsContainer:
+    flights_container_app_environment = app.ManagedEnvironment(
+        "flights-container-app-environment",
+        resource_group_name=resource_group.name,
+        app_logs_configuration=app.AppLogsConfigurationArgs(
+            destination="azure-monitor",
+        )
+    )
+
+    db_username_secret = app.SecretArgs(name="db-username", value=s.db.username)
+    db_password_secret = app.SecretArgs(name="db-password", value=s.db.password)
+    adsb_exchange_api_key_secret = app.SecretArgs(
+        name="adsb-exchange-api-key", value=s.api.adsb_exchange.api_key)
+
+    flights_container_app = app.ContainerApp(  # missing Log Analytics Workspace
+        "flights-container-app",
+        environment_id=flights_container_app_environment.id,
+        resource_group_name=resource_group.name,
+        opts=ResourceOptions(depends_on=[PostgresDB.postgres_server]),  # replace_on_changes?
+        configuration=app.ConfigurationArgs(
+            secrets=[db_username_secret, db_password_secret, adsb_exchange_api_key_secret],
+        ),
+        template=app.TemplateArgs(
+            containers=[
+                app.ContainerArgs(
+                    name="flights",
+                    env=[
+                        app.EnvironmentVarArgs(
+                            name=Environs.environment_variable,
+                            value=os.environ[Environs.environment_variable]
+                        ),
+                        app.EnvironmentVarArgs(
+                            name=s.db.username_env_var, secret_ref=db_username_secret.name),
+                        app.EnvironmentVarArgs(
+                            name=s.db.password_env_var, secret_ref=db_password_secret.name),
+                        app.EnvironmentVarArgs(
+                            name=s.api.adsb_exchange.api_key_env_var,
+                            secret_ref=adsb_exchange_api_key_secret.name,
+                        ),
+                    ],
+                    image="fpvian/sky-viz-flights:latest",
+                    resources=app.ContainerResourcesArgs(
+                        cpu=0.25,
+                        memory="0.5Gi",
                     ),
-                ],
-                image="fpvian/sky-viz-flights:latest",
-                resources=app.ContainerResourcesArgs(
-                    cpu=0.25,
-                    memory="0.5Gi",
                 ),
-            ),
-        ],
-    ),
-)
+            ],
+        ),
+    )
+
 
 # skyviz = delete_before_replace
 # name = s.general.webapp_name
-
 # delete old skyviz app
