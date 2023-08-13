@@ -12,7 +12,12 @@ class General:
 
 @dataclass
 class GeneralDev(General):
-    cache_time_to_live_min: int = 1
+    cache_time_to_live_min: int = 2
+
+
+@dataclass
+class GeneralStaging(General):
+    cache_time_to_live_min: int = 0
 
 
 @dataclass

@@ -43,6 +43,13 @@ class Environs:
             {'logs': 'logs_prod'},
         ],
 
+        'staging': [
+            '_self_',
+            {'general': 'general_staging'},
+            {'db': 'postgres_staging'},
+            {'logs': 'logs_prod'},
+        ],
+
         'test': [
             '_self_',
             {'general': 'general_dev'},

@@ -73,36 +73,38 @@ type = SNI SSL
 domain = skyviz.app
 Repeat for www.skyviz.app
 
+# Log Analytics Workspace - Flights
+name="flights-log-analytics-workspace"
 
-# App Service Plan - Flights
-resource_group_name=resource_group.name,
-name="flights-app-service-plan",
-pricing_plan = "Free F1",
+# Container Apps Environment - Flights
+name="flights-container-app-environment",
+Logs Destination = Azure Log Analytics
 
 # Web App - Flights
 resource_group_name=resource_group.name,
 name="flights",
-publish="Docker Container",
-linux_plan = app_service_plan.id,
-image_source = app.ImageSourceArgs(
-  registry = "Docker Hub",
-  image = "fpvian/sky-viz-flights:latest",
-enable_public_access = False,
+image_source="Docker Hub or other registries",
+image_and_tag = "fpvian/sky-viz-flights:latest",
+Environment Variables:
+  SKYVIZ_ENV=prod
+  POSTGRES_PROD_ADMIN_USERNAME = @Microsoft.KeyVault(SecretUri=pg_user_secret.identifier)
+  POSTGRES_PROD_ADMIN_PASSWORD = @Microsoft.KeyVault(SecretUri=pg_pass_secret.identifier)
+  ADSB_EXCHANGE_API_KEY_PROD = @Microsoft.KeyVault(SecretUri=adsb_api_key_secret.identifier)
 
 post-deploy:
-Add application settings:
-SKYVIZ_ENV=prod
-POSTGRES_PROD_ADMIN_USERNAME = @Microsoft.KeyVault(SecretUri=pg_user_secret.identifier)
-POSTGRES_PROD_ADMIN_PASSWORD = @Microsoft.KeyVault(SecretUri=pg_pass_secret.identifier)
-ADSB_EXCHANGE_API_KEY_PROD = @Microsoft.KeyVault(SecretUri=adsb_api_key_secret.identifier)
-Always On = True???
-system assigned managed identity = enabled
-continuous_deployment = on, (copy webhook url to docker repo)
-vnet_integration = skyviz-vnet -> default subnet
-app service logs -> application logging = file system, quota = 100 MB
+setup warning/error level log alerts:
+-----------------------------------------------
+ContainerAppConsoleLogs_CL
+| where TimeGenerated >= ago(48h)
+| where ContainerName_s == "flights-1"
+| where Log_s contains "[WARNING]" or Log_s contains "[ERROR]" or Log_s contains "[CRITICAL]"
+-----------------------------------------------
 
+??? system assigned managed identity = enabled
+??? continuous_deployment = on, (copy webhook url to docker repo)
+??? vnet_integration = skyviz-vnet -> default subnet
 
 # To Do
-applications insights/alerts for errors
 ci/cd
 lock name of database and web app since it is used in connections and github actions
+version lock pulumi provider

@@ -25,20 +25,31 @@ $~$
 
 ## Testing:
 - Run `pytest`
+- Add `ADSB_EXCHANGE_API_KEY_DEV` to Github repository secrets
 - Tests are run automatically when opening a PR and merging to main
 
 $~$
 
 ## Deployment (WIP):
+- Build containers and push to Docker Hub
 - Create Pulumi account and access token
 - Create Azure account and service principal
 - Populate ARM and PULUMI fields in .env file
 - Install Pulumi `curl -fsSL https://get.pulumi.com | sh`
 - `cd deployment/`
+- `export SKYVIZ_ENV='prod'`
 - `pulumi up`
 - Update DNS records for domain
 - Add webhooks to Docker Hub repositories
 - New deployments are automatic on container push to docker hub
+
+## Staging (WIP):
+- Build containers and push to Docker Hub
+- `cd deployment/`
+- `export SKYVIZ_ENV='staging'`
+- `pulumi up`
+- [Staging Website](skyviz-staging.azurewebsites.net)
+- `pulumi destroy`
 
 $~$
 

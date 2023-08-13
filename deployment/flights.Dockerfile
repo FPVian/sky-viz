@@ -11,8 +11,6 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # the application crashes without emitting any logs due to buffering.
 ENV PYTHONUNBUFFERED=1
 
-ENV SKYVIZ_ENV=prod
-
 WORKDIR /app
 
 # Create a non-privileged user that the app will run under.

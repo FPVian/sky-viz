@@ -21,3 +21,11 @@ class GeneralDev(General):
 class GeneralProd(General):
     suppress_errors: bool = True
     wait_between_runs: int = 1800
+    webapp_name: str = 'skyviz'
+
+
+@dataclass
+class GeneralStaging(General):
+    suppress_errors: bool = True
+    wait_between_runs: int = 120
+    webapp_name: str = 'skyviz-staging'
