@@ -99,12 +99,3 @@ ContainerAppConsoleLogs_CL
 | where ContainerName_s == "flights-1"
 | where Log_s contains "[WARNING]" or Log_s contains "[ERROR]" or Log_s contains "[CRITICAL]"
 -----------------------------------------------
-
-??? system assigned managed identity = enabled
-??? continuous_deployment = on, (copy webhook url to docker repo)
-??? vnet_integration = skyviz-vnet -> default subnet
-
-# To Do
-ci/cd
-lock name of database and web app since it is used in connections and github actions
-version lock pulumi provider

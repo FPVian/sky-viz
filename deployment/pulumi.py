@@ -5,12 +5,12 @@ from pulumi import ResourceOptions
 from pulumi_azure_native.resources.v20220901 import ResourceGroup
 import pulumi_azure_native.dbforpostgresql.v20230301preview as dbforpostgresql
 import pulumi_azure_native.operationalinsights.v20221001 as operationalinsights
-from pulumi_azure_native.operationalinsights.v20200801 import get_shared_keys
+from pulumi_azure_native.operationalinsights.v20200801 import get_shared_keys_output
+from pulumi_azure_native.operationalinsights.v20190901 import Query
 import pulumi_azure_native.app.v20230501 as app
+import pulumi_azure_native.web.v20220901 as web
 
 import os
-
-# import pulumi_azure_native.keyvault.v20230201 as keyvault
 
 '''
 Pulumi Azure Native API docs: https://www.pulumi.com/registry/packages/azure-native/api-docs/
@@ -56,12 +56,21 @@ class LogAnalytics:
         workspace_capping=operationalinsights.WorkspaceCappingArgs(daily_quota_gb=0.2),
     )
 
-    workspace_shared_keys = get_shared_keys(
+    workspace_shared_keys = get_shared_keys_output(
         resource_group_name=resource_group.name,
         workspace_name=log_analytics_workspace.name,
     )
 
-    # flights_warnings_query = operationalinsights.
+    # container_app_warnings_query = Query(
+    #     "flights-warnings-query",
+    #     query_pack_name="tbd",
+    #     resource_group_name=resource_group.name,
+    #     body='''
+    #     ContainerAppConsoleLogs_CL
+    #     | where TimeGenerated >= ago(48h)
+    #     | where Log_s contains "[WARNING]" or Log_s contains "[ERROR]" or Log_s contains "[CRITICAL]"
+    #     '''
+    # )
 
 
 class FlightsContainer:
@@ -124,7 +133,53 @@ class FlightsContainer:
 
 
 class SkyVizApp:
-    pass
-# skyviz = depends on flights
-# name = s.general.webapp_name
+    skyviz_app_service_plan = web.AppServicePlan(
+        "skyviz-app-service-plan",
+        resource_group_name=resource_group.name,
+        kind="Linux",
+        reserved=True,
+        sku=web.SkuDescriptionArgs(
+            name="B1",
+            tier="Basic",
+        ),
+    )
+
+    skyviz_web_app = web.WebApp(
+        s.general.webapp_name,
+        name=s.general.webapp_name,
+        opts=ResourceOptions(depends_on=[FlightsContainer.flights_container_app]),
+        resource_group_name=resource_group.name,
+        site_config=web.SiteConfigArgs(
+            linux_fx_version="DOCKER|fpvian/sky-viz-skyviz:latest",
+            always_on=True,
+            health_check_path="/healthz",
+            app_settings=[
+                web.NameValuePairArgs(
+                    name=Environs.environment_variable,
+                    value=os.environ[Environs.environment_variable]
+                ),
+                web.NameValuePairArgs(name=s.db.username_env_var, value=s.db.username),
+                web.NameValuePairArgs(name=s.db.password_env_var, value=s.db.password),
+            ],
+        ),
+        client_affinity_enabled=True,
+        server_farm_id=skyviz_app_service_plan.id,
+    )
+
+# To Do
+# logging
+# certificates
+# cicd
 # delete old skyviz app
+# alerts for postgres
+
+# app service logs -> application logging = file system, quota = 100 MB
+
+# Add Custom Domains
+# domain provider = all other domain services
+# certificate = app service managed certificate
+# type = SNI SSL
+# domain = skyviz.app
+# Repeat for www.skyviz.app
+
+# continuous_deployment = on, (copy webhook url to docker repo)
