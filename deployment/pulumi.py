@@ -163,8 +163,42 @@ class SkyVizApp:
             ],
         ),
         client_affinity_enabled=True,
+        https_only=True,
         server_farm_id=skyviz_app_service_plan.id,
+        # host_name_ssl_states=[web.HostNameSslStateArgs(
+        #     host_type=web.HostType.REPOSITORY,
+        #     name="skyviz.app",
+        #     ssl_state=web.SslState.SNI_ENABLED,
+        # #     # thumbprint="",
+        # ),],
+        # custom_domain_verification_id="",
     )
+
+
+# skyviz_certificate = web.Certificate(
+#     "skyviz-certificate",
+#     resource_group_name=resource_group.name,
+#     host_names=["skyviz.app", "www.skyviz.app",],
+# )
+
+# skyviz_certificate = web.WebAppPublicCertificate(
+#     "skyviz-certificate",
+#     resource_group_name=resource_group.name,
+#     name=SkyVizApp.skyviz_web_app.name,
+#     public_certificate_name="skyviz.app",
+#     public_certificate_location=web.PublicCertificateLocation.CURRENT_USER_MY,
+# )
+
+skyviz_domain = web.WebAppHostNameBinding(
+    "skyviz-domain",
+    resource_group_name=resource_group.name,
+    name=SkyVizApp.skyviz_web_app.name,
+    host_name="skyviz.app",
+    host_name_type=web.HostNameType.VERIFIED,
+    ssl_state=web.SslState.SNI_ENABLED,
+    thumbprint=skyviz_certificate.thumbprint,
+    # ssl_state="Disabled",
+)
 
 # To Do
 # logging
@@ -172,6 +206,7 @@ class SkyVizApp:
 # cicd
 # delete old skyviz app
 # alerts for postgres
+# variable for docker image names
 
 # app service logs -> application logging = file system, quota = 100 MB
 
