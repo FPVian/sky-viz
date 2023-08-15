@@ -4,7 +4,7 @@
 
 $~$
 
-## Check it out ----> [skyviz.app](https://skyviz.app)
+## Check it out ----> [skyviz.app](https://www.skyviz.app)
 
 $~$
 
@@ -48,7 +48,7 @@ $~$
 >- `export SKYVIZ_ENV='prod'`
 >- `pulumi up`
 
-- Update DNS records for domain
+- Update DNS records and issue certificates for domain
 - Add webhooks to Docker Hub repositories
 - New deployments are automatic on container push to docker hub
 

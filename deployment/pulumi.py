@@ -165,46 +165,49 @@ class SkyVizApp:
         client_affinity_enabled=True,
         https_only=True,
         server_farm_id=skyviz_app_service_plan.id,
-        # host_name_ssl_states=[web.HostNameSslStateArgs(
-        #     host_type=web.HostType.REPOSITORY,
-        #     name="skyviz.app",
-        #     ssl_state=web.SslState.SNI_ENABLED,
-        # #     # thumbprint="",
-        # ),],
-        # custom_domain_verification_id="",
+    )
+
+    '''
+    Commenting the certificate due to an issue between pulumi and the Azure API.
+    The bind must be made in the first pulumi run.
+    Then the certificate is created and the ssl state/thumbprint added to the bind in a subsequent run.
+    This makes adding certificates a multi-step process and runs counter to the ethos of pulumi/IAC.
+    After the stack is deployed, manually add the ip address to DNS records and issue certificates.
+    More info: https://github.com/pulumi/pulumi-azure-native/issues/578
+
+    skyviz_certificate = web.Certificate(
+        "skyviz-certificate",
+        canonical_name="www.skyviz.app",
+        host_names=[skyviz_web_app.default_host_name, "www.skyviz.app", "skyviz.app"],
+        opts=ResourceOptions(delete_before_replace=True),
+        resource_group_name=resource_group.name,
+        server_farm_id=skyviz_app_service_plan.id,
+    )
+
+    hostname bind args:
+    # ssl_state=web.SslState.SNI_ENABLED,
+    # thumbprint=skyviz_certificate.thumbprint,
+    '''
+
+    skyviz_hostname_bind = web.WebAppHostNameBinding(
+        "skyviz-hostname-bind",
+        host_name="www.skyviz.app",
+        resource_group_name=resource_group.name,
+        name=skyviz_web_app.name,
+    )
+
+    skyviz_root_hostname_bind = web.WebAppHostNameBinding(
+        "skyviz-root-hostname-bind",
+        opts=ResourceOptions(depends_on=skyviz_hostname_bind),
+        host_name="skyviz.app",
+        resource_group_name=resource_group.name,
+        name=skyviz_web_app.name,
     )
 
 
-# skyviz_certificate = web.Certificate(
-#     "skyviz-certificate",
-#     resource_group_name=resource_group.name,
-#     host_names=["skyviz.app", "www.skyviz.app",],
-# )
-
-# skyviz_certificate = web.WebAppPublicCertificate(
-#     "skyviz-certificate",
-#     resource_group_name=resource_group.name,
-#     name=SkyVizApp.skyviz_web_app.name,
-#     public_certificate_name="skyviz.app",
-#     public_certificate_location=web.PublicCertificateLocation.CURRENT_USER_MY,
-# )
-
-skyviz_domain = web.WebAppHostNameBinding(
-    "skyviz-domain",
-    resource_group_name=resource_group.name,
-    name=SkyVizApp.skyviz_web_app.name,
-    host_name="skyviz.app",
-    host_name_type=web.HostNameType.VERIFIED,
-    ssl_state=web.SslState.SNI_ENABLED,
-    thumbprint=skyviz_certificate.thumbprint,
-    # ssl_state="Disabled",
-)
-
 # To Do
 # logging
-# certificates
 # cicd
-# delete old skyviz app
 # alerts for postgres
 # variable for docker image names
 
