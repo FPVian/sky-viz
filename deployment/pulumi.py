@@ -6,7 +6,8 @@ from pulumi_azure_native.resources.v20220901 import ResourceGroup
 import pulumi_azure_native.dbforpostgresql.v20230301preview as dbforpostgresql
 import pulumi_azure_native.operationalinsights.v20221001 as operationalinsights
 from pulumi_azure_native.operationalinsights.v20200801 import get_shared_keys_output
-from pulumi_azure_native.operationalinsights.v20190901 import Query
+from pulumi_azure_native.operationalinsights.v20190901 import Query, QueryPack
+from pulumi_azure_native.insights.v20210501preview import DiagnosticSetting, LogSettingsArgs
 import pulumi_azure_native.app.v20230501 as app
 import pulumi_azure_native.web.v20220901 as web
 
@@ -17,8 +18,11 @@ Pulumi Azure Native API docs: https://www.pulumi.com/registry/packages/azure-nat
 Azure API Reference: https://learn.microsoft.com/en-us/azure/templates/
 '''
 
+flights_container_image = "fpvian/sky-viz-flights:latest"
+skyviz_container_image = "fpvian/sky-viz-skyviz:latest"
 
-resource_group = ResourceGroup(s.general.webapp_name, location='eastus')
+
+resource_group = ResourceGroup(f"{s.general.webapp_name}-resource-group", location="eastus")
 
 
 class PostgresDB:
@@ -61,15 +65,47 @@ class LogAnalytics:
         workspace_name=log_analytics_workspace.name,
     )
 
+    # query_pack = QueryPack(
+    #     "query-pack",
+    #     query_pack_name="query-pack",
+    #     resource_group_name=resource_group.name,
+    #     location="East US"
+    # )
+
     # container_app_warnings_query = Query(
-    #     "flights-warnings-query",
+    #     "container-app-warnings-query",
+    #     display_name="container-app-warnings-query",
     #     query_pack_name="tbd",
     #     resource_group_name=resource_group.name,
     #     body='''
     #     ContainerAppConsoleLogs_CL
     #     | where TimeGenerated >= ago(48h)
-    #     | where Log_s contains "[WARNING]" or Log_s contains "[ERROR]" or Log_s contains "[CRITICAL]"
-    #     '''
+    #     | where Log_s has "[WARNING]" or Log_s has "[ERROR]" or Log_s has "[CRITICAL]"
+    #     ''',
+    # )
+
+    # app_service_warnings_query = Query(
+    #     "app-service-warnings-query",
+    #     display_name="app-service-warnings-query",
+    #     # query_pack_name="tbd",
+    #     resource_group_name=resource_group.name,
+    #     body='''
+    #     AppServiceConsoleLogs
+    #     | where TimeGenerated >= ago(48h)
+    #     | where ResultDescription has "[WARNING]" or ResultDescription has "[ERROR]" or ResultDescription has "[CRITICAL]"
+    #     ''',
+    # )
+
+    # app_service_activity_query = Query(
+    #     "app-service-activity-query",
+    #     display_name="app-service-activity-query",
+    #     # query_pack_name="tbd",
+    #     resource_group_name=resource_group.name,
+    #     body='''
+    #     AppServiceHTTPLogs
+    #     | where TimeGenerated >= ago(24h)
+    #     | where UserAgent != "AlwaysOn"
+    #     ''',
     # )
 
 
@@ -120,7 +156,7 @@ class FlightsContainer:
                             secret_ref=adsb_exchange_api_key_secret.name,
                         ),
                     ],
-                    image="fpvian/sky-viz-flights:latest",
+                    image=flights_container_image,
                     resources=app.ContainerResourcesArgs(
                         cpu=0.25,
                         memory="0.5Gi",
@@ -150,7 +186,7 @@ class SkyVizApp:
         opts=ResourceOptions(depends_on=[FlightsContainer.flights_container_app]),
         resource_group_name=resource_group.name,
         site_config=web.SiteConfigArgs(
-            linux_fx_version="DOCKER|fpvian/sky-viz-skyviz:latest",
+            linux_fx_version=f"DOCKER|{skyviz_container_image}",
             always_on=True,
             health_check_path="/healthz",
             app_settings=[
@@ -204,20 +240,30 @@ class SkyVizApp:
         name=skyviz_web_app.name,
     )
 
+    skyviz_diagnostic_setting = DiagnosticSetting(
+        "skyviz-diagnostic-setting",
+        resource_uri=skyviz_web_app.id,
+        workspace_id=LogAnalytics.log_analytics_workspace.id,
+        logs=[
+            LogSettingsArgs(
+                category="AppServiceConsoleLogs",
+                enabled=True,
+            ),
+            LogSettingsArgs(
+                category="AppServicePlatformLogs",
+                enabled=True,
+            ),
+            LogSettingsArgs(
+                category="AppServiceHTTPLogs",
+                enabled=True,
+            ),
+        ],
+    )
+
 
 # To Do
-# logging
+# log alerts, metrics/health alerts, log storage quota alerts
 # cicd
 # alerts for postgres
-# variable for docker image names
-
-# app service logs -> application logging = file system, quota = 100 MB
-
-# Add Custom Domains
-# domain provider = all other domain services
-# certificate = app service managed certificate
-# type = SNI SSL
-# domain = skyviz.app
-# Repeat for www.skyviz.app
 
 # continuous_deployment = on, (copy webhook url to docker repo)
