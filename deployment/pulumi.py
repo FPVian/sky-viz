@@ -87,7 +87,7 @@ class FlightsContainer:
     adsb_exchange_api_key_secret = app.SecretArgs(
         name="adsb-exchange-api-key", value=s.api.adsb_exchange.api_key)
 
-    flights_container_app = app.ContainerApp(  # replace_on_changes?
+    flights_container_app = app.ContainerApp(
         "flights-container-app",
         environment_id=flights_container_app_environment.id,
         resource_group_name=resource_group.name,
@@ -233,48 +233,125 @@ class Alerts:
         )]
     )
 
-#     container_app_warnings = ScheduledQueryRule(
-#         "container-app-warnings",
-#         resource_group_name=resource_group.name,
-#         criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
-#             time_aggregation=TimeAggregation.COUNT,
-#             operator=ConditionOperator.GREATER_THAN,
-#             threshold=0,
-#             query='''ContainerAppConsoleLogs_CL
-# | where Log_s has "[INFO]" or Log_s has "[ERROR]" or Log_s has "[CRITICAL]"''',
-#         ),]),
-#         evaluation_frequency="PT5M",  # ISO 8601 duration format (P1D)
-#         actions=ActionsArgs(action_groups=[email_alerts.id]),
-#         # target_resource_types="",
-#         window_size="P2D",  # | where TimeGenerated >= ago(48h)
-#         scopes=[FlightsContainer.flights_container_app_environment.id],
-#         enabled=True,
-#         severity=2,
-#     )
-
-    web_app_warnings = ScheduledQueryRule(
+    container_app_warnings = ScheduledQueryRule(
         "container-app-warnings",
         resource_group_name=resource_group.name,
         criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
             time_aggregation=TimeAggregation.COUNT,
             operator=ConditionOperator.GREATER_THAN,
             threshold=0,
-            query='''AppServiceConsoleLogs
-| where ResultDescription has "[INFO]" or ResultDescription has "[ERROR]" or ResultDescription has "[CRITICAL]"''',
+            query='''ContainerAppConsoleLogs_CL
+                    | where TimeGenerated >= ago(48h)
+                    | where Log_s contains "[WARNING]" or Log_s contains "[ERROR]"
+                    or Log_s contains "[CRITICAL]"''',
         ),]),
-        evaluation_frequency="PT5M",  # ISO 8601 duration format (P1D)
+        evaluation_frequency="P1D",  # ISO 8601 duration format
         actions=ActionsArgs(action_groups=[email_alerts.id]),
-        # target_resource_types="",
-        window_size="P2D",  # | where TimeGenerated >= ago(48h)
+        window_size="P2D",
+        scopes=[LogAnalytics.log_analytics_workspace.id],
+        enabled=True,
+        severity=2,
+    )
+
+    container_app_health = ScheduledQueryRule(
+        "container-app-health",
+        resource_group_name=resource_group.name,
+        criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
+            time_aggregation=TimeAggregation.COUNT,
+            operator=ConditionOperator.GREATER_THAN,
+            threshold=0,
+            query='''ContainerAppSystemLogs_CL
+                    | where TimeGenerated >= ago(48h)
+                    | where Type_s == "Warning" or Type_s == "Error" or Type_s == "Critical"''',
+        ),]),
+        evaluation_frequency="P1D",  # ISO 8601 duration format
+        actions=ActionsArgs(action_groups=[email_alerts.id]),
+        window_size="P2D",
+        scopes=[LogAnalytics.log_analytics_workspace.id],
+        enabled=True,
+        severity=1,
+    )
+
+    web_app_warnings = ScheduledQueryRule(
+        "web-app-warnings",
+        resource_group_name=resource_group.name,
+        criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
+            time_aggregation=TimeAggregation.COUNT,
+            operator=ConditionOperator.GREATER_THAN,
+            threshold=0,
+            query='''AppServiceConsoleLogs
+                    | where TimeGenerated >= ago(48h)
+                    | where ResultDescription has "[WARNING]" or ResultDescription has "[ERROR]"
+                    or ResultDescription has "[CRITICAL]"''',
+        ),]),
+        evaluation_frequency="P1D",  # ISO 8601 duration format
+        actions=ActionsArgs(action_groups=[email_alerts.id]),
+        window_size="P2D",
         scopes=[SkyVizApp.skyviz_web_app.id],
         enabled=True,
         severity=2,
     )
 
+    web_app_health = ScheduledQueryRule(
+        "web-app-health",
+        resource_group_name=resource_group.name,
+        criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
+            time_aggregation=TimeAggregation.COUNT,
+            operator=ConditionOperator.GREATER_THAN,
+            threshold=0,
+            query='''AppServiceHTTPLogs
+                    | where TimeGenerated >= ago(48h)
+                    | where ScStatus >= 500''',
+        ),]),
+        evaluation_frequency="P1D",  # ISO 8601 duration format
+        actions=ActionsArgs(action_groups=[email_alerts.id]),
+        window_size="P2D",
+        scopes=[SkyVizApp.skyviz_web_app.id],
+        enabled=True,
+        severity=1,
+    )
 
-# To Do
-# log alerts, metrics/health alerts, log storage quota alerts
+    web_app_activity = ScheduledQueryRule(
+        "web-app-activity",
+        resource_group_name=resource_group.name,
+        criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
+            time_aggregation=TimeAggregation.COUNT,
+            operator=ConditionOperator.GREATER_THAN,
+            threshold=0,
+            query='''AppServiceHTTPLogs
+                    | where TimeGenerated >= ago(24h)
+                    | where UserAgent != "AlwaysOn"''',
+        ),]),
+        evaluation_frequency="P1D",  # ISO 8601 duration format
+        actions=ActionsArgs(action_groups=[email_alerts.id]),
+        window_size="P1D",
+        scopes=[SkyVizApp.skyviz_web_app.id],
+        enabled=True,
+        severity=4,
+    )
+
+    log_analytics_limits = ScheduledQueryRule(
+        "log-analytics-limits",
+        resource_group_name=resource_group.name,
+        criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
+            time_aggregation=TimeAggregation.COUNT,
+            operator=ConditionOperator.GREATER_THAN,
+            threshold=0,
+            query='''_LogOperation
+                    | where TimeGenerated >= ago(48h)
+                    | where Category == "Ingestion"
+                    | where Operation == "Data Collection" or Operation == "Ingestion rate"
+                    | where Level == "Warning" or Level == "Error"''',
+        ),]),
+        evaluation_frequency="P1D",  # ISO 8601 duration format
+        actions=ActionsArgs(action_groups=[email_alerts.id]),
+        window_size="P2D",
+        scopes=[LogAnalytics.log_analytics_workspace.id],
+        enabled=True,
+        severity=1,
+    )
+
+
 # cicd
-# alerts for postgres
-
 # continuous_deployment = on, (copy webhook url to docker repo)
+# container app replace_on_changes? web app delete_before_replace?
