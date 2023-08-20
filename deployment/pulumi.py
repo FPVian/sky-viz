@@ -235,6 +235,7 @@ class Alerts:
 
     container_app_warnings = ScheduledQueryRule(
         "container-app-warnings",
+        opts=ResourceOptions(depends_on=[FlightsContainer.flights_container_app]),
         resource_group_name=resource_group.name,
         criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
             time_aggregation=TimeAggregation.COUNT,
@@ -255,6 +256,7 @@ class Alerts:
 
     container_app_health = ScheduledQueryRule(
         "container-app-health",
+        opts=ResourceOptions(depends_on=[FlightsContainer.flights_container_app]),
         resource_group_name=resource_group.name,
         criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
             time_aggregation=TimeAggregation.COUNT,
