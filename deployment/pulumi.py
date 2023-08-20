@@ -6,10 +6,13 @@ from pulumi_azure_native.resources.v20220901 import ResourceGroup
 import pulumi_azure_native.dbforpostgresql.v20230301preview as dbforpostgresql
 import pulumi_azure_native.operationalinsights.v20221001 as operationalinsights
 from pulumi_azure_native.operationalinsights.v20200801 import get_shared_keys_output
-from pulumi_azure_native.operationalinsights.v20190901 import Query, QueryPack
-from pulumi_azure_native.insights.v20210501preview import DiagnosticSetting, LogSettingsArgs
 import pulumi_azure_native.app.v20230501 as app
 import pulumi_azure_native.web.v20220901 as web
+import pulumi_azure_native.insights.v20230101 as insights
+from pulumi_azure_native.insights.v20210501preview import DiagnosticSetting, LogSettingsArgs
+from pulumi_azure_native.insights.v20230315preview import (
+    ScheduledQueryRule, ScheduledQueryRuleCriteriaArgs, ConditionArgs, ConditionOperator,
+    TimeAggregation, ActionsArgs)
 
 import os
 
@@ -64,49 +67,6 @@ class LogAnalytics:
         resource_group_name=resource_group.name,
         workspace_name=log_analytics_workspace.name,
     )
-
-    # query_pack = QueryPack(
-    #     "query-pack",
-    #     query_pack_name="query-pack",
-    #     resource_group_name=resource_group.name,
-    #     location="East US"
-    # )
-
-    # container_app_warnings_query = Query(
-    #     "container-app-warnings-query",
-    #     display_name="container-app-warnings-query",
-    #     query_pack_name="tbd",
-    #     resource_group_name=resource_group.name,
-    #     body='''
-    #     ContainerAppConsoleLogs_CL
-    #     | where TimeGenerated >= ago(48h)
-    #     | where Log_s has "[WARNING]" or Log_s has "[ERROR]" or Log_s has "[CRITICAL]"
-    #     ''',
-    # )
-
-    # app_service_warnings_query = Query(
-    #     "app-service-warnings-query",
-    #     display_name="app-service-warnings-query",
-    #     # query_pack_name="tbd",
-    #     resource_group_name=resource_group.name,
-    #     body='''
-    #     AppServiceConsoleLogs
-    #     | where TimeGenerated >= ago(48h)
-    #     | where ResultDescription has "[WARNING]" or ResultDescription has "[ERROR]" or ResultDescription has "[CRITICAL]"
-    #     ''',
-    # )
-
-    # app_service_activity_query = Query(
-    #     "app-service-activity-query",
-    #     display_name="app-service-activity-query",
-    #     # query_pack_name="tbd",
-    #     resource_group_name=resource_group.name,
-    #     body='''
-    #     AppServiceHTTPLogs
-    #     | where TimeGenerated >= ago(24h)
-    #     | where UserAgent != "AlwaysOn"
-    #     ''',
-    # )
 
 
 class FlightsContainer:
@@ -258,6 +218,57 @@ class SkyVizApp:
                 enabled=True,
             ),
         ],
+    )
+
+
+class Alerts:
+    email_alerts = insights.ActionGroup(
+        "email-alerts",
+        group_short_name="skyviz-alert",
+        resource_group_name=resource_group.name,
+        location="global",
+        email_receivers=[insights.EmailReceiverArgs(
+            name="skyviz-domain-email",
+            email_address="azure.alerts@skyviz.app",
+        )]
+    )
+
+#     container_app_warnings = ScheduledQueryRule(
+#         "container-app-warnings",
+#         resource_group_name=resource_group.name,
+#         criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
+#             time_aggregation=TimeAggregation.COUNT,
+#             operator=ConditionOperator.GREATER_THAN,
+#             threshold=0,
+#             query='''ContainerAppConsoleLogs_CL
+# | where Log_s has "[INFO]" or Log_s has "[ERROR]" or Log_s has "[CRITICAL]"''',
+#         ),]),
+#         evaluation_frequency="PT5M",  # ISO 8601 duration format (P1D)
+#         actions=ActionsArgs(action_groups=[email_alerts.id]),
+#         # target_resource_types="",
+#         window_size="P2D",  # | where TimeGenerated >= ago(48h)
+#         scopes=[FlightsContainer.flights_container_app_environment.id],
+#         enabled=True,
+#         severity=2,
+#     )
+
+    web_app_warnings = ScheduledQueryRule(
+        "container-app-warnings",
+        resource_group_name=resource_group.name,
+        criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
+            time_aggregation=TimeAggregation.COUNT,
+            operator=ConditionOperator.GREATER_THAN,
+            threshold=0,
+            query='''AppServiceConsoleLogs
+| where ResultDescription has "[INFO]" or ResultDescription has "[ERROR]" or ResultDescription has "[CRITICAL]"''',
+        ),]),
+        evaluation_frequency="PT5M",  # ISO 8601 duration format (P1D)
+        actions=ActionsArgs(action_groups=[email_alerts.id]),
+        # target_resource_types="",
+        window_size="P2D",  # | where TimeGenerated >= ago(48h)
+        scopes=[SkyVizApp.skyviz_web_app.id],
+        enabled=True,
+        severity=2,
     )
 
 
