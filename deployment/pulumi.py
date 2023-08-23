@@ -1,7 +1,9 @@
 from flights.config.settings import s
 from flights.config.env import Environs
 
+import pulumi
 from pulumi import ResourceOptions
+import pulumi_docker as docker
 from pulumi_azure_native.resources.v20220901 import ResourceGroup
 import pulumi_azure_native.dbforpostgresql.v20230301preview as dbforpostgresql
 import pulumi_azure_native.operationalinsights.v20221001 as operationalinsights
@@ -15,6 +17,7 @@ from pulumi_azure_native.insights.v20230315preview import (
     TimeAggregation, ActionsArgs)
 
 import os
+from datetime import datetime
 
 '''
 Pulumi Azure Native API docs: https://www.pulumi.com/registry/packages/azure-native/api-docs/
@@ -26,6 +29,27 @@ skyviz_container_image = "fpvian/sky-viz-skyviz:latest"
 
 
 resource_group = ResourceGroup(f"{s.general.webapp_name}-resource-group", location="eastus")
+
+
+class DockerContainers:
+    now = datetime.utcnow().strftime("%D-%H:%M:%S")
+
+    flights_image = docker.Image(
+        "flights-image",
+        build=docker.DockerBuildArgs(
+            context="..",
+            dockerfile="flights.Dockerfile",
+        ),
+        image_name=f"fpvian/sky-viz-flights:{now}",
+        # registry=docker.RegistryArgs(
+        #     server=,
+        #     password=,
+        #     username=,
+        # ),
+        skip_push=True,
+    )
+
+    pulumi.export("Docker images", flights_image.image_name)
 
 
 class PostgresDB:
@@ -220,6 +244,8 @@ class SkyVizApp:
         ],
     )
 
+    pulumi.export("URL", skyviz_web_app.default_host_name.apply(lambda name: "https://" + name))
+
 
 class Alerts:
     email_alerts = insights.ActionGroup(
@@ -233,46 +259,51 @@ class Alerts:
         )]
     )
 
-    container_app_warnings = ScheduledQueryRule(
-        "container-app-warnings",
-        opts=ResourceOptions(depends_on=[FlightsContainer.flights_container_app]),
-        resource_group_name=resource_group.name,
-        criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
-            time_aggregation=TimeAggregation.COUNT,
-            operator=ConditionOperator.GREATER_THAN,
-            threshold=0,
-            query='''ContainerAppConsoleLogs_CL
-                    | where TimeGenerated >= ago(48h)
-                    | where Log_s contains "[WARNING]" or Log_s contains "[ERROR]"
-                    or Log_s contains "[CRITICAL]"''',
-        ),]),
-        evaluation_frequency="P1D",  # ISO 8601 duration format
-        actions=ActionsArgs(action_groups=[email_alerts.id]),
-        window_size="P2D",
-        scopes=[LogAnalytics.log_analytics_workspace.id],
-        enabled=True,
-        severity=2,
-    )
+    if os.environ[Environs.environment_variable] == "prod":
+        '''
+        Stack must be deployed before adding these alerts.
+        Azure throws an error if there are no logs in the queried table.
+        '''
+        container_app_warnings = ScheduledQueryRule(
+            "container-app-warnings",
+            opts=ResourceOptions(depends_on=[FlightsContainer.flights_container_app]),
+            resource_group_name=resource_group.name,
+            criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
+                time_aggregation=TimeAggregation.COUNT,
+                operator=ConditionOperator.GREATER_THAN,
+                threshold=0,
+                query='''ContainerAppConsoleLogs_CL
+                        | where TimeGenerated >= ago(48h)
+                        | where Log_s contains "[WARNING]" or Log_s contains "[ERROR]"
+                        or Log_s contains "[CRITICAL]"''',
+            ),]),
+            evaluation_frequency="P1D",  # ISO 8601 duration format
+            actions=ActionsArgs(action_groups=[email_alerts.id]),
+            window_size="P2D",
+            scopes=[LogAnalytics.log_analytics_workspace.id],
+            enabled=True,
+            severity=2,
+        )
 
-    container_app_health = ScheduledQueryRule(
-        "container-app-health",
-        opts=ResourceOptions(depends_on=[FlightsContainer.flights_container_app]),
-        resource_group_name=resource_group.name,
-        criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
-            time_aggregation=TimeAggregation.COUNT,
-            operator=ConditionOperator.GREATER_THAN,
-            threshold=0,
-            query='''ContainerAppSystemLogs_CL
-                    | where TimeGenerated >= ago(48h)
-                    | where Type_s == "Warning" or Type_s == "Error" or Type_s == "Critical"''',
-        ),]),
-        evaluation_frequency="P1D",  # ISO 8601 duration format
-        actions=ActionsArgs(action_groups=[email_alerts.id]),
-        window_size="P2D",
-        scopes=[LogAnalytics.log_analytics_workspace.id],
-        enabled=True,
-        severity=1,
-    )
+        container_app_health = ScheduledQueryRule(
+            "container-app-health",
+            opts=ResourceOptions(depends_on=[FlightsContainer.flights_container_app]),
+            resource_group_name=resource_group.name,
+            criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
+                time_aggregation=TimeAggregation.COUNT,
+                operator=ConditionOperator.GREATER_THAN,
+                threshold=0,
+                query='''ContainerAppSystemLogs_CL
+                        | where TimeGenerated >= ago(48h)
+                        | where Type_s == "Warning" or Type_s == "Error" or Type_s == "Critical"''',
+            ),]),
+            evaluation_frequency="P1D",  # ISO 8601 duration format
+            actions=ActionsArgs(action_groups=[email_alerts.id]),
+            window_size="P2D",
+            scopes=[LogAnalytics.log_analytics_workspace.id],
+            enabled=True,
+            severity=1,
+        )
 
     web_app_warnings = ScheduledQueryRule(
         "web-app-warnings",

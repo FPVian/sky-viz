@@ -19,6 +19,7 @@ dependencies = [
     "pandas == 2.0.2",
     "pulumi == 3.78.1",
     "pulumi-azure-native == 2.3.0",
+    "pulumi_docker == 4.3.2",
     "openpyxl",
     "flake8",
     "types-requests",
