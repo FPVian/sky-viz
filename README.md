@@ -46,6 +46,7 @@ $~$
 - Run Pulumi
 >- `cd deployment/`
 >- `export SKYVIZ_ENV='prod'`
+>- `export DOCKER_HOST='unix:///home/ian/.docker/desktop/docker.sock'`
 >- `pulumi up`
 
 - Update DNS records and issue certificates for domain

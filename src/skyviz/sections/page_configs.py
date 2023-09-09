@@ -18,4 +18,4 @@ def configure_home_page():
                 ''',
         },
     )
-    st.title('Where to go Plane Spotting?')
+    st.title('Flights Data Tracker')

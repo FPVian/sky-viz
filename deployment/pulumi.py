@@ -31,25 +31,40 @@ skyviz_container_image = "fpvian/sky-viz-skyviz:latest"
 resource_group = ResourceGroup(f"{s.general.webapp_name}-resource-group", location="eastus")
 
 
-# class DockerContainers:
-#     now = datetime.utcnow().strftime("%D-%H:%M:%S")
+class DockerContainers:
+    now = datetime.utcnow().strftime("%D-%H:%M:%S")
 
-#     flights_image = docker.Image(
-#         "flights-image",
-#         build=docker.DockerBuildArgs(
-#             context="..",
-#             dockerfile="flights.Dockerfile",
-#         ),
-#         image_name=f"fpvian/sky-viz-flights:{now}",
-#         # registry=docker.RegistryArgs(
-#         #     server=,
-#         #     password=,
-#         #     username=,
-#         # ),
-#         skip_push=True,
-#     )
+    flights_image = docker.Image(
+        "flights-image",
+        build=docker.DockerBuildArgs(
+            context="..",
+            dockerfile="flights.Dockerfile",
+        ),
+        image_name=f"fpvian/sky-viz-flights:{now}",
+        # registry=docker.RegistryArgs(
+        #     server=,
+        #     password=,
+        #     username=,
+        # ),
+        skip_push=True,
+    )
 
-#     pulumi.export("Docker images", flights_image.image_name)
+    skyviz_image = docker.Image(
+        "skyviz-image",
+        build=docker.DockerBuildArgs(
+            context="..",
+            dockerfile="skyviz.Dockerfile",
+        ),
+        image_name=f"fpvian/sky-viz-skyviz:{now}",
+        # registry=docker.RegistryArgs(
+        #     server=,
+        #     password=,
+        #     username=,
+        # ),
+        skip_push=True,
+    )
+
+    pulumi.export("Docker images", [flights_image.image_name, skyviz_image.image_name])
 
 
 class PostgresDB:
