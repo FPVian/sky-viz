@@ -1,5 +1,12 @@
 import streamlit as st
 
+'''
+Implementation:
+from skyviz.sections.sidebar import sidebar
+with st.sidebar:
+    sidebar()
+'''
+
 
 def sidebar():
     st.slider(

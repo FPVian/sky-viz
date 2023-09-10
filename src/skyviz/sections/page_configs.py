@@ -11,11 +11,16 @@ def configure_home_page():
             'Report a Bug': 'https://www.github.com/fpvian/flight-data',
             'About': '''
                 ### [Creator's Github Profile](https://www.github.com/fpvian)
-
-                ### Data Source
+                ### [Project's Github Repository](https://www.github.com/fpvian/flight-data)
+                ---
+                Data Source:
                 - ADSBexchange.com, https://ADSBexchange.com
                 ---
                 ''',
         },
     )
-    st.title('Flights Data Tracker')
+    icon, title = st.columns([1, 20])
+    with icon:
+        st.image('src/skyviz/static/icon.png', width=100)
+    with title:
+        st.title('Flights Data Tracker')

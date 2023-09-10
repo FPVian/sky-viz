@@ -1,0 +1,29 @@
+name: Build and deploy containers to staging and production environments with pulumi
+
+env:
+  SKYVIZ_ENV=
+  ARM_CLIENT_ID= ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET= ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_TENANT_ID= ${{ secrets.ARM_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID= ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  PULUMI_ACCESS_TOKEN= ${{ secrets.PULUMI_ACCESS_TOKEN }}
+  DOCKER_USER= ${{ secrets.DOCKER_USER }}
+  DOCKER_TOKEN= ${{ secrets.DOCKER_TOKEN }}
+  POSTGRES_PROD_ADMIN_USERNAME= ${{ secrets.POSTGRES_PROD_ADMIN_USERNAME }}
+  POSTGRES_PROD_ADMIN_PASSWORD= ${{ secrets.POSTGRES_PROD_ADMIN_PASSWORD }}
+  POSTGRES_STAGING_ADMIN_USERNAME= ${{ secrets.POSTGRES_STAGING_ADMIN_USERNAME }}
+  POSTGRES_STAGING_ADMIN_PASSWORD= ${{ secrets.POSTGRES_STAGING_ADMIN_PASSWORD }}
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
