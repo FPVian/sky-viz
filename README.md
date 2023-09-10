@@ -30,33 +30,26 @@ $~$
 
 $~$
 
-## Deployment (WIP):
-- Build containers and push to Docker Hub
->- `docker build -t fpvian/sky-viz-flights:latest -f ./deployment/flights.Dockerfile .`
->- `docker build -t fpvian/sky-viz-skyviz:latest -f ./deployment/skyviz.Dockerfile .`
->- `docker push fpvian/sky-viz-flights:latest`
->- `docker push fpvian/sky-viz-skyviz:latest`
-
+## Deployment:
 - Create Pulumi account and access token
 - Create Azure account and service principal
-- Populate ARM, PULUMI, & POSTGRES fields in .env file
+- Create Docker Hub account and access token
+- Populate ARM, PULUMI, DOCKER, & POSTGRES fields in .env file
 - Install Pulumi 
 >- `curl -fsSL https://get.pulumi.com | sh`
 
-- Run Pulumi
+- Run Pulumi (omit container app alerts on first prod run)
 >- `cd deployment/`
 >- `export SKYVIZ_ENV='prod'`
 >- `export DOCKER_HOST='unix:///home/ian/.docker/desktop/docker.sock'`
 >- `pulumi up`
 
 - Update DNS records and issue certificates for domain
-- Add webhooks to Docker Hub repositories
-- New deployments are automatic on container push to docker hub
+- New deployments are automatic on running pulumi up
 
 $~$
 
-## Staging (WIP):
-- Build containers and push to Docker Hub
+## Staging:
 - `export SKYVIZ_ENV='staging'`
 - Run Pulumi in a separate stack
 - [Staging Website](skyviz-staging.azurewebsites.net)

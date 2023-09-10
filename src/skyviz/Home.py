@@ -25,7 +25,6 @@ def main():
     st.subheader(f'`{total_flights_rows}` data points stored from `{count_flights_samples}` samples'
                  + ' of real-time flights in the continental US')
 
-
     # with st.sidebar:
     #     sidebar()
 

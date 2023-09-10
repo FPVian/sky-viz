@@ -24,29 +24,36 @@ Pulumi Azure Native API docs: https://www.pulumi.com/registry/packages/azure-nat
 Azure API Reference: https://learn.microsoft.com/en-us/azure/templates/
 '''
 
-flights_container_image = "fpvian/sky-viz-flights:latest"
-skyviz_container_image = "fpvian/sky-viz-skyviz:latest"
-
 
 resource_group = ResourceGroup(f"{s.general.webapp_name}-resource-group", location="eastus")
 
 
 class DockerContainers:
-    now = datetime.utcnow().strftime("%D-%H:%M:%S")
+    '''
+    Manual builds:
+    docker build -t fpvian/sky-viz-flights:latest -f ./deployment/flights.Dockerfile .
+    docker build -t fpvian/sky-viz-skyviz:latest -f ./deployment/skyviz.Dockerfile .
+    docker push fpvian/sky-viz-flights:latest
+    docker push fpvian/sky-viz-skyviz:latest
+    '''
+    docker_user = os.environ['DOCKER_USER']
+    now = datetime.utcnow().strftime("%m.%d.%y-%H.%M.%S")
+    flights_image_name = f"{docker_user}/sky-viz-flights:{now}"
+    skyviz_image_name = f"{docker_user}/sky-viz-skyviz:{now}"
 
     flights_image = docker.Image(
         "flights-image",
         build=docker.DockerBuildArgs(
             context="..",
             dockerfile="flights.Dockerfile",
+            platform='linux/amd64',
         ),
-        image_name=f"fpvian/sky-viz-flights:{now}",
-        # registry=docker.RegistryArgs(
-        #     server=,
-        #     password=,
-        #     username=,
-        # ),
-        skip_push=True,
+        image_name=flights_image_name,
+        registry=docker.RegistryArgs(
+            server=f'https://hub.docker.com/repositories/{docker_user}',
+            username=docker_user,
+            password=os.environ['DOCKER_TOKEN'],
+        ),
     )
 
     skyviz_image = docker.Image(
@@ -54,14 +61,14 @@ class DockerContainers:
         build=docker.DockerBuildArgs(
             context="..",
             dockerfile="skyviz.Dockerfile",
+            platform='linux/amd64',
         ),
-        image_name=f"fpvian/sky-viz-skyviz:{now}",
-        # registry=docker.RegistryArgs(
-        #     server=,
-        #     password=,
-        #     username=,
-        # ),
-        skip_push=True,
+        image_name=skyviz_image_name,
+        registry=docker.RegistryArgs(
+            server=f'https://hub.docker.com/repositories/{docker_user}',
+            username=docker_user,
+            password=os.environ['DOCKER_TOKEN'],
+        ),
     )
 
     pulumi.export("Docker images", [flights_image.image_name, skyviz_image.image_name])
@@ -131,7 +138,10 @@ class FlightsContainer:
         environment_id=flights_container_app_environment.id,
         resource_group_name=resource_group.name,
         opts=ResourceOptions(
-            depends_on=[PostgresDB.postgres_server],
+            depends_on=[
+                PostgresDB.postgres_server,
+                DockerContainers.flights_image,
+            ],
             delete_before_replace=True,
         ),
         configuration=app.ConfigurationArgs(
@@ -155,7 +165,7 @@ class FlightsContainer:
                             secret_ref=adsb_exchange_api_key_secret.name,
                         ),
                     ],
-                    image=flights_container_image,
+                    image=DockerContainers.flights_image_name,
                     resources=app.ContainerResourcesArgs(
                         cpu=0.25,
                         memory="0.5Gi",
@@ -182,10 +192,13 @@ class SkyVizApp:
     skyviz_web_app = web.WebApp(
         s.general.webapp_name,
         name=s.general.webapp_name,
-        opts=ResourceOptions(depends_on=[FlightsContainer.flights_container_app]),
+        opts=ResourceOptions(depends_on=[
+            FlightsContainer.flights_container_app,
+            DockerContainers.skyviz_image,
+        ]),
         resource_group_name=resource_group.name,
         site_config=web.SiteConfigArgs(
-            linux_fx_version=f"DOCKER|{skyviz_container_image}",
+            linux_fx_version=f"DOCKER|{DockerContainers.skyviz_image_name}",
             always_on=True,
             health_check_path="/healthz",
             app_settings=[
@@ -398,8 +411,3 @@ class Alerts:
         enabled=True,
         severity=1,
     )
-
-
-# cicd
-# continuous_deployment = on, (copy webhook url to docker repo)
-# container app replace_on_changes? web app delete_before_replace?
