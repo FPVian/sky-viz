@@ -1,17 +1,13 @@
 <a name="readme-top"></a>
 
 
-<p align="center">
-    <a href="https://www.linkedin.com/in/iangresov/"><img src="https://img.shields.io/badge/linkedin-0A66C2.svg?style=[style_name]&logo=linkedin&logoColor=white" /></a>
-    <a href="mailto:ian@skyviz.app"><img src="https://img.shields.io/badge/gmail-EA4335.svg?style=[style_name]&logo=gmail&logoColor=white" /></a>
-</p>
+
 
 
 <!-- PROJECT LOGO -->
-<br />
 <div align="center">
   <a href="https://www.skyviz.app">
-    <img src="src/skyviz/static/logo.png" alt="Logo" width="160" height="160">
+    <img src="src/skyviz/static/icon.png" alt="Logo" width="160" height="160">
   </a>
 
 <h1 align="center">SkyViz</h1>
@@ -32,6 +28,11 @@
     <a href="https://azure.microsoft.com/"><img src="https://img.shields.io/badge/microsoft%20azure-0089D6?style=for-the-badge&logo=microsoft-azure&logoColor=white" /></a>
   </p>
 </div>
+
+<p align="center">
+    <a href="https://www.linkedin.com/in/iangresov/"><img src="https://img.shields.io/badge/linkedin-0A66C2.svg?style=[style_name]&logo=linkedin&logoColor=white" /></a>
+    <a href="mailto:ian@skyviz.app"><img src="https://img.shields.io/badge/gmail-EA4335.svg?style=[style_name]&logo=gmail&logoColor=white" /></a>
+</p>
 
 $~$
 
