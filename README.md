@@ -29,12 +29,14 @@
   </p>
 </div>
 
+
+<br />
 <p align="center">
     <a href="https://www.linkedin.com/in/iangresov/"><img src="https://img.shields.io/badge/linkedin-0A66C2.svg?style=[style_name]&logo=linkedin&logoColor=white" /></a>
     <a href="mailto:ian@skyviz.app"><img src="https://img.shields.io/badge/gmail-EA4335.svg?style=[style_name]&logo=gmail&logoColor=white" /></a>
 </p>
+<br />
 
-$~$
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -58,8 +60,8 @@ $~$
     <li><a href="#database-migrations">Database Migrations</a></li>
   </ol>
 </details>
+<br />
 
-$~$
 
 <!-- GETTING STARTED -->
 # Getting Started
