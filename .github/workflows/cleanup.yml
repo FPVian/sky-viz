@@ -1,0 +1,39 @@
+# https://www.pulumi.com/docs/using-pulumi/continuous-delivery/github-actions/
+name: Pulumi
+
+env:
+  SKYVIZ_ENV: staging
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  DOCKER_USER: ${{ secrets.DOCKER_USER }}
+  DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+  POSTGRES_USERNAME: ${{ secrets.POSTGRES_USERNAME }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  ADSB_EXCHANGE_API_KEY_DEV: ${{ secrets.ADSB_EXCHANGE_API_KEY_DEV }}
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  destroy-staging:
+    name: Destroy staging resources
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - run: python3 -m venv .venv
+      - run: source .venv/bin/activate
+      - run: pip install .
+      - uses: pulumi/actions@v4
+        with:
+          command: destroy
+          stack-name: staging
+          work-dir: deployment
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}

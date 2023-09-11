@@ -1,7 +1,7 @@
 # https://docs.docker.com/compose/compose-file/
 
 services:
-  flights:
+  flights:  # docker run --restart=always -e SKYVIZ_ENV=dev
     build:
       context: .
       dockerfile: deployment/flights.Dockerfile
@@ -29,7 +29,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  skyviz:
+  skyviz:  # docker run -p 8501:8501 --restart=always -e SKYVIZ_ENV=dev
     build:
       context: .
       dockerfile: deployment/skyviz.Dockerfile

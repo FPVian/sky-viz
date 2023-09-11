@@ -21,3 +21,13 @@ class GeneralDev(General):
 class GeneralProd(General):
     suppress_errors: bool = True
     wait_between_runs: int = 1800
+    webapp_name: str = 'skyviz'
+    azure_region: str = 'eastus'
+
+
+@dataclass
+class GeneralStaging(General):
+    suppress_errors: bool = True
+    wait_between_runs: int = 1800
+    webapp_name: str = 'skyviz-staging'
+    azure_region: str = 'eastus2'

@@ -7,6 +7,7 @@ from typing import Optional
 
 @dataclass
 class AdsbExchange:
+    api_key_env_var: str = MISSING
     api_key: Optional[str] = MISSING
     usa_sample_coordinates: list = field(default_factory=lambda: [
         (43, -119),
@@ -22,15 +23,24 @@ class AdsbExchange:
 
 @dataclass
 class AdsbExchangeDev(AdsbExchange):
-    api_key: Optional[str] = os.environ.get('ADSB_EXCHANGE_API_KEY_DEV')
+    api_key_env_var: str = 'ADSB_EXCHANGE_API_KEY_DEV'
+    api_key: Optional[str] = os.environ.get(api_key_env_var)
 
 
 @dataclass
 class AdsbExchangeProd(AdsbExchange):
-    api_key: Optional[str] = os.environ.get('ADSB_EXCHANGE_API_KEY_PROD')
+    api_key_env_var: str = 'ADSB_EXCHANGE_API_KEY_PROD'
+    api_key: Optional[str] = os.environ.get(api_key_env_var)
+
+
+@dataclass
+class AdsbExchangeStaging(AdsbExchange):
+    api_key_env_var: str = 'ADSB_EXCHANGE_API_KEY_DEV'
+    api_key: Optional[str] = os.environ.get(api_key_env_var)
 
 
 @dataclass
 class AdsbExchangeTest(AdsbExchange):
-    api_key: Optional[str] = os.environ.get('ADSB_EXCHANGE_API_KEY_DEV')
+    api_key_env_var: str = 'ADSB_EXCHANGE_API_KEY_DEV'
+    api_key: Optional[str] = os.environ.get(api_key_env_var)
     usa_sample_coordinates: list = field(default_factory=lambda: [(43, -105.5), (31, -106)])

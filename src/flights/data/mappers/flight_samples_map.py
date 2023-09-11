@@ -12,6 +12,7 @@ class FlightSamplesMapper:
     '''
     def map_scatter_data(self, scatter_data: list[dict]) -> Iterator[FlightSamples]:
         log.info(f'mapping {len(scatter_data)} rows of scatter data to flight samples table model')
+        log.info('filtering out irrelevant scatter data')
         filtered_flights = filter(self._filter_flight, scatter_data)
         flights = map(self._map_flight, filtered_flights)
         log.info('mapped scatter data to flight samples table model')
@@ -20,8 +21,8 @@ class FlightSamplesMapper:
     def _filter_flight(self, flight: dict) -> bool:
         valid_flight = all([flight.get('alt_baro') != 'ground',
                             flight.get('hex'),
-                            flight.get('lat'),
-                            flight.get('lon'),
+                            self._safe_cast_to_float(flight.get('lat')),
+                            self._safe_cast_to_float(flight.get('lon')),
                             ])
         return valid_flight
 

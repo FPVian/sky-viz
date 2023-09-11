@@ -5,7 +5,6 @@
         "--ignore=W292,W293,W503",
         "--exclude=**/versions/*",
     ],
-    "python.linting.mypyEnabled": true,
     "python.testing.pytestArgs": [
         "tests"
     ],
