@@ -60,11 +60,10 @@
     <li><a href="#database-migrations">Database Migrations</a></li>
   </ol>
 </details>
-<br />
 
 
 <!-- GETTING STARTED -->
-# Getting Started
+## Getting Started
 1. Create a free subsciption to [ADSBexchange](https://adsbexchange.com/) APIs on [RapidAPI](https://rapidapi.com)
 2. Clone the repo
     ```sh
@@ -86,7 +85,7 @@
 
 $~$
 
-# Development:
+## Development:
 1. Install [Python](https://www.python.org/downloads/)
 2. Create and activate a virtual environment
     ```sh
@@ -118,7 +117,7 @@ Tests are run automatically when opening a PR and merging to main. Just add `ADS
 
 $~$
 
-# Deployment:
+## Deployment:
 Note that `webapp_name` in `src/flights/config/groups/general.py` and `server_name` in `src/flights/config/groups/db.py` *must be globally unique in Azure.*
 1. Create [Pulumi account](https://www.pulumi.com/docs/get-started/) and [access token](https://www.pulumi.com/docs/pulumi-cloud/access-management/access-tokens/)
 2. Create [Azure account](https://azure.microsoft.com/en-us/free/) and [service principal](https://www.pulumi.com/registry/packages/azure-native/installation-configuration/) with ["Contributer" role](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/service_principal_client_secret)
@@ -176,7 +175,7 @@ $~$
 
 $~$
 
-# Database Migrations:
+## Database Migrations:
 
 1. Navigate to folder with alembic.ini file
     ```sh
