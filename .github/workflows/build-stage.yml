@@ -29,30 +29,31 @@ jobs:
       - run: |
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install .
+          pip install -e .
       - uses: pulumi/actions@v4
         with:
           command: preview
           stack-name: prod
           work-dir: deployment
+          exclude-protected: true
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
-  # stage:
-  #   name: Deploy staging stack
-  #   runs-on: ubuntu-latest
-  #   env:
-  #       SKYVIZ_ENV: staging
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/setup-python@v4
-  #       with:
-  #         python-version: 3.11
-  #     - uses: pulumi/actions@v4
-  #       with:
-  #         command: up
-  #         stack-name: staging
-  #         work-dir: deployment
-  #         upsert: true
-  #       env:
-  #         PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+  stage:
+    name: Deploy staging stack
+    runs-on: ubuntu-latest
+    env:
+        SKYVIZ_ENV: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - uses: pulumi/actions@v4
+        with:
+          command: up
+          stack-name: staging
+          work-dir: deployment
+          upsert: true
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
