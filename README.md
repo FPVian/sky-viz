@@ -138,7 +138,7 @@ After following these steps, deployments will be handled automatically when merg
 5. Run Pulumi
     ```sh
     cd deployment/
-    export SKYVIZ_ENV='prod'
+    export SKYVIZ_ENV=prod
     export DOCKER_HOST='unix://'$HOME'/.docker/desktop/docker.sock'  # linux only
     pulumi up
     ```
@@ -153,11 +153,11 @@ Staging environment is automatically deployed when opening a pull request to mai
 1. Run Pulumi in a separate stack
     ```sh
     cd deployment/
-    export SKYVIZ_ENV='staging'
+    export SKYVIZ_ENV=staging
     export DOCKER_HOST='unix://'$HOME'/.docker/desktop/docker.sock'  # linux only
     pulumi up
     ```
-2. Navigate to [Staging Website](skyviz-staging.azurewebsites.net)
+2. Navigate to [Staging Website](https://skyviz-staging.azurewebsites.net)
 3. Clean up resources
     ```sh
     pulumi destroy
@@ -175,7 +175,7 @@ $~$
     ```
 2. Set environment variable to select database
     ```sh
-    export SKYVIZ_ENV='dev'  # postgres running in a local docker container
+    export SKYVIZ_ENV=test  # ephemeral sqlite database
     ```
 3. Check for changes to the database model
     ```sh
