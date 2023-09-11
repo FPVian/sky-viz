@@ -30,7 +30,6 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install .
-        working-directory: deployment
       - uses: pulumi/actions@v4
         with:
           command: preview
