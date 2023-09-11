@@ -1,5 +1,5 @@
 # https://www.pulumi.com/docs/using-pulumi/continuous-delivery/github-actions/
-name: Pulumi
+name: Pulumi cleanup
 
 env:
   SKYVIZ_ENV: staging
@@ -20,16 +20,17 @@ on:
 
 jobs:
   destroy-staging:
-    name: Destroy staging resources
+    name: destroy staging resources
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: 3.11
-      - run: python3 -m venv .venv
-      - run: source .venv/bin/activate
-      - run: pip install .
+      - run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -e .
       - uses: pulumi/actions@v4
         with:
           command: destroy
