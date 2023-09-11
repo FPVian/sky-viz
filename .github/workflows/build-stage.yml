@@ -49,6 +49,10 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: 3.11
+      - run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -e .
       - uses: pulumi/actions@v4
         with:
           command: up

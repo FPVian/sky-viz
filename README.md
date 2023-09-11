@@ -3,7 +3,7 @@
 <!-- PROJECT LOGO -->
 <div align="center">
   <a href="https://www.skyviz.app">
-    <img src="src/skyviz/static/icon.png" alt="Logo" width="160" height="160">
+    <img src="src/skyviz/static/logo.png" alt="Logo" width="160" height="160">
   </a>
 
 <h1 align="center">SkyViz</h1>
