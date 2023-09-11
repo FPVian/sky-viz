@@ -25,7 +25,10 @@ Azure API Reference: https://learn.microsoft.com/en-us/azure/templates/
 '''
 
 
-resource_group = ResourceGroup(f"{s.general.webapp_name}-resource-group", location="eastus")
+resource_group = ResourceGroup(
+    f"{s.general.webapp_name}-resource-group",
+    location=s.general.azure_region,
+)
 
 
 class DockerContainers:
