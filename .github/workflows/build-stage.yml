@@ -1,0 +1,55 @@
+name: Preview changes and build/deploy containers to staging environment using pulumi
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  DOCKER_USER: ${{ secrets.DOCKER_USER }}
+  DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+  POSTGRES_STAGING_ADMIN_USERNAME: ${{ secrets.POSTGRES_STAGING_ADMIN_USERNAME }}
+  POSTGRES_STAGING_ADMIN_PASSWORD: ${{ secrets.POSTGRES_STAGING_ADMIN_PASSWORD }}
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  preview:
+    name: Preview changes to production environment
+    runs-on: ubuntu-latest
+    env:
+        SKYVIZ_ENV: prod
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - run: pip install .
+      - uses: pulumi/actions@v4
+        with:
+          command: preview
+          stack-name: prod
+          work-dir: deployment
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+  stage:
+    name: Build & deploy to staging environment
+    runs-on: ubuntu-latest
+    env:
+        SKYVIZ_ENV: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - uses: pulumi/actions@v4
+        with:
+          command: up
+          stack-name: staging
+          work-dir: deployment
+          upsert: true
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
