@@ -20,7 +20,7 @@ on:
 
 jobs:
   update-prod:
-    name: Update
+    name: Update prod stack
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
