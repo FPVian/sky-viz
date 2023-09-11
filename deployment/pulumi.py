@@ -25,6 +25,13 @@ Azure API Reference: https://learn.microsoft.com/en-us/azure/templates/
 '''
 
 
+env_var = Environs.environment_variable
+environment = os.environ[env_var]
+pulumi.export("Environment", environment)
+docker_user = os.environ['DOCKER_USER']
+docker_token = os.environ['DOCKER_TOKEN']
+
+
 resource_group = ResourceGroup(
     f"{s.general.webapp_name}-resource-group",
     location=s.general.azure_region,
@@ -39,10 +46,9 @@ class DockerContainers:
     docker push fpvian/sky-viz-flights:latest
     docker push fpvian/sky-viz-skyviz:latest
     '''
-    docker_user = os.environ['DOCKER_USER']
     now = datetime.utcnow().strftime("%m.%d.%y-%H.%M.%S")
-    flights_image_name = f"{docker_user}/sky-viz-flights:{now}"
-    skyviz_image_name = f"{docker_user}/sky-viz-skyviz:{now}"
+    flights_image_name = f"{docker_user}/sky-viz-flights:{environment}-{now}"
+    skyviz_image_name = f"{docker_user}/sky-viz-skyviz:{environment}-{now}"
 
     flights_image = docker.Image(
         "flights-image",
@@ -55,7 +61,7 @@ class DockerContainers:
         registry=docker.RegistryArgs(
             server=f'https://hub.docker.com/repositories/{docker_user}',
             username=docker_user,
-            password=os.environ['DOCKER_TOKEN'],
+            password=docker_token,
         ),
     )
 
@@ -70,7 +76,7 @@ class DockerContainers:
         registry=docker.RegistryArgs(
             server=f'https://hub.docker.com/repositories/{docker_user}',
             username=docker_user,
-            password=os.environ['DOCKER_TOKEN'],
+            password=docker_token,
         ),
     )
 
@@ -80,11 +86,11 @@ class DockerContainers:
 class PostgresDB:
     postgres_server = dbforpostgresql.Server(
         s.db.server_name,
-        opts=ResourceOptions(protect=False),
+        opts=ResourceOptions(protect=s.db.protected),
         server_name=s.db.server_name,
         resource_group_name=resource_group.name,
-        administrator_login=s.db.admin_username,
-        administrator_login_password=s.db.admin_password,
+        administrator_login=s.db.username,
+        administrator_login_password=s.db.password,
         sku=dbforpostgresql.SkuArgs(
             name="Standard_B1ms",
             tier=dbforpostgresql.SkuTier.BURSTABLE,
@@ -156,8 +162,8 @@ class FlightsContainer:
                     name="flights",
                     env=[
                         app.EnvironmentVarArgs(
-                            name=Environs.environment_variable,
-                            value=os.environ[Environs.environment_variable]
+                            name=env_var,
+                            value=environment
                         ),
                         app.EnvironmentVarArgs(
                             name=s.db.username_env_var, secret_ref=db_username_secret.name),
@@ -206,8 +212,8 @@ class SkyVizApp:
             health_check_path="/healthz",
             app_settings=[
                 web.NameValuePairArgs(
-                    name=Environs.environment_variable,
-                    value=os.environ[Environs.environment_variable]
+                    name=env_var,
+                    value=environment
                 ),
                 web.NameValuePairArgs(name=s.db.username_env_var, value=s.db.username),
                 web.NameValuePairArgs(name=s.db.password_env_var, value=s.db.password),
@@ -290,7 +296,7 @@ class Alerts:
         )]
     )
 
-    if os.environ[Environs.environment_variable] == "prod":
+    if environment == "prod":
         '''
         Stack must be deployed before adding these alerts.
         Azure throws an error if there are no logs in the queried table.

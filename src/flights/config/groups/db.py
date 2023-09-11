@@ -16,12 +16,11 @@ class PostgresProd(Db):
     host: str = f'{server_name}.postgres.database.azure.com'
     port: int = 5432
     database: str = 'postgres'
-    username_env_var: str = 'POSTGRES_PROD_USERNAME'
+    username_env_var: str = 'POSTGRES_USERNAME'
     username: str = os.environ.get(username_env_var, '')
-    password_env_var: str = 'POSTGRES_PROD_PASSWORD'
+    password_env_var: str = 'POSTGRES_PASSWORD'
     password: str = os.environ.get(password_env_var, '')
-    admin_username: str = os.environ.get('POSTGRES_PROD_ADMIN_USERNAME', '')
-    admin_password: str = os.environ.get('POSTGRES_PROD_ADMIN_PASSWORD', '')
+    protected: bool = True
 
 
 @dataclass
@@ -32,12 +31,11 @@ class PostgresStaging(Db):
     host: str = f'{server_name}.postgres.database.azure.com'
     port: int = 5432
     database: str = 'postgres'
-    username_env_var: str = 'POSTGRES_STAGING_USERNAME'
+    username_env_var: str = 'POSTGRES_USERNAME'
     username: str = os.environ.get(username_env_var, '')
-    password_env_var: str = 'POSTGRES_STAGING_PASSWORD'
+    password_env_var: str = 'POSTGRES_PASSWORD'
     password: str = os.environ.get(password_env_var, '')
-    admin_username: str = os.environ.get('POSTGRES_STAGING_ADMIN_USERNAME', '')
-    admin_password: str = os.environ.get('POSTGRES_STAGING_ADMIN_PASSWORD', '')
+    protected: bool = False
 
 
 @dataclass

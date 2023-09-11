@@ -14,26 +14,28 @@ env:
   ADSBEXCHANGE_API_KEY_DEV: ${{ secrets.ADSB_EXCHANGE_API_KEY_DEV }}
 
 on:
-  push:
+  pull_request:
     branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
-  destroy-staging:
-    name: Destroy staging resources
+  stage:
+    name: Deploy staging stack
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: 3.11
-      - run: python3 -m venv .venv
-      - run: source .venv/bin/activate
-      - run: pip install .
+      - run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -e .
       - uses: pulumi/actions@v4
         with:
-          command: destroy
+          command: up
           stack-name: staging
           work-dir: deployment
+          upsert: true
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}

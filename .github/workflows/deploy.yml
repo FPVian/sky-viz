@@ -1,5 +1,5 @@
 # https://www.pulumi.com/docs/using-pulumi/continuous-delivery/github-actions/
-name: Pulumi prod stack
+name: Pulumi
 
 env:
   SKYVIZ_ENV: prod
@@ -9,8 +9,9 @@ env:
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
   DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-  POSTGRES_PROD_ADMIN_USERNAME: ${{ secrets.POSTGRES_PROD_ADMIN_USERNAME }}
-  POSTGRES_PROD_ADMIN_PASSWORD: ${{ secrets.POSTGRES_PROD_ADMIN_PASSWORD }}
+  POSTGRES_USERNAME: ${{ secrets.POSTGRES_USERNAME }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  ADSBEXCHANGE_API_KEY_PROD: ${{ secrets.ADSB_EXCHANGE_API_KEY_PROD }}
 
 on:
   push:
@@ -18,7 +19,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  update:
+  update-prod:
     name: Update
     runs-on: ubuntu-latest
     steps:

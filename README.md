@@ -68,7 +68,6 @@
 3. Rename `.env.template` to `.env` and fill with api key
     ```
     ADSB_EXCHANGE_API_KEY_DEV=<your key here>
-    ADSB_EXCHANGE_API_KEY_PROD=<your key here>
     ```
 4. Install [Docker](https://docs.docker.com/get-docker/)
 5. Start containers
@@ -114,11 +113,11 @@ Tests are run automatically when opening a PR and merging to main. Just add `ADS
 $~$
 
 ## Deployment:
-Note that `webapp_name` in `src/flights/config/groups/general.py` and `server_name` in `src/flights/config/groups/db.py` *must be globally unique in Azure.*
+After following these steps, deployments will be handled automatically when merging to main. Note that `webapp_name` in `src/flights/config/groups/general.py` and `server_name` in `src/flights/config/groups/db.py` *must be globally unique in Azure.*
 1. Create [Pulumi account](https://www.pulumi.com/docs/get-started/) and [access token](https://www.pulumi.com/docs/pulumi-cloud/access-management/access-tokens/)
 2. Create [Azure account](https://azure.microsoft.com/en-us/free/) and [service principal](https://www.pulumi.com/registry/packages/azure-native/installation-configuration/) with ["Contributer" role](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/service_principal_client_secret)
 3. Create [Docker Hub account](https://hub.docker.com/) and [access token](https://docs.docker.com/docker-hub/access-tokens/)
-4. Populate ARM, PULUMI, DOCKER, & POSTGRES fields in .env file
+4. Populate ARM, PULUMI, DOCKER, POSTGRES, and ADSB fields in .env file **and GitHub repository secrets**
     ```
     ARM_CLIENT_ID=<your azure service principal client id>
     ARM_CLIENT_SECRET=<your azure service principal client secret>
@@ -127,16 +126,12 @@ Note that `webapp_name` in `src/flights/config/groups/general.py` and `server_na
     PULUMI_ACCESS_TOKEN=<your pulumi token>
     DOCKER_USER=<your docker username>
     DOCKER_TOKEN=<your docker token>
-    POSTGRES_PROD_ADMIN_USERNAME=<make up a username>
-    POSTGRES_PROD_ADMIN_PASSWORD=<randomly generate a password>
-    POSTGRES_PROD_USERNAME=<the same as admin username, until you manually create a user>
-    POSTGRES_PROD_PASSWORD=<the same as admin password, until you manually create a user>
-    POSTGRES_STAGING_ADMIN_USERNAME=<make up a username>
-    POSTGRES_STAGING_ADMIN_PASSWORD=<randomly generate a password>
-    POSTGRES_STAGING_USERNAME=<the same as staging admin username>
-    POSTGRES_STAGING_PASSWORD=<the same as staging admin password>
+    POSTGRES_USERNAME=<make up a username>
+    POSTGRES_PASSWORD=<randomly generate a password>
+    ADSB_EXCHANGE_API_KEY_DEV=<your key here>
+    ADSB_EXCHANGE_API_KEY_PROD=<your key here>
     ```
-5. Install Pulumi 
+5. Install Pulumi
     ```sh
     curl -fsSL https://get.pulumi.com | sh
     ```
@@ -154,6 +149,7 @@ Note that `webapp_name` in `src/flights/config/groups/general.py` and `server_na
 $~$
 
 ### Staging:
+Staging environment is automatically deployed when opening a pull request to main and automatically destroyed when merged. Follow these steps to manually manage staging environment.
 1. Run Pulumi in a separate stack
     ```sh
     cd deployment/
