@@ -1,4 +1,4 @@
-name: Destroy cloud resources in staging environment using pulumi
+name: Pulumi staging stack
 
 env:
   SKYVIZ_ENV: staging
