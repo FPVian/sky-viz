@@ -80,7 +80,7 @@ class DockerContainers:
 class PostgresDB:
     postgres_server = dbforpostgresql.Server(
         s.db.server_name,
-        opts=ResourceOptions(protect=True),
+        opts=ResourceOptions(protect=False),
         server_name=s.db.server_name,
         resource_group_name=resource_group.name,
         administrator_login=s.db.admin_username,

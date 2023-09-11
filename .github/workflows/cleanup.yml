@@ -1,3 +1,4 @@
+# https://www.pulumi.com/docs/using-pulumi/continuous-delivery/github-actions/
 name: Pulumi staging stack
 
 env:
@@ -15,8 +16,6 @@ on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   destroy:
