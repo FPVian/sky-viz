@@ -39,7 +39,7 @@
   <summary>Table of Contents</summary>
   <ol>
     <li>
-      <a href="#project-architecture">Project Overview</a>
+      <a href="#project-architecture">Project Architecture</a>
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
