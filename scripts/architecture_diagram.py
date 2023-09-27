@@ -20,7 +20,7 @@ adsb_exchange_logo = f"{project_root}/src/skyviz/static/adsb_exchange_logo.png"
 graph_attr = {
     "fontcolor": "#BEBEBE",
     "fontsize": "38",
-    "bgcolor": "transparent",  # #17202A
+    "bgcolor": "#17202A",
     "pad": "0.75",
     "labelloc": "t",
     # "nodesep": "1.2",
