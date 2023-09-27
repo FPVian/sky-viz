@@ -20,7 +20,7 @@ adsb_exchange_logo = f"{project_root}/src/skyviz/static/adsb_exchange_logo.png"
 graph_attr = {
     "fontcolor": "#BEBEBE",
     "fontsize": "38",
-    "bgcolor": "transparent",  # "transparent", #17202A
+    "bgcolor": "#17202A",
     "pad": "0.75",
     "labelloc": "t",
     # "nodesep": "1.2",
@@ -43,7 +43,7 @@ edge_attr = {
     "penwidth": "2.0",
 }
 
-with Diagram("SkyViz Architecture", filename=output_filepath, graph_attr=graph_attr, node_attr=node_attr,
+with Diagram(filename=output_filepath, graph_attr=graph_attr, node_attr=node_attr,
              edge_attr=edge_attr, show=False):
     with Cluster("Data Flow", graph_attr=cluster_attr):
         adsb_api = Custom("ADS-B Exchange API", adsb_exchange_logo)

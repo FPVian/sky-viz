@@ -61,8 +61,8 @@
 </details>
 
 
-<!-- PROJECT OVERVIEW -->
-## Project Overview
+<!-- PROJECT ARCHITECTURE -->
+## Project Architecture
 
 <div align="center">
   <img src="src/skyviz/static/architecture_diagram.png" alt="Architecture Diagram" height="500">
