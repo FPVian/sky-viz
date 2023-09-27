@@ -39,6 +39,9 @@
   <summary>Table of Contents</summary>
   <ol>
     <li>
+      <a href="#project-architecture">Project Architecture</a>
+    </li>
+    <li>
       <a href="#getting-started">Getting Started</a>
     </li>
     <li>
@@ -57,6 +60,17 @@
   </ol>
 </details>
 
+
+<!-- PROJECT ARCHITECTURE -->
+## Project Architecture
+
+<div align="center">
+  <img src="src/skyviz/static/architecture_diagram.png" alt="Architecture Diagram">
+</div>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+$~$
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -80,6 +94,7 @@
 
 $~$
 
+<!-- DEVELOPMENT -->
 ## Development:
 1. Install [Python](https://www.python.org/downloads/)
 2. Create and activate a virtual environment
@@ -101,6 +116,7 @@ $~$
 
 $~$
 
+<!-- TESTING -->
 ### Testing:
 Tests are run automatically when opening a PR and merging to main. Just add `ADSB_EXCHANGE_API_KEY_DEV` to the Github repository secrets.
 - Run all tests manually
@@ -112,6 +128,7 @@ Tests are run automatically when opening a PR and merging to main. Just add `ADS
 
 $~$
 
+<!-- DEPLOYMENT -->
 ## Deployment:
 After following these steps, deployments will be handled automatically when merging to main. Note that `webapp_name` in `src/flights/config/groups/general.py` and `server_name` in `src/flights/config/groups/db.py` *must be globally unique in Azure.*
 1. Create [Pulumi account](https://www.pulumi.com/docs/get-started/) and [access token](https://www.pulumi.com/docs/pulumi-cloud/access-management/access-tokens/)
@@ -148,6 +165,7 @@ After following these steps, deployments will be handled automatically when merg
 
 $~$
 
+<!-- STAGING -->
 ### Staging:
 Staging environment is automatically deployed when opening a pull request to main and automatically destroyed when merged. Follow these steps to manually manage staging environment.
 1. Run Pulumi in a separate stack
@@ -167,6 +185,7 @@ Staging environment is automatically deployed when opening a pull request to mai
 
 $~$
 
+<!-- DATABASE MIGRATIONS -->
 ## Database Migrations:
 
 1. Navigate to folder with alembic.ini file
