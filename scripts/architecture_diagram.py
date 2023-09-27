@@ -1,9 +1,11 @@
-from diagrams import Diagram, Edge, Cluster
+from diagrams import Diagram, Cluster
 from diagrams.azure.analytics import LogAnalyticsWorkspaces
-from diagrams.azure.compute import AppServices, ContainerInstances
-from diagrams.azure.web import AppServiceCertificates, AppServicePlans, AppServices
+from diagrams.azure.compute import ContainerInstances
+from diagrams.azure.web import AppServices
 from diagrams.azure.database import DatabaseForPostgresqlServers
-from diagrams.generic.compute import Rack
+from diagrams.custom import Custom
+
+from pathlib import Path
 
 '''
 Docs:
@@ -11,45 +13,41 @@ Docs:
     https://www.graphviz.org/documentation/
 '''
 
+project_root = Path(__file__).resolve().parents[1]
+output_filepath = f"{project_root}/src/skyviz/static/architecture_diagram"
+adsb_exchange_logo = f"{project_root}/src/skyviz/static/adsb_exchange_logo.png"
 
-filepath = "src/skyviz/static/architecture-diagram"
-
-graph_attr = {  # https://diagrams.mingrammer.com/docs/guides/diagram
-    "fontsize": "45",
+graph_attr = {
+    "fontcolor": "#BEBEBE",
+    "fontsize": "38",
     "bgcolor": "#17202A",  # "transparent",
     "pad": "0.75",
+    "labelloc": "t",
+    # "nodesep": "1.2",
+    # "ranksep": "0.8",
 }
 
 node_attr = {
-            # "fixedsize": "True",  # delete
-            "fontcolor": "#EEEEEE",
-            # "fontname": "calibri",
-            # "fontsize": "13.0",
-            # "height": "1.0",
-            # "imagepos": "tc",
-            # "imagescale": "True",
-            # "labelloc": "b",
-            # "shape": "rectangle",
-            # "style": "filled",
-            # "width": "1.0",
+    "fontcolor": "#EEEEEE",
 }
 
 cluster_attr = {
-    "fontcolor": "#EEEEEE",
-    # "fontsize": "12.0",
-    # "fontname": "calibri",
-    # "labeljust": "1",
-    # "labelloc": "b",  # ?
-    "margin": "25",  # 30.0?
-    # "style": "rounded",
-    # "pencolor": "#AEB6BE",
+    "fontcolor": "transparent",
+    "labeljust": "1",
+    "margin": "25",
+    "pencolor": "transparent",
     "bgcolor": "transparent",
 }
 
-with Diagram("SkyViz Architecture", filename=filepath, show=False, graph_attr=graph_attr, node_attr=node_attr):
+edge_attr = {
+    "penwidth": "2.0",
+}
+
+with Diagram("SkyViz Architecture", filename=output_filepath, graph_attr=graph_attr, node_attr=node_attr,
+             edge_attr=edge_attr, show=False):
     with Cluster("Data Flow", graph_attr=cluster_attr):
-        adsb_api = Rack("ADS-B Exchange API", fillcolor="lightblue", style="filled")
-        container_app = ContainerInstances("Python ETL Container")
+        adsb_api = Custom("ADS-B Exchange API", adsb_exchange_logo)
+        container_app = ContainerInstances("Python Container")
         postgres = DatabaseForPostgresqlServers("Postgres DB")
         web_app = AppServices("Streamlit Web App UI")
     

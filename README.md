@@ -65,7 +65,7 @@
 ## Project Overview
 
 <div align="center">
-  <img src="src/skyviz/static/architecture-diagram.png" alt="Architecture Diagram" height="500">
+  <img src="src/skyviz/static/architecture_diagram.png" alt="Architecture Diagram" height="500">
 </div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
