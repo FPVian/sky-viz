@@ -43,8 +43,8 @@ edge_attr = {
     "penwidth": "2.0",
 }
 
-with Diagram(filename=output_filepath, graph_attr=graph_attr, node_attr=node_attr,
-             edge_attr=edge_attr, show=False):
+with Diagram("SkyViz Architecture", filename=output_filepath, graph_attr=graph_attr,
+             node_attr=node_attr, edge_attr=edge_attr, show=False):
     with Cluster("Data Flow", graph_attr=cluster_attr):
         adsb_api = Custom("ADS-B Exchange API", adsb_exchange_logo)
         container_app = ContainerInstances("Python Container")
