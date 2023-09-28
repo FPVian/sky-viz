@@ -39,7 +39,7 @@
   <summary>Table of Contents</summary>
   <ol>
     <li>
-      <a href="#project-architecture">Project Architecture</a>
+      <a href="#project-overview">Project Overview</a>
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
@@ -61,8 +61,14 @@
 </details>
 
 
-<!-- PROJECT ARCHITECTURE -->
-## Project Architecture
+<!-- PROJECT OVERVIEW -->
+## Project Overview
+
+The ADS-B Exchange network collects telemetry from plane transponders and publishes the current state of the airspace through their APIs. This project stores and transforms the data to make it available for historical analysis in a Streamlit web app.
+
+Resources are containerized using Docker and hosted in Azure. CI/CD is enabled through Pulumi and Github Actions. Database versioning and migrations are handled by SQLAlchemy ORM and Alembic. Environment configuration is managed using Hydra.
+
+$~$
 
 <div align="center">
   <img src="src/skyviz/static/architecture_diagram.png" alt="Architecture Diagram">
