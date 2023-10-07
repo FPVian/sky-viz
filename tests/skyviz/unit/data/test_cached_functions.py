@@ -4,6 +4,7 @@ from database.models import FlightSamples
 from skyviz.data.cached_functions import read_table
 
 from hydra.utils import instantiate
+from sqlalchemy.orm import Session
 
 import os
 import pytest
@@ -44,7 +45,8 @@ def test_read_table(sqlite_repo: SqliteRepository):
             longitude=-4.4,
         ),
     ]
-    sqlite_repo.insert_rows(rows)
+    with Session(sqlite_repo.engine) as session, session.begin():
+        sqlite_repo.insert_rows(session, rows)
     result = read_table(FlightSamples)
     result_dict = result.to_dict()
     assert result_dict['icao_id'] == {0: 'abc123', 1: 'abc456'}

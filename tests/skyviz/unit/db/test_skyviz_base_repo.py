@@ -52,7 +52,8 @@ def test_calc_minutes_since_last_update(mock_dt, sqlite_repo: FlightsDbRepo):
             longitude=-4.4,
         ),
     ]
-    sqlite_repo.insert_rows(iter(rows))
+    with Session(sqlite_repo.engine) as session, session.begin():
+        sqlite_repo.insert_rows(session, iter(rows))
 
     db: SqliteRepository = instantiate(s.db)
     with Session(db.engine) as session, session.begin():
@@ -78,7 +79,8 @@ def test_count_total_rows(sqlite_repo: FlightsDbRepo):
             longitude=-4.4,
         ),
     ]
-    sqlite_repo.insert_rows(iter(rows))
+    with Session(sqlite_repo.engine) as session, session.begin():
+        sqlite_repo.insert_rows(session, iter(rows))
 
     db: SqliteRepository = instantiate(s.db)
     with Session(db.engine) as session, session.begin():
@@ -110,7 +112,8 @@ def test_count_distinct(sqlite_repo: FlightsDbRepo):
             longitude=-6.6,
         ),
     ]
-    sqlite_repo.insert_rows(iter(rows))
+    with Session(sqlite_repo.engine) as session, session.begin():
+        sqlite_repo.insert_rows(session, iter(rows))
 
     db: SqliteRepository = instantiate(s.db)
     with Session(db.engine) as session, session.begin():

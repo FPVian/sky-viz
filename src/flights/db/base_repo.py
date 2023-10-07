@@ -37,13 +37,12 @@ class BaseRepository():
         alembic_config.set_main_option('script_location', self.alembic_folder_path)
         command.upgrade(alembic_config, 'head')
 
-    def insert_rows(self, rows: Iterator[Base]):
+    def insert_rows(self, session: Session, rows: Iterator[Base]):
         '''
         Starts and closes a SQLAlchemy session for one-off inserting rows into a table.
         '''
         rows_to_insert = list(rows)
         log.info('inserting %s rows into %s table',
                  len(rows_to_insert), rows_to_insert[0].__tablename__ if rows else None)
-        with Session(self.engine) as session, session.begin():
-            session.add_all(rows_to_insert)
+        session.add_all(rows_to_insert)
         log.info('inserted all rows')
