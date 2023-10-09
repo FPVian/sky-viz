@@ -8,6 +8,10 @@ from sqlalchemy.orm import Session
 
 log = logger.create(__name__)
 
+'''
+Streamlit API reference: https://docs.streamlit.io/library/api-reference
+'''
+
 
 def main():
     configure_home_page()

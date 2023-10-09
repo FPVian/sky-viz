@@ -115,7 +115,7 @@ $~$
 4. Run modules
     ```sh
     python3 -m flights &
-    python3 -m skyviz
+    streamlit run ./src/skyviz/Home.py
     ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -162,7 +162,6 @@ After following these steps, deployments will be handled automatically when merg
     ```sh
     cd deployment/
     export SKYVIZ_ENV=prod
-    export DOCKER_HOST='unix://'$HOME'/.docker/desktop/docker.sock'  # linux only
     pulumi up
     ```
 6. Update DNS records and issue certificates for domain
@@ -178,7 +177,6 @@ Staging environment is automatically deployed when opening a pull request to mai
     ```sh
     cd deployment/
     export SKYVIZ_ENV=staging
-    export DOCKER_HOST='unix://'$HOME'/.docker/desktop/docker.sock'  # linux only
     pulumi up
     ```
 2. Navigate to [Staging Website](https://skyviz-staging.azurewebsites.net)

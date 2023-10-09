@@ -31,3 +31,9 @@ class FlightSamples(Base):
     source: Mapped[Optional[str]]
     rssi: Mapped[Optional[float]]
     emergency: Mapped[Optional[str]]
+
+
+class FlightAggregates (Base):
+    __tablename__ = 'flight_aggregates'
+    sample_entry_date_utc: Mapped[datetime] = mapped_column(primary_key=True)
+    number_of_flights: Mapped[int]

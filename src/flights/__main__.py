@@ -7,6 +7,7 @@ from flights.data.cleaners.flight_samples_clean import FlightSamplesCleaner
 from flights.db.base_repo import BaseRepository
 
 from hydra.utils import instantiate
+from sqlalchemy.orm import Session
 
 import asyncio
 
@@ -19,7 +20,8 @@ def app_routine(db: BaseRepository):
     clean_scatter_sample = FlightSamplesCleaner().clean_flight_sample(scatter_api_sample)
     flights_rows = FlightSamplesMapper().map_scatter_data(clean_scatter_sample)
     flights_transformed = FlightSamplesTransform().transform_flight_sample(flights_rows)
-    db.insert_rows(flights_transformed)
+    with Session(db.engine) as session, session.begin():
+        db.insert_rows(session, flights_transformed)
 
 
 async def main():

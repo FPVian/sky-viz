@@ -45,7 +45,8 @@ def test_insert_rows(sqlite_repo: SqliteRepository):
             longitude=-4.4,
         ),
     ]
-    sqlite_repo.insert_rows(iter(rows))
+    with Session(sqlite_repo.engine) as session, session.begin():
+        sqlite_repo.insert_rows(session, iter(rows))
     with Session(sqlite_repo.engine) as session:
         result = session.execute(text('SELECT * FROM flight_samples')).fetchall()
     assert 'abc123' in result[0]
@@ -56,7 +57,8 @@ def test_insert_rows_empty_list(sqlite_repo: SqliteRepository):
     '''
     Tests that the insert_rows method does not raise an error when an empty list is passed in.
     '''
-    sqlite_repo.insert_rows([])
+    with Session(sqlite_repo.engine) as session, session.begin():
+        sqlite_repo.insert_rows(session, [])
 
 
 def test_upgrade_db(sqlite_repo: SqliteRepository):
