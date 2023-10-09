@@ -115,7 +115,7 @@ $~$
 4. Run modules
     ```sh
     python3 -m flights &
-    python3 -m skyviz
+    streamlit run ./src/skyviz/Home.py
     ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
