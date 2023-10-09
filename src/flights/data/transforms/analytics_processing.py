@@ -1,5 +1,5 @@
 from flights.utils import logger
-from database.models import FlightSamples, FlightAggregates
+from database.models import FlightSamples
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
