@@ -25,8 +25,11 @@
   </p>
 </div>
 
+<p align="center">
+    <a href="https://htmlpreview.github.io/?https://github.com/FPVian/sky-viz/blob/python-coverage-comment-action-data/htmlcov/index.html"><img src="https://raw.githubusercontent.com/FPVian/sky-viz/python-coverage-comment-action-data/badge.svg" /></a>
+</p>
 
-<br />
+<!-- <br /> -->
 <p align="center">
     <a href="https://www.linkedin.com/in/iangresov/"><img src="https://img.shields.io/badge/linkedin-0A66C2.svg?style=[style_name]&logo=linkedin&logoColor=white" /></a>
     <a href="mailto:ian@skyviz.app"><img src="https://img.shields.io/badge/gmail-EA4335.svg?style=[style_name]&logo=gmail&logoColor=white" /></a>
@@ -81,20 +84,20 @@ $~$
 <!-- GETTING STARTED -->
 ## Getting Started
 1. Create a free subsciption to [ADSBexchange](https://adsbexchange.com/) APIs on [RapidAPI](https://rapidapi.com)
-2. Clone the repo
+1. Clone the repo
     ```sh
     git clone https://github.com/fpvian/sky-viz.git
     ```
-3. Rename `.env.template` to `.env` and fill with api key
+1. Rename `.env.template` to `.env` and fill with api key
     ```
     ADSB_EXCHANGE_API_KEY_DEV=<your key here>
     ```
-4. Install [Docker](https://docs.docker.com/get-docker/)
-5. Start containers
+1. Install [Docker](https://docs.docker.com/get-docker/)
+1. Start containers
     ```sh
     docker compose up
     ```
-6. Navigate to [localhost:8501](localhost:8501)
+1. Navigate to [localhost:8501](localhost:8501)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -103,16 +106,16 @@ $~$
 <!-- DEVELOPMENT -->
 ## Development:
 1. Install [Python](https://www.python.org/downloads/)
-2. Create and activate a virtual environment
+1. Create and activate a virtual environment
     ```sh
     python3 -m venv .venv --upgrade-deps
     source .venv/bin/activate
     ```
-3. Install packages and dependencies
+1. Install packages and dependencies
     ```sh
     pip install --editable .
     ```
-4. Run modules
+1. Run modules
     ```sh
     python3 -m flights &
     streamlit run ./src/skyviz/Home.py
@@ -123,9 +126,10 @@ $~$
 $~$
 
 <!-- TESTING -->
-### Testing:
-Tests are run automatically when opening a PR and merging to main. Just add `ADSB_EXCHANGE_API_KEY_DEV` to the Github repository secrets.
-- Run all tests manually
+### Testing: 
+Tests are run automatically when opening a PR and merging to main. Coverage reports are added to the PR as a comment.
+1. Add `ADSB_EXCHANGE_API_KEY_DEV` to the Github repository secrets
+1. Run all tests and generate coverage report
     ```sh
     pytest
     ```
@@ -138,9 +142,9 @@ $~$
 ## Deployment:
 After following these steps, deployments will be handled automatically when merging to main. Note that `webapp_name` in `src/flights/config/groups/general.py` and `server_name` in `src/flights/config/groups/db.py` *must be globally unique in Azure.*
 1. Create [Pulumi account](https://www.pulumi.com/docs/get-started/) and [access token](https://www.pulumi.com/docs/pulumi-cloud/access-management/access-tokens/)
-2. Create [Azure account](https://azure.microsoft.com/en-us/free/) and [service principal](https://www.pulumi.com/registry/packages/azure-native/installation-configuration/) with ["Contributer" role](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/service_principal_client_secret)
-3. Create [Docker Hub account](https://hub.docker.com/) and [access token](https://docs.docker.com/docker-hub/access-tokens/)
-4. Populate ARM, PULUMI, DOCKER, POSTGRES, and ADSB fields in .env file **and GitHub repository secrets**
+1. Create [Azure account](https://azure.microsoft.com/en-us/free/) and [service principal](https://www.pulumi.com/registry/packages/azure-native/installation-configuration/) with ["Contributer" role](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/service_principal_client_secret)
+1. Create [Docker Hub account](https://hub.docker.com/) and [access token](https://docs.docker.com/docker-hub/access-tokens/)
+1. Populate ARM, PULUMI, DOCKER, POSTGRES, and ADSB fields in .env file **and GitHub repository secrets**
     ```
     ARM_CLIENT_ID=<your azure service principal client id>
     ARM_CLIENT_SECRET=<your azure service principal client secret>
@@ -154,17 +158,18 @@ After following these steps, deployments will be handled automatically when merg
     ADSB_EXCHANGE_API_KEY_DEV=<your key here>
     ADSB_EXCHANGE_API_KEY_PROD=<your key here>
     ```
-5. Install Pulumi
+1. Install Pulumi
     ```sh
     curl -fsSL https://get.pulumi.com | sh
     ```
-5. Run Pulumi
+1. Run Pulumi
     ```sh
     cd deployment/
     export SKYVIZ_ENV=prod
     pulumi up
     ```
-6. Update DNS records and issue certificates for domain
+1. Update DNS records and issue certificates for domain
+1. Install Pulumi app in GitHub repository to preview changes to prod resources as a PR comment
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -179,8 +184,8 @@ Staging environment is automatically deployed when opening a pull request to mai
     export SKYVIZ_ENV=staging
     pulumi up
     ```
-2. Navigate to [Staging Website](https://skyviz-staging.azurewebsites.net)
-3. Clean up resources
+1. Navigate to [Staging Website](https://skyviz-staging.azurewebsites.net)
+1. Clean up resources
     ```sh
     pulumi destroy
     ```
@@ -196,27 +201,27 @@ $~$
     ```sh
     cd src/flights/db/
     ```
-2. Set environment variable to select database
+1. Set environment variable to select database
     ```sh
     export SKYVIZ_ENV=test  # ephemeral sqlite database
     ```
-3. Check for changes to the database model
+1. Check for changes to the database model
     ```sh
     alembic check
     ```
-4. Create a new version
+1. Create a new version
     ```sh
     alembic revision --autogenerate -m "<name of commit>"
     ```
-5. Test migration (migrations are handled automatically)
+1. Test migration (migrations are handled automatically)
     ```sh
     alembic upgrade heads
     ```
-6. Undo the last migration
+1. Undo the last migration
     ```sh
     alembic downgrade -1
     ```
-7. Restore database to its initial state
+1. Restore database to its initial state
     ```sh
     alembic downgrade base
     ```
