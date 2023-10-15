@@ -13,6 +13,8 @@ log = logger.create(__name__)
 
 '''
 These functions make use of the db repository but must remain separate since the results are cached.
+
+Pandas docs for reading SQL tables: https://pandas.pydata.org/docs/reference/api/pandas.read_sql.html
 '''
 
 
@@ -25,7 +27,7 @@ def init_db() -> BaseRepository:
 @st.cache_data(ttl=timedelta(minutes=s.general.cache_time_to_live_min))
 def read_table(table_model: Base) -> pd.DataFrame:
     '''
-    Reads an entire table into a pandas dataframe. Will be used for OLAP.
+    Reads an entire table into a pandas dataframe.
     '''
     log.info(f'caching {table_model.__tablename__} table')
     db = init_db()

@@ -1,12 +1,13 @@
 from flights.utils import logger
-from database.models import Base
+from database.models import Base, FlightSamples, FlightAggregates
 
-from sqlalchemy import Engine
+from sqlalchemy import Engine, select
 from sqlalchemy.orm import Session
 from alembic.config import Config
 from alembic import command
 
 from typing import Iterator
+from datetime import datetime
 
 log = logger.create(__name__)
 
@@ -46,3 +47,31 @@ class BaseRepository():
                  len(rows_to_insert), rows_to_insert[0].__tablename__ if rows else None)
         session.add_all(rows_to_insert)
         log.info('inserted all rows')
+
+    def get_new_flight_samples(self, session: Session) -> Iterator[FlightSamples]:
+        '''
+        Fetches flight sample dates without matching aggregates.
+        '''
+        log.info('fetching flight samples that need to be aggregated')
+        sql_query = select(FlightSamples.sample_entry_date_utc)\
+            .distinct()\
+            .join(
+                FlightAggregates,
+                FlightSamples.sample_entry_date_utc == FlightAggregates.sample_entry_date_utc,
+                isouter=True,
+                )\
+            .where(FlightAggregates.sample_entry_date_utc == None)
+        unmatched_samples: Iterator[FlightSamples] = session.execute(sql_query)
+        log.info('returning flight sample dates for aggregation')
+        return unmatched_samples
+    
+    def count_flight_samples_by_date(self, session: Session, sample_date: datetime) -> int:
+        '''
+        Counts the number of flight samples for a given date.
+        '''
+        log.info(f'counting flights in sample entered at: {sample_date}')
+        count_result: int = session.query(FlightSamples)\
+            .where(FlightSamples.sample_entry_date_utc == sample_date)\
+            .count()
+        log.info(f'counted {count_result} flights')
+        return count_result
