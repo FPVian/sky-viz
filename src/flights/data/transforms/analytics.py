@@ -1,4 +1,3 @@
-from flights.config.settings import s
 from flights.utils import logger
 from database.models import FlightSamples, FlightAggregates
 from flights.db.base_repo import BaseRepository

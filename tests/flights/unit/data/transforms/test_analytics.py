@@ -1,5 +1,5 @@
 from flights.db.repos.sqlite import SqliteRepository
-from database.models import FlightSamples, FlightAggregates
+from database.models import FlightSamples
 from flights.data.transforms.analytics import FlightsProcessor
 from flights.config.settings import s
 
