@@ -8,9 +8,9 @@
 | src/flights/config/settings.py                   |       61 |        3 |     95% | 88, 92-93 |
 | src/flights/data/mappers/flight\_samples\_map.py |       60 |        1 |     98% |        73 |
 | src/skyviz/config/settings.py                    |       52 |        3 |     94% | 78, 82-83 |
-|                                        **TOTAL** |  **698** |   **12** | **98%** |           |
+|                                        **TOTAL** |  **731** |   **12** | **98%** |           |
 
-21 files skipped due to complete coverage.
+22 files skipped due to complete coverage.
 
 
 ## Setup coverage badge
