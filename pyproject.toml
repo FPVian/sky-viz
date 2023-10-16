@@ -47,6 +47,7 @@ skip_covered = "true"
 # https://docs.astral.sh/ruff/configuration/
 [tool.ruff]
 line-length = 105
+ignore = ['E711']  # cannot use 'is None' with SQLAlchemy .where() statements
 
 # bandit -c pyproject.toml -r .
 [tool.bandit]

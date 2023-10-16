@@ -22,4 +22,4 @@ class GeneralStaging(General):
 
 @dataclass
 class GeneralProd(General):
-    cache_time_to_live_min: int = 30
+    cache_time_to_live_min: int = 5
