@@ -53,14 +53,16 @@ class BaseRepository():
         Fetches flight sample dates without matching aggregates.
         '''
         log.info('fetching flight samples that need to be aggregated')
-        sql_query = select(FlightSamples.sample_entry_date_utc)\
-            .distinct()\
+        sql_query = (
+            select(FlightSamples.sample_entry_date_utc)
+            .distinct()
             .join(
                 FlightAggregates,
                 FlightSamples.sample_entry_date_utc == FlightAggregates.sample_entry_date_utc,
                 isouter=True,
-                )\
+                )
             .where(FlightAggregates.sample_entry_date_utc == None)
+        )
         unmatched_samples: Iterator[FlightSamples] = session.execute(sql_query)
         log.info('returning flight sample dates for aggregation')
         return unmatched_samples
@@ -70,8 +72,10 @@ class BaseRepository():
         Counts the number of flight samples for a given date.
         '''
         log.info(f'counting flights in sample entered at: {sample_date}')
-        count_result: int = session.query(FlightSamples)\
-            .where(FlightSamples.sample_entry_date_utc == sample_date)\
+        count_result: int = (
+            session.query(FlightSamples)
+            .where(FlightSamples.sample_entry_date_utc == sample_date)
             .count()
+        )
         log.info(f'counted {count_result} flights')
         return count_result

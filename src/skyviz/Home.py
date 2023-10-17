@@ -5,17 +5,24 @@ from database.models import FlightAggregates
 
 import streamlit as st
 import pandas as pd
+import altair as alt
 from sqlalchemy.orm import Session
+
+from datetime import datetime, timedelta
+import pytz
 
 log = logger.create(__name__)
 
 # Streamlit API reference: https://docs.streamlit.io/library/api-reference
 
+time_zone = 'America/Chicago'
 
 def main():
     configure_home_page()
     st.write('$~$')
 
+
+    # load data from database
     progress_bar = st.progress(0, text='Loading data from database...')
     db = init_db()
     with Session(db.engine) as session, session.begin():
@@ -24,15 +31,44 @@ def main():
             session, FlightAggregates.sample_entry_date_utc)
         progress_bar.progress(50, text='Loading data from database...')
         flight_aggregates: pd.DataFrame = read_table(FlightAggregates)
-        total_flights: int = flight_aggregates['number_of_flights'].sum()
         progress_bar.progress(75, text='Loading data from database...')
         count_flights_samples = db.count_total_rows(session, FlightAggregates)
         progress_bar.progress(100, text='Loading data from database...')
     progress_bar.empty()
-    
+
+
+    # calculations
+    with st.spinner('Calculating...'):
+        total_flights: int = flight_aggregates['number_of_flights'].sum()
+
+        # convert dates to central time
+        entry_date_col = FlightAggregates.sample_entry_date_utc.name
+        flight_aggregates[entry_date_col] = pd.to_datetime(flight_aggregates[entry_date_col], utc=True)
+        flight_aggregates.set_index(entry_date_col)
+        flight_aggregates[entry_date_col] = flight_aggregates[entry_date_col].dt.tz_convert(tz=time_zone)
+
+
+    # dashboard
+    ## totals
     st.subheader(f'Last Database Update: `{minutes_since_last_update}` minutes ago')
     st.subheader(f'`{total_flights}` data points stored from `{count_flights_samples}` samples'
                  + ' of real-time flights in the continental US')
+
+    ## recent flight counts line graph
+    start_time = datetime.now(tz=pytz.timezone(time_zone)) - timedelta(days=3)
+    flight_count_vs_time = (
+        alt.Chart(
+            flight_aggregates[flight_aggregates[entry_date_col] > start_time],
+            title='Airborne Flights, last 3 days',
+            )
+        .mark_line()
+        .encode(
+            x=alt.X(entry_date_col, title='Central Time'),
+            y=alt.Y(FlightAggregates.number_of_flights.name, title=None),
+            )
+        .configure_title(anchor='middle')
+    )
+    st.altair_chart(flight_count_vs_time, use_container_width=True)
 
 
 if __name__ == '__main__':
