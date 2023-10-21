@@ -2,6 +2,7 @@ from skyviz.config.settings import s
 
 import logging
 from logging import handlers
+import os
 
 '''
 logging docs: https://docs.python.org/3/howto/logging.html#loggers
@@ -13,6 +14,7 @@ def create(name: str):
     logger.setLevel(s.logs.level)
 
     if s.logs.log_to_file:
+        os.makedirs(s.logs.path, exist_ok=True)
         file_handler = handlers.RotatingFileHandler(
             filename=s.logs.file_path,
             maxBytes=s.logs.bytes_per_file,
