@@ -42,34 +42,54 @@ def main():
         total_flights: int = flight_aggregates['number_of_flights'].sum()
 
         # convert dates to central time
-        entry_date_col = FlightAggregates.sample_entry_date_utc.name
+        entry_date_col: str = FlightAggregates.sample_entry_date_utc.name
+        num_flights_col: str = FlightAggregates.number_of_flights.name
         flight_aggregates[entry_date_col] = pd.to_datetime(flight_aggregates[entry_date_col], utc=True)
         flight_aggregates.set_index(entry_date_col)
         flight_aggregates[entry_date_col] = flight_aggregates[entry_date_col].dt.tz_convert(tz=time_zone)
 
 
     # dashboard
+    left_column, right_column = st.columns(2)
+
     ## totals
     st.subheader(f'Last Database Update: `{minutes_since_last_update}` minutes ago')
     st.subheader(f'`{total_flights}` data points stored from `{count_flights_samples}` samples'
                  + ' of real-time flights in the continental US')
 
-    ## recent flight counts line graph
-    start_time = datetime.now(tz=pytz.timezone(time_zone)) - timedelta(days=3)
-    flight_count_vs_time = (
-        alt.Chart(
-            flight_aggregates[flight_aggregates[entry_date_col] > start_time],
-            title='Airborne Flights, last 3 days',
+    with left_column:
+        ## recent flight counts line graph
+        start_time = datetime.now(tz=pytz.timezone(time_zone)) - timedelta(days=3)
+        flight_count_vs_time = (
+            alt.Chart(
+                flight_aggregates[flight_aggregates[entry_date_col] > start_time],
+                title='Airborne Flights, last 3 days',
             )
-        .mark_line()
-        .encode(
-            x=alt.X(entry_date_col, title='Central Time'),
-            y=alt.Y(FlightAggregates.number_of_flights.name, title=None),
-            )
-        .configure_title(anchor='middle')
-    )
-    st.altair_chart(flight_count_vs_time, use_container_width=True)
+            .mark_line()
+            .encode(
+                x=alt.X(entry_date_col, title='Central Time'),
+                y=alt.Y(num_flights_col, title=None),
+                )
+            .configure_title(anchor='middle')
+        )
+        st.altair_chart(flight_count_vs_time, use_container_width=True)
 
+    with right_column:
+        ## flight average daily bar graph
+        start_time = datetime.now(tz=pytz.timezone(time_zone)) - timedelta(days=7)
+        flight_count_trend = (
+            alt.Chart(
+                flight_aggregates[flight_aggregates[entry_date_col] > start_time],
+                title='Average Flights per Day',
+            )
+            .mark_bar()
+            .encode(
+                x=alt.X(entry_date_col, title=None),
+                y=alt.Y(num_flights_col, title=None),
+                )
+            .configure_title(anchor='middle')
+        )
+        st.altair_chart(flight_count_trend, use_container_width=True)
 
 if __name__ == '__main__':
     try:
