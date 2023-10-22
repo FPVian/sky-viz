@@ -22,7 +22,7 @@ class BaseRepository():
     def __init__(self, engine: Engine):
         self.engine = engine
 
-    def calc_minutes_since_last_update(self, session, date_column: Mapped) -> float:
+    def calc_minutes_since_last_update(self, session, date_column: Mapped) -> float:  # deprecated
         '''
         Fetches the latest row in a table using the date_column,
         then calculates the time in minutes between the latest date and now.
@@ -36,7 +36,7 @@ class BaseRepository():
         log.info(f'calculated {minutes_since_last_update} minutes since last update')
         return minutes_since_last_update
     
-    def count_total_rows(self, session, table_model: Base) -> int:
+    def count_total_rows(self, session, table_model: Base) -> int:  # deprecated
         '''
         Counts the number of rows in a table.
         '''
@@ -45,7 +45,7 @@ class BaseRepository():
         log.info(f'counted {count_result} rows')
         return count_result
 
-    def count_distinct(self, session, column: Mapped) -> int:  # deprecated due to slow performance
+    def count_distinct(self, session, column: Mapped) -> int:  # deprecated
         '''
         Counts the number of distinct values in a single column.
         '''

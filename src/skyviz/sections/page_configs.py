@@ -19,8 +19,8 @@ def configure_home_page():
                 ''',
         },
     )
-    icon, title = st.columns([1, 20])
+    icon, title = st.columns([1, 12])
     with icon:
         st.image('src/skyviz/static/logo.png', width=100)
     with title:
-        st.title('Flights Data Tracker')
+        st.title('Flights in the US')

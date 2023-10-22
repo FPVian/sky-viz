@@ -53,7 +53,7 @@ class BaseRepository():
         Fetches flight sample dates without matching aggregates.
         '''
         log.info('fetching flight samples that need to be aggregated')
-        sql_query = (
+        query = (
             select(FlightSamples.sample_entry_date_utc)
             .distinct()
             .join(
@@ -63,7 +63,7 @@ class BaseRepository():
                 )
             .where(FlightAggregates.sample_entry_date_utc == None)
         )
-        unmatched_samples: Iterator[FlightSamples] = session.execute(sql_query)
+        unmatched_samples: Iterator[FlightSamples] = session.execute(query)
         log.info('returning flight sample dates for aggregation')
         return unmatched_samples
     

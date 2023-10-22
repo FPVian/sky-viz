@@ -11,6 +11,7 @@
             "options": [
                 "default",
                 "dev",
+                "staging",
                 "test"
             ],
             "default": "default"
@@ -22,6 +23,7 @@
             "options": [
                 "default",
                 "dev",
+                "staging",
                 "prod",
                 "test"
             ],

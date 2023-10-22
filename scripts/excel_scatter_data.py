@@ -1,6 +1,10 @@
 from flights.api.clients.adsb_exchange import AdsbExchangeClient
 import pandas as pd
 
+'''
+pip install pandas and openpyxl
+'''
+
 
 def main():
     latitude = 39.8564  # Denver International Airport
