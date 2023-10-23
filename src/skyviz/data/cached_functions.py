@@ -42,13 +42,13 @@ class Cache:
 
     @st.cache_data(ttl=timedelta(minutes=s.general.cache_time_to_live_min))
     def convert_utc_to_local_time(
-        table_model: Base, utc_column_name: str, new_column_name: str) -> pl.DataFrame:
+        table_model: Base, utc_column_name: str, new_column_name: str) -> pl.LazyFrame:
         '''
         Converts naive datetime column from UTC to local time and
         returns a dataframe with the new column.
         '''
         log.info(f'converting {utc_column_name} to {s.general.time_zone} time')
-        table: pl.DataFrame = Cache.read_table(table_model)
+        table: pl.LazyFrame = Cache.read_table(table_model).lazy()
         table = (
             table.with_columns(
                 pl.col(utc_column_name)
@@ -69,11 +69,11 @@ class Cache:
         Return dataframe columns: sample_entry_date_utc, number_of_flights, sample_entry_date_ct
         '''
         log.info(f'filtering flight aggregates to last {num_days} days')
-        flight_aggregates: pl.DataFrame = Cache.convert_utc_to_local_time(
+        flight_aggregates: pl.LazyFrame = Cache.convert_utc_to_local_time(
             FlightAggregates, FlightAggregates.sample_entry_date_utc.name, 'sample_entry_date_ct')
         start_date = datetime.now(tz=pytz.timezone(s.general.time_zone)) - timedelta(days=num_days)
-        flight_aggregates = (
-            flight_aggregates.filter(pl.col('sample_entry_date_ct') >= start_date)
+        flight_aggregates: pl.DataFrame = (
+            flight_aggregates.filter(pl.col('sample_entry_date_ct') >= start_date).collect()
         )
         log.info(f'returning flight aggregates filtered to last {num_days} days')
         return flight_aggregates

@@ -69,7 +69,7 @@ def test_convert_column_to_local_time(sqlite_repo: SqliteRepository):
     with Session(sqlite_repo.engine) as session, session.begin():
         sqlite_repo.insert_rows(session, rows)
     result = Cache.convert_utc_to_local_time(
-        FlightAggregates, FlightAggregates.sample_entry_date_utc.name, 'local')
+        FlightAggregates, FlightAggregates.sample_entry_date_utc.name, 'local').collect()
     assert result.select(pl.col('local')).item() == (
         sample_time.astimezone(pytz.timezone(s.general.time_zone)))
 
