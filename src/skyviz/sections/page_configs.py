@@ -23,4 +23,4 @@ def configure_home_page():
     with icon:
         st.image('src/skyviz/static/logo.png', width=100)
     with title:
-        st.title('Flights in the US')
+        st.title('Commercial Flights in the US')

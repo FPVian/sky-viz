@@ -20,7 +20,7 @@ class GeneralDev(General):
 @dataclass
 class GeneralProd(General):
     suppress_errors: bool = True
-    wait_between_runs: int = 3600
+    wait_between_runs: int = 1800
     webapp_name: str = 'skyviz'
     azure_region: str = 'eastus'
 
