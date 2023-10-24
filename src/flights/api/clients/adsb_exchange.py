@@ -17,7 +17,7 @@ class AdsbExchangeClient():
         '''
         Returns a dict of aircraft within 1,000 km of a given lat/lon.
         Rate limit: 10 requests/min, 60,000 requests/month.
-        Only returns flights at or above 9,975 feet.
+        Only returns flights at or above 9,975 feet (changed 10/14).
 
         Response is in the following format:
             [{'alert': 1,
