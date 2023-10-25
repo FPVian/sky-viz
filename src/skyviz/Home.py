@@ -26,7 +26,7 @@ def main():
     col1, col2, col3, col4, col5 = st.columns(5)  # row of metrics
     col1.metric('Total Flights',  # change total flights to sum monthly aggregates (cur. # data points)
                 flight_aggregates.select(pl.col(FlightAggregates.number_of_flights.name).sum()).item())
-    col2.metric('Current Aircraft', Cache.get_current_flights(), Cache.calc_change_in_flights())
+    col2.metric('Current Aircraft', Cache.get_current_flights_count(), Cache.calc_change_in_flights())
     col3.metric('Max Aircraft',
                 flight_aggregates.select(pl.col(FlightAggregates.number_of_flights.name).max()))
     col4.metric('Average Aircraft',

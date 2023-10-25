@@ -99,6 +99,13 @@ def test_get_new_flight_samples(sqlite_repo: SqliteRepository):
         FlightAggregates(
             sample_entry_date_utc=datetime(2023, 6, 11),
             number_of_flights=1,
+            avg_ground_speed_knots=35,
+            min_ground_speed_knots=30,
+            max_ground_speed_knots=40,
+            avg_altitude_ft=15000,
+            max_altitude_ft=20000,
+            max_climb_rate_ft_per_min=1000,
+            max_descent_rate_ft_per_min=500,
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():

@@ -47,7 +47,9 @@ class Cache:
     @st.cache_data(ttl=timedelta(minutes=s.general.cache_time_to_live_min))
     def read_latest_flight_sample() -> pandas.DataFrame:  # pull from RecentFlightSamples
         '''
-        Reads the latest sample of flights into a polars dataframe.
+        Reads the latest sample of flights into a pandas dataframe.
+
+        Return columns: latitude, longitude
         '''
         log.info('caching latest sample in flight_samples table')
         db = Cache.init_db()
@@ -108,6 +110,8 @@ class Cache:
     def _get_flight_count_last_sample(flight_aggregates: pl.LazyFrame) -> pl.LazyFrame:
         '''
         Fetches the most recent row of a flight_aggregates LazyFrame.
+
+        Return columns: number_of_flights, sample_entry_date_utc
         '''
         log.info('fetching most recent row in flight_aggregates LazyFrame')
         current_flights: pl.LazyFrame = flight_aggregates.select(
@@ -130,13 +134,13 @@ class Cache:
         '''
         log.info('fetching flight_agreggates for most recent sample')
         flight_aggregates: pl.LazyFrame = Cache.read_table(FlightAggregates).lazy()
-        current_flights: int = Cache._get_flight_count_last_sample(flight_aggregates).collect()
+        current_flights: pl.DataFrame = Cache._get_flight_count_last_sample(flight_aggregates).collect()
         log.info('returning flight_aggregates most recent sample')
         return current_flights
 
 
     @st.cache_data(ttl=timedelta(minutes=s.general.cache_time_to_live_min))
-    def get_current_flights() -> int:
+    def get_current_flights_count() -> int:
         '''
         Fetches the number of flights in the most recent sample.
         '''
@@ -168,6 +172,6 @@ class Cache:
             .item()
         )
         log.info(f'{previous_flights} flights in last sample')
-        change_in_flights: int = Cache.get_current_flights() - previous_flights
+        change_in_flights: int = Cache.get_current_flights_count() - previous_flights
         log.info(f'returning change in flights: {change_in_flights}')
         return change_in_flights

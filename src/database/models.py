@@ -33,6 +33,48 @@ class FlightSamples(Base):
     emergency: Mapped[Optional[str]]
 
 
+class RecentFlightSamples(Base):
+    __tablename__ = 'recent_flight_samples'
+    icao_id: Mapped[str] = mapped_column(primary_key=True)
+    sample_entry_date_utc: Mapped[datetime] = mapped_column(primary_key=True)
+    flight: Mapped[Optional[str]]
+    latitude: Mapped[float]
+    longitude: Mapped[float]
+    altitude_ft: Mapped[Optional[int]]
+    alt_change_ft_per_min: Mapped[Optional[int]]
+    heading: Mapped[Optional[float]]
+    ground_speed_knots: Mapped[Optional[float]]
+    nav_modes: Mapped[Optional[str]]
+    emitter_category: Mapped[Optional[str]]
+    aircraft_type: Mapped[Optional[str]]
+    aircraft_registration: Mapped[Optional[str]]
+    flag: Mapped[Optional[str]]
+    source: Mapped[Optional[str]]
+    rssi: Mapped[Optional[float]]
+    emergency: Mapped[Optional[str]]
+
+
+class FlightEmergencies (Base):
+    __tablename__ = 'flight_emergencies'
+    icao_id: Mapped[str] = mapped_column(primary_key=True)
+    sample_entry_date_utc: Mapped[datetime] = mapped_column(primary_key=True)
+    flight: Mapped[Optional[str]]
+    latitude: Mapped[float]
+    longitude: Mapped[float]
+    altitude_ft: Mapped[Optional[int]]
+    alt_change_ft_per_min: Mapped[Optional[int]]
+    heading: Mapped[Optional[float]]
+    ground_speed_knots: Mapped[Optional[float]]
+    nav_modes: Mapped[Optional[str]]
+    emitter_category: Mapped[Optional[str]]
+    aircraft_type: Mapped[Optional[str]]
+    aircraft_registration: Mapped[Optional[str]]
+    flag: Mapped[Optional[str]]
+    source: Mapped[Optional[str]]
+    rssi: Mapped[Optional[float]]
+    emergency: Mapped[Optional[str]]
+
+
 class FlightAggregates (Base):
     __tablename__ = 'flight_aggregates'
     sample_entry_date_utc: Mapped[datetime] = mapped_column(primary_key=True)
@@ -58,7 +100,7 @@ class FlightAggregates (Base):
     max_descent_flight: Mapped[Optional[str]]
 
 
-class DailyFlightAggregates (Base):
+class DailyFlightTotals (Base):
     __tablename__ = 'daily_flight_aggregates'
     sample_date: Mapped[date] = mapped_column(primary_key=True)
     day_of_week: Mapped[str]  # 'Tue'
@@ -88,7 +130,7 @@ class DailyFlightAggregates (Base):
     max_descent_flight: Mapped[Optional[str]]
 
 
-class WeeklyFlightAggregates (Base):
+class WeeklyFlightTotals (Base):
     __tablename__ = 'weekly_flight_aggregates'
     week_start_date: Mapped[date] = mapped_column(primary_key=True)
     week_of_year: Mapped[int]
@@ -117,7 +159,7 @@ class WeeklyFlightAggregates (Base):
     max_descent_flight: Mapped[Optional[str]]
 
 
-class MonthlyFlightAggregates (Base):
+class MonthlyFlightTotals (Base):
     __tablename__ = 'monthly_flight_aggregates'
     month_start_date: Mapped[date] = mapped_column(primary_key=True)
     month: Mapped[str]  # 'Jan'
@@ -146,45 +188,3 @@ class MonthlyFlightAggregates (Base):
     max_descent_aircraft_type: Mapped[Optional[str]]
     max_descent_aircraft_registration: Mapped[Optional[str]]
     max_descent_flight: Mapped[Optional[str]]
-
-
-class FlightEmergencies (Base):
-    __tablename__ = 'flight_emergencies'
-    icao_id: Mapped[str] = mapped_column(primary_key=True)
-    sample_entry_date_utc: Mapped[datetime] = mapped_column(primary_key=True)
-    flight: Mapped[Optional[str]]
-    latitude: Mapped[float]
-    longitude: Mapped[float]
-    altitude_ft: Mapped[Optional[int]]
-    alt_change_ft_per_min: Mapped[Optional[int]]
-    heading: Mapped[Optional[float]]
-    ground_speed_knots: Mapped[Optional[float]]
-    nav_modes: Mapped[Optional[str]]
-    emitter_category: Mapped[Optional[str]]
-    aircraft_type: Mapped[Optional[str]]
-    aircraft_registration: Mapped[Optional[str]]
-    flag: Mapped[Optional[str]]
-    source: Mapped[Optional[str]]
-    rssi: Mapped[Optional[float]]
-    emergency: Mapped[Optional[str]]
-
-
-class RecentFlightSamples(Base):
-    __tablename__ = 'recent_flight_samples'
-    icao_id: Mapped[str] = mapped_column(primary_key=True)
-    sample_entry_date_utc: Mapped[datetime] = mapped_column(primary_key=True)
-    flight: Mapped[Optional[str]]
-    latitude: Mapped[float]
-    longitude: Mapped[float]
-    altitude_ft: Mapped[Optional[int]]
-    alt_change_ft_per_min: Mapped[Optional[int]]
-    heading: Mapped[Optional[float]]
-    ground_speed_knots: Mapped[Optional[float]]
-    nav_modes: Mapped[Optional[str]]
-    emitter_category: Mapped[Optional[str]]
-    aircraft_type: Mapped[Optional[str]]
-    aircraft_registration: Mapped[Optional[str]]
-    flag: Mapped[Optional[str]]
-    source: Mapped[Optional[str]]
-    rssi: Mapped[Optional[float]]
-    emergency: Mapped[Optional[str]]
