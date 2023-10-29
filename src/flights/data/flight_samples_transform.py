@@ -1,11 +1,11 @@
-from flights.utils import logger
+from flights.utils.logger import Logger
 from database.models import FlightSamples
 
 from datetime import datetime
 from typing import Iterator
 import pytz
 
-log = logger.create(__name__)
+log = Logger.create(__name__)
 
 
 class FlightSamplesTransform:

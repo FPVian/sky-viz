@@ -1,4 +1,4 @@
-from flights.utils import logger
+from flights.utils.logger import Logger
 from flights.config.settings import s
 
 import requests
@@ -6,7 +6,7 @@ import requests
 from typing import Optional, Any
 import time
 
-log = logger.create(__name__)
+log = Logger.create(__name__)
 
 '''
 Requests docs: https://requests.readthedocs.io/en/latest/

@@ -1,4 +1,4 @@
-from flights.config.settings import s
+from transform.config.settings import s
 
 import logging
 from logging import handlers

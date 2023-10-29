@@ -1,8 +1,8 @@
-from flights.utils import logger
+from flights.utils.logger import Logger
 from flights.config.settings import s
 from flights.api.rest import RestApi
 
-log = logger.create(__name__)
+log = Logger.create(__name__)
 
 
 class AdsbExchangeClient():

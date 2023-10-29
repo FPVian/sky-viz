@@ -31,7 +31,7 @@ dependencies = [
 [tool.pytest.ini_options]
 addopts = [
     "--cov=src",
-    "--cov-fail-under=98"
+    "--cov-fail-under=99"
 ]
 
 # https://coverage.readthedocs.io/en/latest/config.html

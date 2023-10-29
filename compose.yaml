@@ -12,6 +12,16 @@ services:
       db:
         condition: service_healthy
     restart: always
+  transform:  # docker run --restart=always -e SKYVIZ_ENV=dev
+    build:
+      context: .
+      dockerfile: deployment/transform.Dockerfile
+    environment:
+      - SKYVIZ_ENV=dev
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
   db:
     image: postgres:15.3
     user: postgres

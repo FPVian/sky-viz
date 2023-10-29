@@ -1,9 +1,9 @@
-from flights.utils import logger
+from flights.utils.logger import Logger
 from flights.db.base_repo import BaseRepository
 
 from sqlalchemy import create_engine, URL
 
-log = logger.create(__name__)
+log = Logger.create(__name__)
 
 '''
 SQLAlchemy docs for engine configuration:
@@ -14,6 +14,9 @@ https://docs.sqlalchemy.org/en/20/core/engines.html
 class PostgresRepository(BaseRepository):
     '''
     Creates a Postgres connectable and executes database operations.
+
+    unused_settings is added to accept and ignore extra settings
+    passed in by the hydra instantiate function.
     '''
     def __init__(self, driver: str, username: str, password: str, host: str, port: int, database: str,
                  alembic_ini_path: str, alembic_folder_path: str, **unused_settings):

@@ -1,13 +1,14 @@
-from flights.utils import logger
+from transform.utils.logger import Logger
 from database.models import FlightSamples, FlightAggregates
-from flights.db.base_repo import BaseRepository
+from transform.db.base_repo import BaseRepository
 
 from sqlalchemy.orm import Session
 
 from typing import Iterator
 from datetime import datetime, date, timedelta
 
-log = logger.create(__name__)
+log = Logger.create(__name__)
+
 
 class FlightsProcessor:
     '''

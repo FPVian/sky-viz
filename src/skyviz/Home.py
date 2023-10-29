@@ -1,6 +1,6 @@
 from skyviz.sections.page_configs import configure_home_page
 from skyviz.data.cached_functions import Cache
-from skyviz.utils import logger
+from skyviz.utils.logger import Logger
 from database.models import FlightSamples, FlightAggregates
 
 import streamlit as st
@@ -8,7 +8,7 @@ import polars as pl
 import altair as alt
 import pydeck as pdk
 
-log = logger.create(__name__)
+log = Logger.create(__name__)
 
 # Streamlit API reference: https://docs.streamlit.io/library/api-reference
 # Altair API reference: https://altair-viz.github.io/user_guide/api.html

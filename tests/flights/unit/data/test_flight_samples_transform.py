@@ -1,4 +1,4 @@
-from flights.data.transforms.flight_samples_transform import FlightSamplesTransform
+from flights.data.flight_samples_transform import FlightSamplesTransform
 from database.models import FlightSamples
 
 from datetime import datetime

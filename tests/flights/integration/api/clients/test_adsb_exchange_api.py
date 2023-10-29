@@ -1,10 +1,10 @@
-from flights.utils import logger
+from flights.utils.logger import Logger
 from flights.config.settings import Settings
 from flights.api.rest import RestApi
 
 import pytest
 
-log = logger.create(__name__)
+log = Logger.create(__name__)
 
 
 @pytest.fixture

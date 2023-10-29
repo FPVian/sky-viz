@@ -1,6 +1,6 @@
-from flights.utils import logger
+from flights.utils.logger import Logger
 
-log = logger.create(__name__)
+log = Logger.create(__name__)
 
 
 class FlightSamplesCleaner:

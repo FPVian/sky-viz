@@ -1,4 +1,4 @@
-from flights.data.cleaners.flight_samples_clean import FlightSamplesCleaner
+from flights.data.flight_samples_clean import FlightSamplesCleaner
 
 
 def test_clean_flight_sample():

@@ -1,9 +1,9 @@
-from skyviz.utils import logger
+from skyviz.utils.logger import Logger
 from skyviz.db.base_repo import BaseRepository
 
 from sqlalchemy import create_engine
 
-log = logger.create(__name__)
+log = Logger.create(__name__)
 
 '''
 SQLAlchemy docs for engine configuration:

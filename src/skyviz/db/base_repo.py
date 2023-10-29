@@ -1,4 +1,4 @@
-from skyviz.utils import logger
+from skyviz.utils.logger import Logger
 from database.models import Base
 
 from sqlalchemy import Engine, select
@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped
 
 from datetime import datetime, timedelta
 
-log = logger.create(__name__)
+log = Logger.create(__name__)
 '''
 See the docs for writing SQL statements with SQLAlchemy 2.0 here:
 https://docs.sqlalchemy.org/en/20/orm/queryguide/index.html

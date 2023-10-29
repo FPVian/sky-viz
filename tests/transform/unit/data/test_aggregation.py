@@ -1,7 +1,7 @@
-from flights.db.repos.sqlite import SqliteRepository
+from flights.config.settings import s as flights_s
+from transform.db.repos.sqlite import SqliteRepository
+from transform.data.aggregation import FlightsProcessor
 from database.models import FlightSamples
-from flights.data.transforms.analytics import FlightsProcessor
-from flights.config.settings import s
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -19,13 +19,13 @@ def sqlite_repo():
     Make sure environment is set to 'test' in conftest.py
     '''
     try:
-        os.remove(s.db.database_path)
+        os.remove(flights_s.db.database_path)
     except FileNotFoundError:
         pass
-    db: SqliteRepository = instantiate(s.db)
+    db: SqliteRepository = instantiate(flights_s.db)
     db.upgrade_db()
     yield db
-    os.remove(s.db.database_path)
+    os.remove(flights_s.db.database_path)
 
 
 def test_summarize_flight_samples(sqlite_repo: SqliteRepository):

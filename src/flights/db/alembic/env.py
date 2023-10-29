@@ -1,4 +1,4 @@
-from database import models
+from database.models import Base
 from flights.config.settings import s
 
 from alembic import context
@@ -20,7 +20,7 @@ if not logging.getLogger('__main__').hasHandlers():
         fileConfig(config.config_file_name)
 
 
-target_metadata = models.Base.metadata
+target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:

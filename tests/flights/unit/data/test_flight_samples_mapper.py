@@ -1,4 +1,4 @@
-from flights.data.mappers.flight_samples_map import FlightSamplesMapper
+from flights.data.flight_samples_map import FlightSamplesMapper
 from database.models import FlightSamples
 
 import pytest

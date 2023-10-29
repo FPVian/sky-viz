@@ -1,9 +1,9 @@
 from database.models import FlightSamples
-from flights.utils import logger
+from flights.utils.logger import Logger
 
 from typing import Optional, Iterator
 
-log = logger.create(__name__)
+log = Logger.create(__name__)
 
 
 class FlightSamplesMapper:

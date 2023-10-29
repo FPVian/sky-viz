@@ -1,5 +1,5 @@
 from skyviz.config.settings import s
-from skyviz.utils import logger
+from skyviz.utils.logger import Logger
 from database.models import Base, FlightSamples, FlightAggregates
 from skyviz.db.base_repo import BaseRepository
 
@@ -13,7 +13,7 @@ from datetime import timedelta
 from datetime import datetime
 import pytz
 
-log = logger.create(__name__)
+log = Logger.create(__name__)
 
 
 class Cache:

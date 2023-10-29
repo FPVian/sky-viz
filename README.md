@@ -118,6 +118,7 @@ $~$
 1. Run modules
     ```sh
     python3 -m flights &
+    python3 -m transform &
     streamlit run ./src/skyviz/Home.py
     ```
 

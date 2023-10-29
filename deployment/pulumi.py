@@ -42,12 +42,15 @@ class DockerContainers:
     '''
     Manual builds:
     docker build -t fpvian/sky-viz-flights:latest -f ./deployment/flights.Dockerfile .
+    docker build -t fpvian/sky-viz-transform:latest -f ./deployment/transform.Dockerfile .
     docker build -t fpvian/sky-viz-skyviz:latest -f ./deployment/skyviz.Dockerfile .
     docker push fpvian/sky-viz-flights:latest
+    docker push fpvian/sky-viz-transform:latest
     docker push fpvian/sky-viz-skyviz:latest
     '''
     now = datetime.utcnow().strftime("%m.%d.%y-%H.%M.%S")
     flights_image_name = f"{docker_user}/sky-viz-flights:{environment}-{now}"
+    transform_image_name = f"{docker_user}/sky-viz-transform:{environment}-{now}"
     skyviz_image_name = f"{docker_user}/sky-viz-skyviz:{environment}-{now}"
 
     flights_image = docker.Image(
@@ -58,6 +61,21 @@ class DockerContainers:
             platform='linux/amd64',
         ),
         image_name=flights_image_name,
+        registry=docker.RegistryArgs(
+            server=f'https://hub.docker.com/repositories/{docker_user}',
+            username=docker_user,
+            password=docker_token,
+        ),
+    )
+
+    transform_image = docker.Image(
+        "transform-image",
+        build=docker.DockerBuildArgs(
+            context="..",
+            dockerfile="transform.Dockerfile",
+            platform='linux/amd64',
+        ),
+        image_name=transform_image_name,
         registry=docker.RegistryArgs(
             server=f'https://hub.docker.com/repositories/{docker_user}',
             username=docker_user,
@@ -80,7 +98,10 @@ class DockerContainers:
         ),
     )
 
-    pulumi.export("Docker images", [flights_image.image_name, skyviz_image.image_name])
+    pulumi.export(
+        "Docker images",
+        [flights_image.image_name, transform_image.image_name, skyviz_image.image_name],
+    )
 
 
 class PostgresDB:
@@ -124,7 +145,7 @@ class LogAnalytics:
     )
 
 
-class FlightsContainer:
+class ContainerApps:
     flights_container_app_environment = app.ManagedEnvironment(
         "flights-container-app-environment",
         resource_group_name=resource_group.name,
@@ -185,6 +206,46 @@ class FlightsContainer:
         ),
     )
 
+    transform_container_app = app.ContainerApp(
+        "transform-container-app",
+        environment_id=flights_container_app_environment.id,
+        resource_group_name=resource_group.name,
+        opts=ResourceOptions(
+            depends_on=[
+                PostgresDB.postgres_server,
+                DockerContainers.transform_image,
+                flights_container_app,
+            ],
+            delete_before_replace=True,
+        ),
+        configuration=app.ConfigurationArgs(
+            secrets=[db_username_secret, db_password_secret],
+        ),
+        template=app.TemplateArgs(
+            containers=[
+                app.ContainerArgs(
+                    name="transform",
+                    env=[
+                        app.EnvironmentVarArgs(
+                            name=env_var,
+                            value=environment
+                        ),
+                        app.EnvironmentVarArgs(
+                            name=s.db.username_env_var, secret_ref=db_username_secret.name),
+                        app.EnvironmentVarArgs(
+                            name=s.db.password_env_var, secret_ref=db_password_secret.name),
+                    ],
+                    image=DockerContainers.transform_image_name,
+                    resources=app.ContainerResourcesArgs(
+                        cpu=0.25,
+                        memory="0.5Gi",
+                    ),
+                ),
+            ],
+            scale=app.ScaleArgs(min_replicas=1, max_replicas=1),
+        ),
+    )
+
 
 class SkyVizApp:
     skyviz_app_service_plan = web.AppServicePlan(
@@ -202,7 +263,7 @@ class SkyVizApp:
         s.general.webapp_name,
         name=s.general.webapp_name,
         opts=ResourceOptions(depends_on=[
-            FlightsContainer.flights_container_app,
+            ContainerApps.flights_container_app,
             DockerContainers.skyviz_image,
         ]),
         resource_group_name=resource_group.name,
@@ -303,7 +364,7 @@ class Alerts:
         '''
         container_app_warnings = ScheduledQueryRule(
             "container-app-warnings",
-            opts=ResourceOptions(depends_on=[FlightsContainer.flights_container_app]),
+            opts=ResourceOptions(depends_on=[ContainerApps.flights_container_app]),
             resource_group_name=resource_group.name,
             criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
                 time_aggregation=TimeAggregation.COUNT,
@@ -324,7 +385,7 @@ class Alerts:
 
         container_app_health = ScheduledQueryRule(
             "container-app-health",
-            opts=ResourceOptions(depends_on=[FlightsContainer.flights_container_app]),
+            opts=ResourceOptions(depends_on=[ContainerApps.flights_container_app]),
             resource_group_name=resource_group.name,
             criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
                 time_aggregation=TimeAggregation.COUNT,

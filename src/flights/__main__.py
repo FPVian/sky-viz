@@ -1,10 +1,9 @@
 from flights.config.settings import s
-from flights.utils import logger
+from flights.utils.logger import Logger
 from flights.api.clients.adsb_exchange import AdsbExchangeClient
-from flights.data.mappers.flight_samples_map import FlightSamplesMapper
-from flights.data.transforms.flight_samples_transform import FlightSamplesTransform
-from flights.data.cleaners.flight_samples_clean import FlightSamplesCleaner
-from flights.data.transforms.analytics import FlightsProcessor
+from flights.data.flight_samples_map import FlightSamplesMapper
+from flights.data.flight_samples_transform import FlightSamplesTransform
+from flights.data.flight_samples_clean import FlightSamplesCleaner
 from flights.db.base_repo import BaseRepository
 
 from hydra.utils import instantiate
@@ -13,7 +12,7 @@ from sqlalchemy.orm import Session
 import asyncio
 
 
-log = logger.create(__name__)
+log = Logger.create(__name__)
 
 
 def app_routine(db: BaseRepository):
@@ -23,8 +22,6 @@ def app_routine(db: BaseRepository):
     flights_transformed = FlightSamplesTransform().transform_flight_sample(flights_rows)
     with Session(db.engine) as session, session.begin():
         db.insert_rows(session, flights_transformed)
-    with Session(db.engine) as session, session.begin():
-        FlightsProcessor().summarize_flight_samples(session, db)
 
 
 async def main():
