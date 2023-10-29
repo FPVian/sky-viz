@@ -2,12 +2,12 @@ from flights.utils import logger
 from database.models import Base, FlightSamples, FlightAggregates, DailyTopAircraft, MonthlyTopFlights
 
 from sqlalchemy import Engine, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Mapped
 from alembic.config import Config
 from alembic import command
 import polars as pl
 
-from typing import Iterator
+from typing import Iterator, Optional
 from datetime import datetime, date, timedelta
 
 log = logger.create(__name__)
@@ -68,7 +68,7 @@ class BaseRepository():
         log.info('returning flight sample dates for aggregation')
         return unmatched_samples
     
-    def count_flight_samples_by_date(self, session: Session, sample_date: datetime) -> int:
+    def count_flight_samples_by_date(self, session: Session, sample_date: datetime) -> int:  # deprecated
         '''
         Counts the number of flight samples for a given date.
         '''
@@ -80,6 +80,26 @@ class BaseRepository():
         )
         log.info(f'counted {count_result} flights')
         return count_result
+    
+    def filter_table_by_dates(
+            self,
+            table: Base,
+            date_column: Mapped[datetime],
+            start_date: datetime,
+            end_date: Optional[datetime] = None
+    ) -> pl.DataFrame:
+        '''
+        Queries a table for rows between two dates and returns a dataframe.
+        If no end_date is specified, the date column is filtered to match start_date exactly.
+        '''
+        log.info(f'reading {table.__tablename__} table between {start_date} and {end_date}')
+        if end_date is None:
+            query = select(table).where(date_column == start_date)
+        else:
+            query = select(table).where(date_column >= start_date, date_column < end_date)
+        table: pl.DataFrame = pl.read_database(query, self.engine)
+        log.info(f'returning dataframe filered on {date_column}')
+        return table
 
     def avg_count_aircraft_type_per_sample(
             self, start_date: datetime, end_date: datetime) -> pl.DataFrame:
@@ -107,9 +127,9 @@ class BaseRepository():
                 order by {DailyTopAircraft.num_per_sample.name} desc
             ) as avg_count_aircraft_type_per_sample
         '''
-        aircraft_counts: pl.DataFrame = pl.read_database(query, self.engine)
+        avg_aircraft_by_type: pl.DataFrame = pl.read_database(query, self.engine)
         log.info('returning table of aircraft types averaged per sample')
-        return aircraft_counts
+        return avg_aircraft_by_type
     
     def count_num_flights_by_aircraft_type(self, entry_date: date) -> pl.DataFrame:
         '''
@@ -136,9 +156,9 @@ class BaseRepository():
                 order by {DailyTopAircraft.num_flights.name} desc
             ) as count_num_flights_by_aircraft_type
         '''
-        aircraft_counts: pl.DataFrame = pl.read_database(query, self.engine)
+        flights_by_aircraft_type: pl.DataFrame = pl.read_database(query, self.engine)
         log.info('returning table of flights by aircraft type')
-        return aircraft_counts
+        return flights_by_aircraft_type
     
     def count_unique_aircraft_by_aircraft_type(
             self, start_date: datetime, end_date: datetime) -> pl.DataFrame:
@@ -165,9 +185,9 @@ class BaseRepository():
                 order by {DailyTopAircraft.num_unique_aircraft.name} desc
             ) as count_unique_aircraft_by_aircraft_type
         '''
-        aircraft_count: pl.DataFrame = pl.read_database(query, self.engine)
+        unique_aircraft_by_type: pl.DataFrame = pl.read_database(query, self.engine)
         log.info('returning table of unique registrations by aircraft type')
-        return aircraft_count
+        return unique_aircraft_by_type
 
     def count_flights_per_month(self, month_start_date: date) -> pl.DataFrame:
         '''
@@ -197,6 +217,6 @@ class BaseRepository():
                 order by {MonthlyTopFlights.num_days_flown.name} desc
             ) as count_flights_per_month
         '''
-        aircraft_counts: pl.DataFrame = pl.read_database(query, self.engine)
+        recurring_flights: pl.DataFrame = pl.read_database(query, self.engine)
         log.info('returning table of number of days each flight is flown')
-        return aircraft_counts
+        return recurring_flights
