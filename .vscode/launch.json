@@ -58,7 +58,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "env": { "SKYVIZ_ENV": "${input:FlightsEnvPicker}" },
+            "env": { "SKYVIZ_ENV": "${input:SkyvizEnvPicker}" },
         },
     ],
     "compounds": [

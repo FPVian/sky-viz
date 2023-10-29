@@ -5,7 +5,7 @@ from flights.db.base_repo import BaseRepository
 from sqlalchemy.orm import Session
 
 from typing import Iterator
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 log = logger.create(__name__)
 
@@ -30,3 +30,44 @@ class FlightsProcessor:
             aggregate_rows.append(aggregate_row)
         log.info(f'summarized {len(aggregate_rows)} flight samples')
         db.insert_rows(session, aggregate_rows)
+
+    '''
+    Control flow:
+
+    find sample dates with no matching daily aggregates
+        if missing daily aggregates:
+            summarize_daily_top_flights()
+
+    find sample dates with no matching weekly aggregates
+        if missing weekly aggregates:
+            summarize_weekly_monthly_top_flights()
+
+    find sample dates with no matching monthly aggregates
+        if missing monthly aggregates:
+            summarize_weekly_monthly_top_flights()
+            count_flights_per_month()
+    '''
+
+    def summarize_daily_top_flights(self, entry_date: date) -> None:
+        end_date = entry_date + timedelta(days=1)
+        '''
+        date = date
+        avg_count_aircraft_type_per_sample()
+        join 
+        count_num_flights_by_aircraft_type()
+        join
+        count_unique_aircraft_by_aircraft_type
+        insert into db
+        '''
+    
+    def summarize_weekly_monthly_top_flights(self, start_date: datetime, end_date: datetime) -> None:
+        pass
+        '''
+        date = date
+        avg_count_aircraft_type_per_sample()
+        join 
+        !!! write function to sum daily totals
+        join
+        count_unique_aircraft_by_aircraft_type
+        insert into db
+        '''

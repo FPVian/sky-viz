@@ -1,13 +1,10 @@
+from skyviz.config.settings import s
 from database.models import FlightAggregates
 from skyviz.db.base_repo import BaseRepository
 
 from sqlalchemy.orm import Session
 from hydra.utils import instantiate
 
-import os
-
-os.environ['SKYVIZ_ENV'] = 'prod'
-from skyviz.config.settings import s
 
 db: BaseRepository = instantiate(s.db)
 with Session(db.engine) as session:
