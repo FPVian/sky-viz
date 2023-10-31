@@ -1,4 +1,4 @@
-from flights.config.settings import s
+from config.settings import s
 from flights.api.rest import RestApi
 
 from unittest.mock import patch, Mock

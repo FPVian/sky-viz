@@ -1,6 +1,6 @@
 from skyviz.sections.page_configs import configure_home_page
 from skyviz.data.cached_functions import Cache
-from skyviz.utils.logger import Logger
+from config.logger import Logger
 from database.models import FlightSamples, FlightAggregates
 
 import streamlit as st

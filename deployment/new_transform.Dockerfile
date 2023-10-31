@@ -16,6 +16,7 @@ WORKDIR /app
 # Copy the source code into the container.
 COPY ./src/transform ./src/transform
 COPY ./src/database ./src/database
+COPY ./src/config ./src/config
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.

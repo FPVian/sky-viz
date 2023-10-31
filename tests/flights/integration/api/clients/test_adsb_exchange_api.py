@@ -1,5 +1,5 @@
-from flights.utils.logger import Logger
-from flights.config.settings import Settings
+from config.logger import Logger
+from config.settings import Settings
 from flights.api.rest import RestApi
 
 import pytest

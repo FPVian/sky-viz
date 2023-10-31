@@ -1,4 +1,4 @@
-from flights.utils.logger import Logger
+from config.logger import Logger
 from database.models import FlightSamples
 
 from datetime import datetime

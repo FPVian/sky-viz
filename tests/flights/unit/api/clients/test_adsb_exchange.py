@@ -1,5 +1,5 @@
 from flights.api.clients.adsb_exchange import AdsbExchangeClient
-from flights.config.settings import s
+from config.settings import s
 
 from unittest.mock import patch
 

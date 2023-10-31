@@ -1,6 +1,6 @@
-from transform.utils.logger import Logger
+from config.logger import Logger
 from database.models import FlightSamples, FlightAggregates
-from transform.db.base_repo import BaseRepository
+from transform.db.repository import DbRepo
 
 from sqlalchemy.orm import Session
 
@@ -14,7 +14,7 @@ class FlightsProcessor:
     '''
     Populates tables for running analytics on flight data.
     '''
-    def summarize_flight_samples(self, session: Session, db: BaseRepository) -> None:
+    def summarize_flight_samples(self, session: Session, db: DbRepo) -> None:
         '''
         Gets new flight samples, summarizes them, and inserts them into the flight_aggregates table.
         '''

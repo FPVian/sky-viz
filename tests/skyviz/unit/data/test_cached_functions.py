@@ -1,6 +1,5 @@
-from flights.db.repos.sqlite import SqliteRepository
-from flights.config.settings import s as flights_s
-from skyviz.config.settings import s
+from database.interface import SqliteInterface
+from config.settings import s
 from database.models import FlightSamples, FlightAggregates
 from skyviz.data.cached_functions import Cache
 
@@ -22,16 +21,16 @@ def sqlite_repo():
     Make sure environment is set to 'test' in conftest.py
     '''
     try:
-        os.remove(flights_s.db.database_path)
+        os.remove(s.db.database_path)
     except FileNotFoundError:
         pass
-    db: SqliteRepository = instantiate(flights_s.db)
+    db: SqliteInterface = instantiate(s.db)
     db.upgrade_db()
     yield db
-    os.remove(flights_s.db.database_path)
+    os.remove(s.db.database_path)
 
 
-def test_read_table(sqlite_repo: SqliteRepository):
+def test_read_table(sqlite_repo: SqliteInterface):
     '''
     Test that the read_table function reads rows from the database into a polars dataframe.
     '''
@@ -50,13 +49,13 @@ def test_read_table(sqlite_repo: SqliteRepository):
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():
-        sqlite_repo.insert_rows(session, rows)
+        session.add_all(rows)
     result = Cache.read_table(FlightSamples)
     assert result[0, 0] == 'abc123'
     assert result[1, 0] == 'abc456'
 
 
-def test_read_latest_flight_sample(sqlite_repo: SqliteRepository):
+def test_read_latest_flight_sample(sqlite_repo: SqliteInterface):
     '''
     Test that the read_latest_flight_sample function returns the latest flight sample
     based on the flight_aggregates table, as a pandas dataframe.
@@ -87,13 +86,13 @@ def test_read_latest_flight_sample(sqlite_repo: SqliteRepository):
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():
-        sqlite_repo.insert_rows(session, rows)
+        session.add_all(rows)
     result: pandas.DataFrame = Cache.read_latest_flight_sample()
     assert result[FlightSamples.latitude.name].item() == -3.3
     assert result[FlightSamples.longitude.name].item() == -4.4
 
 
-def test_convert_utc_to_local_time(sqlite_repo: SqliteRepository):
+def test_convert_utc_to_local_time(sqlite_repo: SqliteInterface):
     '''
     Test that the convert_utc_to_local_time function converts utc to local time.
     '''
@@ -112,14 +111,14 @@ def test_convert_utc_to_local_time(sqlite_repo: SqliteRepository):
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():
-        sqlite_repo.insert_rows(session, rows)
+        session.add_all(rows)
     result = Cache.convert_utc_to_local_time(
         FlightAggregates, FlightAggregates.sample_entry_date_utc.name, 'local').collect()
     assert result.select(pl.col('local')).item() == (
-        sample_time.astimezone(pytz.timezone(s.general.time_zone)))
+        sample_time.astimezone(pytz.timezone(s.skyviz.time_zone)))
 
 
-def test_filter_aggregates_by_recent_days(sqlite_repo: SqliteRepository):
+def test_filter_aggregates_by_recent_days(sqlite_repo: SqliteInterface):
     '''
     Test that the filter_aggregates_by_num_days function returns
     the correct rows of the flight_aggregates table.
@@ -150,7 +149,7 @@ def test_filter_aggregates_by_recent_days(sqlite_repo: SqliteRepository):
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():
-        sqlite_repo.insert_rows(session, rows)
+        session.add_all(rows)
     result = Cache.filter_flight_aggregates_by_recent_days(1)
     assert result.select(pl.count()).item() == 1
     assert result.select(pl.col(FlightAggregates.number_of_flights.name)).item() == 10
@@ -173,7 +172,7 @@ def test_get_flight_count_last_sample():
     assert result.select(pl.count()).item() == 1
 
 
-def test_get_last_flight_aggregate(sqlite_repo: SqliteRepository):
+def test_get_last_flight_aggregate(sqlite_repo: SqliteInterface):
     '''
     Test that the get_last_flight_aggregate function returns the most recent row
     in the flight_aggregates table.
@@ -203,7 +202,7 @@ def test_get_last_flight_aggregate(sqlite_repo: SqliteRepository):
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():
-        sqlite_repo.insert_rows(session, rows)
+        session.add_all(rows)
     result = Cache.get_last_flight_aggregate()
     assert result.select(pl.col(FlightAggregates.sample_entry_date_utc.name)).item() == (
         datetime(2022, 6, 10))
@@ -211,7 +210,7 @@ def test_get_last_flight_aggregate(sqlite_repo: SqliteRepository):
     assert result.select(pl.count()).item() == 1
 
 
-def test_get_current_flights_count(sqlite_repo: SqliteRepository):
+def test_get_current_flights_count(sqlite_repo: SqliteInterface):
     '''
     Test that the get_current_flights_count function returns the number of flights
     from the most recent sample in the flight_aggregates table.
@@ -241,12 +240,12 @@ def test_get_current_flights_count(sqlite_repo: SqliteRepository):
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():
-        sqlite_repo.insert_rows(session, rows)
+        session.add_all(rows)
     result = Cache.get_current_flights_count()
     assert result == 20
 
 
-def test_calc_change_in_flights(sqlite_repo: SqliteRepository):
+def test_calc_change_in_flights(sqlite_repo: SqliteInterface):
     '''
     Test that the calc_change_in_flights function returns the difference in flights
     between the most recent sample and the previous sample in the flight_aggregates table.
@@ -276,6 +275,6 @@ def test_calc_change_in_flights(sqlite_repo: SqliteRepository):
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():
-        sqlite_repo.insert_rows(session, rows)
+        session.add_all(rows)
     result = Cache.calc_change_in_flights()
     assert result == 15

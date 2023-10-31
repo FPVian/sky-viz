@@ -1,5 +1,5 @@
-from flights.config.settings import s
-from flights.config.env import Environs
+from config.settings import s
+from config.env import Environs
 
 import pulumi
 from pulumi import ResourceOptions
@@ -33,8 +33,8 @@ docker_token = os.environ['DOCKER_TOKEN']
 
 
 resource_group = ResourceGroup(
-    f"{s.general.webapp_name}-resource-group",
-    location=s.general.azure_region,
+    f"{s.deploy.webapp_name}-resource-group",
+    location=s.deploy.azure_region,
 )
 
 
@@ -107,7 +107,7 @@ class DockerContainers:
 class PostgresDB:
     postgres_server = dbforpostgresql.Server(
         s.db.server_name,
-        opts=ResourceOptions(protect=s.db.protected),
+        opts=ResourceOptions(protect=s.deploy.protect_db),
         server_name=s.db.server_name,
         resource_group_name=resource_group.name,
         administrator_login=s.db.username,
@@ -260,8 +260,8 @@ class SkyVizApp:
     )
 
     skyviz_web_app = web.WebApp(
-        s.general.webapp_name,
-        name=s.general.webapp_name,
+        s.deploy.webapp_name,
+        name=s.deploy.webapp_name,
         opts=ResourceOptions(depends_on=[
             ContainerApps.flights_container_app,
             DockerContainers.skyviz_image,

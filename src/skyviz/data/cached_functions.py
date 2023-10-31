@@ -1,13 +1,12 @@
-from skyviz.config.settings import s
-from skyviz.utils.logger import Logger
+from config.settings import s
+from config.logger import Logger
 from database.models import Base, FlightSamples, FlightAggregates
-from skyviz.db.base_repo import BaseRepository
+from skyviz.db.repository import DbRepo
 
 import streamlit as st
 import polars as pl
 import pandas
 from sqlalchemy import select
-from hydra.utils import instantiate
 
 from datetime import timedelta
 from datetime import datetime
@@ -27,12 +26,12 @@ class Cache:
     Polars docs: https://pola-rs.github.io/polars/py-polars/html/reference/
     '''
     @st.cache_resource
-    def init_db() -> BaseRepository:
+    def init_db() -> DbRepo:
         log.info('caching database connection')
-        return instantiate(s.db)
+        return DbRepo()
 
 
-    @st.cache_data(ttl=timedelta(minutes=s.general.cache_time_to_live_min))
+    @st.cache_data(ttl=timedelta(minutes=s.skyviz.cache_time_to_live_min))
     def read_table(table_model: Base) -> pl.DataFrame:
         '''
         Reads an entire table into a polars dataframe.
@@ -44,7 +43,7 @@ class Cache:
         return table
 
 
-    @st.cache_data(ttl=timedelta(minutes=s.general.cache_time_to_live_min))
+    @st.cache_data(ttl=timedelta(minutes=s.skyviz.cache_time_to_live_min))
     def read_latest_flight_sample() -> pandas.DataFrame:  # pull from RecentFlightSamples
         '''
         Reads the latest sample of flights into a pandas dataframe.
@@ -68,20 +67,20 @@ class Cache:
         return latest_flight_sample
 
 
-    @st.cache_data(ttl=timedelta(minutes=s.general.cache_time_to_live_min))
+    @st.cache_data(ttl=timedelta(minutes=s.skyviz.cache_time_to_live_min))
     def convert_utc_to_local_time(
         table_model: Base, utc_column_name: str, new_column_name: str) -> pl.LazyFrame:
         '''
         Converts naive datetime column from UTC to local time and
         returns a dataframe with the new column.
         '''
-        log.info(f'converting {utc_column_name} to {s.general.time_zone} time')
+        log.info(f'converting {utc_column_name} to {s.skyviz.time_zone} time')
         table: pl.LazyFrame = Cache.read_table(table_model).lazy()
         table = (
             table.with_columns(
                 pl.col(utc_column_name)
                 .dt.replace_time_zone(time_zone='UTC')
-                .dt.convert_time_zone(time_zone=s.general.time_zone)
+                .dt.convert_time_zone(time_zone=s.skyviz.time_zone)
                 .alias(new_column_name)
             )
         )
@@ -89,7 +88,7 @@ class Cache:
         return table
 
 
-    @st.cache_data(ttl=timedelta(minutes=s.general.cache_time_to_live_min))
+    @st.cache_data(ttl=timedelta(minutes=s.skyviz.cache_time_to_live_min))
     def filter_flight_aggregates_by_recent_days(num_days: int) -> pl.DataFrame:
         '''
         Fetches flight aggregates in local time and filters to a given number of recent days.
@@ -99,7 +98,7 @@ class Cache:
         log.info(f'filtering flight aggregates to last {num_days} days')
         flight_aggregates: pl.LazyFrame = Cache.convert_utc_to_local_time(
             FlightAggregates, FlightAggregates.sample_entry_date_utc.name, 'sample_entry_date_ct')
-        start_date = datetime.now(tz=pytz.timezone(s.general.time_zone)) - timedelta(days=num_days)
+        start_date = datetime.now(tz=pytz.timezone(s.skyviz.time_zone)) - timedelta(days=num_days)
         flight_aggregates: pl.DataFrame = (
             flight_aggregates.filter(pl.col('sample_entry_date_ct') >= start_date).collect()
         )
@@ -127,7 +126,7 @@ class Cache:
         return current_flights
 
 
-    @st.cache_data(ttl=timedelta(minutes=s.general.cache_time_to_live_min))
+    @st.cache_data(ttl=timedelta(minutes=s.skyviz.cache_time_to_live_min))
     def get_last_flight_aggregate() -> pl.DataFrame:
         '''
         Fetches the most recent sample in flight_aggregates.
@@ -139,7 +138,7 @@ class Cache:
         return current_flights
 
 
-    @st.cache_data(ttl=timedelta(minutes=s.general.cache_time_to_live_min))
+    @st.cache_data(ttl=timedelta(minutes=s.skyviz.cache_time_to_live_min))
     def get_current_flights_count() -> int:
         '''
         Fetches the number of flights in the most recent sample.
@@ -152,7 +151,7 @@ class Cache:
         return current_flights
 
 
-    @st.cache_data(ttl=timedelta(minutes=s.general.cache_time_to_live_min))
+    @st.cache_data(ttl=timedelta(minutes=s.skyviz.cache_time_to_live_min))
     def calc_change_in_flights() -> int:
         '''
         Calculates the difference in flights between the most recent sample and the previous sample.

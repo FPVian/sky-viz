@@ -1,4 +1,4 @@
-from flights.utils.logger import Logger
+from config.logger import Logger
 
 log = Logger.create(__name__)
 

@@ -200,7 +200,7 @@ $~$
 
 1. Navigate to folder with alembic.ini file
     ```sh
-    cd src/flights/db/
+    cd src/database/
     ```
 1. Set environment variable to select database
     ```sh

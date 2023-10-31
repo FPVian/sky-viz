@@ -1,5 +1,5 @@
-from flights.utils.logger import Logger
-from flights.config.settings import s
+from config.logger import Logger
+from config.settings import s
 from flights.api.rest import RestApi
 
 log = Logger.create(__name__)

@@ -1,5 +1,5 @@
 from database.models import FlightSamples
-from flights.utils.logger import Logger
+from config.logger import Logger
 
 from typing import Optional, Iterator
 
