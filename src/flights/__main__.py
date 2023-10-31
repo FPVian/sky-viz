@@ -1,6 +1,6 @@
 from config.settings import s
 from config.logger import Logger
-from flights.api.clients.adsb_exchange import AdsbExchangeClient
+from flights.api.adsb_exchange import AdsbExchangeClient
 from flights.data.flight_samples_map import FlightSamplesMapper
 from flights.data.flight_samples_transform import FlightSamplesTransform
 from flights.data.flight_samples_clean import FlightSamplesCleaner

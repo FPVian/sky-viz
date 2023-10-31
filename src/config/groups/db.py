@@ -1,9 +1,12 @@
+from omegaconf import MISSING
+
 from dataclasses import dataclass
 import os
 
 
 @dataclass
 class Db:
+    _target_: str = MISSING
     alembic_ini_path: str = '${project_root}/src/database/alembic.ini'
     alembic_folder_path: str = '${project_root}/src/database/alembic'
 
