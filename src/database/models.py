@@ -105,6 +105,7 @@ class DailyFlightTotals(Base):
     sample_date: Mapped[date] = mapped_column(primary_key=True)
     day_of_week: Mapped[str]  # 'Tue'
     day_and_number: Mapped[str]  # 'Mon 23'
+    sample_size: Mapped[int]
     total_unique_flights: Mapped[int]
     max_aircraft: Mapped[int]
     avg_aircraft: Mapped[float]
@@ -134,6 +135,7 @@ class WeeklyFlightTotals(Base):
     __tablename__ = 'weekly_flight_aggregates'
     week_start_date: Mapped[date] = mapped_column(primary_key=True)
     week_of_year: Mapped[int]
+    sample_size: Mapped[int]
     total_unique_flights: Mapped[int]
     max_aircraft: Mapped[int]
     avg_aircraft: Mapped[float]
@@ -165,6 +167,7 @@ class MonthlyFlightTotals(Base):
     month: Mapped[str]  # 'Jan'
     month_and_year: Mapped[str]  # 'Mar 21'
     short_month_year: Mapped[str]  # '3/21'
+    sample_size: Mapped[int]
     total_unique_flights: Mapped[int]
     max_aircraft: Mapped[int]
     avg_aircraft: Mapped[float]
@@ -196,6 +199,7 @@ class DailyTopAircraft(Base):
     day_of_week: Mapped[str]  # 'Tue'
     day_and_number: Mapped[str]  # 'Mon 23'
     aircraft_type: Mapped[str]  = mapped_column(primary_key=True)
+    num_of_samples: Mapped[int]
     num_per_sample: Mapped[float]
     usage_rank: Mapped[int]
     num_flights: Mapped[int]
@@ -209,6 +213,7 @@ class WeeklyTopAircraft(Base):
     week_start_date: Mapped[date] = mapped_column(primary_key=True)
     week_of_year: Mapped[int]
     aircraft_type: Mapped[str]  = mapped_column(primary_key=True)
+    num_of_samples: Mapped[int]
     num_per_sample: Mapped[float]
     usage_rank: Mapped[int]
     num_flights: Mapped[int]
@@ -224,6 +229,7 @@ class MonthlyTopAircraft(Base):
     month_and_year: Mapped[str]  # 'Mar 21'
     short_month_year: Mapped[str]  # '3/21'
     aircraft_type: Mapped[str]  = mapped_column(primary_key=True)
+    num_of_samples: Mapped[int]
     num_per_sample: Mapped[float]
     usage_rank: Mapped[int]
     num_flights: Mapped[int]

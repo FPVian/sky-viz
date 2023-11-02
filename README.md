@@ -43,6 +43,9 @@
   <ol>
     <li>
       <a href="#project-overview">Project Overview</a>
+      <ul>
+        <li><a href="#data-model">Data Model</a></li>
+      </ul>
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
@@ -75,6 +78,15 @@ $~$
 
 <div align="center">
   <img src="src/skyviz/static/architecture_diagram.png" alt="Architecture Diagram">
+</div>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+$~$
+
+### Data Model
+<div align="center">
+  <img src="src/skyviz/static/db_model_diagram.svg" alt="Data Model Diagram">
 </div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

@@ -23,6 +23,7 @@ dependencies = [
     "pulumi-azure-native == 2.3.0",
     "pulumi_docker == 4.4.2",
     "diagrams == 0.23.3",
+    "lxml == 4.9.3",
     "types-requests",
     "types-pytz",
 ]

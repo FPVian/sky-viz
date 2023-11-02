@@ -1,8 +1,8 @@
 """presentation
 
-Revision ID: 239feeb15ef3
+Revision ID: d4689f469fd6
 Revises: fcd06ea9f570
-Create Date: 2023-10-30 20:34:39.696354
+Create Date: 2023-11-02 15:38:22.226188
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '239feeb15ef3'
+revision = 'd4689f469fd6'
 down_revision = 'fcd06ea9f570'
 branch_labels = None
 depends_on = None
@@ -22,6 +22,7 @@ def upgrade() -> None:
     sa.Column('sample_date', sa.Date(), nullable=False),
     sa.Column('day_of_week', sa.String(), nullable=False),
     sa.Column('day_and_number', sa.String(), nullable=False),
+    sa.Column('sample_size', sa.Integer(), nullable=False),
     sa.Column('total_unique_flights', sa.Integer(), nullable=False),
     sa.Column('max_aircraft', sa.Integer(), nullable=False),
     sa.Column('avg_aircraft', sa.Float(), nullable=False),
@@ -52,6 +53,7 @@ def upgrade() -> None:
     sa.Column('day_of_week', sa.String(), nullable=False),
     sa.Column('day_and_number', sa.String(), nullable=False),
     sa.Column('aircraft_type', sa.String(), nullable=False),
+    sa.Column('num_of_samples', sa.Integer(), nullable=False),
     sa.Column('num_per_sample', sa.Float(), nullable=False),
     sa.Column('usage_rank', sa.Integer(), nullable=False),
     sa.Column('num_flights', sa.Integer(), nullable=False),
@@ -109,6 +111,7 @@ def upgrade() -> None:
     sa.Column('month', sa.String(), nullable=False),
     sa.Column('month_and_year', sa.String(), nullable=False),
     sa.Column('short_month_year', sa.String(), nullable=False),
+    sa.Column('sample_size', sa.Integer(), nullable=False),
     sa.Column('total_unique_flights', sa.Integer(), nullable=False),
     sa.Column('max_aircraft', sa.Integer(), nullable=False),
     sa.Column('avg_aircraft', sa.Float(), nullable=False),
@@ -140,6 +143,7 @@ def upgrade() -> None:
     sa.Column('month_and_year', sa.String(), nullable=False),
     sa.Column('short_month_year', sa.String(), nullable=False),
     sa.Column('aircraft_type', sa.String(), nullable=False),
+    sa.Column('num_of_samples', sa.Integer(), nullable=False),
     sa.Column('num_per_sample', sa.Float(), nullable=False),
     sa.Column('usage_rank', sa.Integer(), nullable=False),
     sa.Column('num_flights', sa.Integer(), nullable=False),
@@ -181,6 +185,7 @@ def upgrade() -> None:
     op.create_table('weekly_flight_aggregates',
     sa.Column('week_start_date', sa.Date(), nullable=False),
     sa.Column('week_of_year', sa.Integer(), nullable=False),
+    sa.Column('sample_size', sa.Integer(), nullable=False),
     sa.Column('total_unique_flights', sa.Integer(), nullable=False),
     sa.Column('max_aircraft', sa.Integer(), nullable=False),
     sa.Column('avg_aircraft', sa.Float(), nullable=False),
@@ -210,6 +215,7 @@ def upgrade() -> None:
     sa.Column('week_start_date', sa.Date(), nullable=False),
     sa.Column('week_of_year', sa.Integer(), nullable=False),
     sa.Column('aircraft_type', sa.String(), nullable=False),
+    sa.Column('num_of_samples', sa.Integer(), nullable=False),
     sa.Column('num_per_sample', sa.Float(), nullable=False),
     sa.Column('usage_rank', sa.Integer(), nullable=False),
     sa.Column('num_flights', sa.Integer(), nullable=False),
