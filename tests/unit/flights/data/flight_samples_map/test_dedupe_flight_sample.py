@@ -1,7 +1,7 @@
-from flights.data.flight_samples_clean import FlightSamplesCleaner
+from flights.data.flight_samples_map import FlightSamplesMapper
 
 
-def test_clean_flight_sample():
+def test_dedupe_flight_sample_removes_duplicates():
     '''
     Test that the resulting list of flights is unique by hex.
     The expected result contains the last entry for each hex because the earlier entries are overwritten.
@@ -21,13 +21,13 @@ def test_clean_flight_sample():
         {'hex': 'ghi', 'other_data': 'data4'},
         {'other_data': 'data7'},
     ]
-    cleaned_data = FlightSamplesCleaner().clean_flight_sample(sample_data)
+    cleaned_data = FlightSamplesMapper()._dedupe_flight_sample(sample_data)
     assert cleaned_data == expected_result
 
 
-def test_clean_flight_sample_without_data():
+def test_dedupe_flight_sample_without_data():
     '''
     Test that clean_flight_sample returns an empty list if the input is an empty list.
     '''
-    cleaned_data = FlightSamplesCleaner().clean_flight_sample([])
+    cleaned_data = FlightSamplesMapper()._dedupe_flight_sample([])
     assert cleaned_data == []

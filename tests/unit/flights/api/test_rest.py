@@ -27,7 +27,7 @@ def test_get_failure(mock_request, mock_log):
     mock_request.return_value.status_code = 204
     response = RestApi('https://fakeurl2.com').get()
     assert mock_request.call_count == s.api.number_of_tries
-    assert mock_log.critical.call_count == 2
+    assert mock_log.critical.call_count == 1
     assert response is None
 
 

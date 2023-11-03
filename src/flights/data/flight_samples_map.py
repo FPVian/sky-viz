@@ -2,6 +2,8 @@ from database.models import FlightSamples
 from config.logger import Logger
 
 from typing import Optional, Iterator
+from datetime import datetime
+import pytz
 
 log = Logger.create(__name__)
 
@@ -12,12 +14,25 @@ class FlightSamplesMapper:
     '''
     def map_scatter_data(self, scatter_data: list[dict]) -> Iterator[FlightSamples]:
         log.info(f'mapping {len(scatter_data)} rows of scatter data to flight samples table model')
+        scatter_sample = self._dedupe_flight_sample(scatter_data)
         log.info('filtering out irrelevant scatter data')
-        filtered_flights = filter(self._filter_flight, scatter_data)
+        filtered_flights = filter(self._filter_flight, scatter_sample)
         flights = map(self._map_flight, filtered_flights)
+        flights_with_date: Iterator[FlightSamples] = self._add_sample_date(flights)
         log.info('mapped scatter data to flight samples table model')
-        return flights
+        return flights_with_date
     
+    def _dedupe_flight_sample(self, scatter_sample: list[dict]) -> list[dict]:
+        '''
+        Removes duplicates from geographic overlaps in the scatter data sample.
+        '''
+        log.info('cleaning duplicates from raw aircraft scatter data sample')
+        unique_flights = {flight.get('hex'): flight for flight in scatter_sample}
+        clean_flights = list(unique_flights.values())
+        log.info(f'found {len(clean_flights)} unique flights in scatter data sample')
+        log.debug(f'clean data:\n\n\n{clean_flights}\n\n\n')
+        return clean_flights
+
     def _filter_flight(self, flight: dict) -> bool:
         valid_flight = all([flight.get('alt_baro') != 'ground',
                             flight.get('hex'),
@@ -86,3 +101,15 @@ class FlightSamplesMapper:
         except ValueError as e:
             log.warning(f'Error casting scatter data to float: {e}')
             return None
+
+    def _add_sample_date(
+            self, flight_sample: Iterator[FlightSamples]) -> Iterator[FlightSamples]:
+        '''
+        Adds a sample collection date to each mapped row of the flight sample.
+        '''
+        log.info('adding sample date to mapped flight sample')
+        sample_collection_date = datetime.utcnow().replace(tzinfo=pytz.utc)
+        for table_row in flight_sample:
+            table_row.sample_entry_date_utc = sample_collection_date
+            yield table_row
+        log.info('sample date added to mapped flight sample')

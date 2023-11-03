@@ -2,8 +2,6 @@ from config.settings import s
 from config.logger import Logger
 from flights.api.adsb_exchange import AdsbExchangeClient
 from flights.data.flight_samples_map import FlightSamplesMapper
-from flights.data.flight_samples_transform import FlightSamplesTransform
-from flights.data.flight_samples_clean import FlightSamplesCleaner
 from flights.db.repository import DbRepo
 
 from sqlalchemy.orm import Session
@@ -16,11 +14,9 @@ log = Logger.create(__name__)
 
 def app_routine(db: DbRepo):
     scatter_api_sample = AdsbExchangeClient().collect_usa_scatter_sample()
-    clean_scatter_sample = FlightSamplesCleaner().clean_flight_sample(scatter_api_sample)
-    flights_rows = FlightSamplesMapper().map_scatter_data(clean_scatter_sample)
-    flights_transformed = FlightSamplesTransform().transform_flight_sample(flights_rows)
+    flights_rows = FlightSamplesMapper().map_scatter_data(scatter_api_sample)
     with Session(db.engine) as session, session.begin():
-        db.insert_rows(session, flights_transformed)
+        db.insert_rows(session, flights_rows)
 
 
 async def main():

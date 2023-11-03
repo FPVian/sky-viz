@@ -369,7 +369,7 @@ class Alerts:
             criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
                 time_aggregation=TimeAggregation.COUNT,
                 operator=ConditionOperator.GREATER_THAN,
-                threshold=0,
+                threshold=5,
                 query='''ContainerAppConsoleLogs_CL
                         | where TimeGenerated >= ago(48h)
                         | where Log_s contains "[WARNING]" or Log_s contains "[ERROR]"
@@ -381,6 +381,26 @@ class Alerts:
             scopes=[LogAnalytics.log_analytics_workspace.id],
             enabled=True,
             severity=2,
+        )
+
+        container_app_errors = ScheduledQueryRule(
+            "container-app-errors",
+            opts=ResourceOptions(depends_on=[ContainerApps.flights_container_app]),
+            resource_group_name=resource_group.name,
+            criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
+                time_aggregation=TimeAggregation.COUNT,
+                operator=ConditionOperator.GREATER_THAN,
+                threshold=0,
+                query='''ContainerAppConsoleLogs_CL
+                        | where TimeGenerated >= ago(48h)
+                        | where Log_s contains "[ERROR]" or Log_s contains "[CRITICAL]"''',
+            ),]),
+            evaluation_frequency="P1D",  # ISO 8601 duration format
+            actions=ActionsArgs(action_groups=[email_alerts.id]),
+            window_size="P2D",
+            scopes=[LogAnalytics.log_analytics_workspace.id],
+            enabled=True,
+            severity=1,
         )
 
         container_app_health = ScheduledQueryRule(
@@ -429,7 +449,7 @@ class Alerts:
         criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
             time_aggregation=TimeAggregation.COUNT,
             operator=ConditionOperator.GREATER_THAN,
-            threshold=0,
+            threshold=5,
             query='''AppServiceHTTPLogs
                     | where TimeGenerated >= ago(48h)
                     | where ScStatus >= 500''',
@@ -440,25 +460,6 @@ class Alerts:
         scopes=[SkyVizApp.skyviz_web_app.id],
         enabled=True,
         severity=1,
-    )
-
-    web_app_activity = ScheduledQueryRule(
-        "web-app-activity",
-        resource_group_name=resource_group.name,
-        criteria=ScheduledQueryRuleCriteriaArgs(all_of=[ConditionArgs(
-            time_aggregation=TimeAggregation.COUNT,
-            operator=ConditionOperator.GREATER_THAN,
-            threshold=0,
-            query='''AppServiceHTTPLogs
-                    | where TimeGenerated >= ago(24h)
-                    | where UserAgent != "AlwaysOn"''',
-        ),]),
-        evaluation_frequency="P1D",  # ISO 8601 duration format
-        actions=ActionsArgs(action_groups=[email_alerts.id]),
-        window_size="P1D",
-        scopes=[SkyVizApp.skyviz_web_app.id],
-        enabled=True,
-        severity=4,
     )
 
     log_analytics_limits = ScheduledQueryRule(
