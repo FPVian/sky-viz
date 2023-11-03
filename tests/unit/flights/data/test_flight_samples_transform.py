@@ -5,7 +5,7 @@ from datetime import datetime
 import pytz
 
 
-def test_transform_flight_sample():
+def test_transform_flight_sample_adds_timestamp():
     '''
     Test that the transform_flight_sample method adds the current time to each row of the flight sample.
     Test that the sample_entry_date for all rows in the sample is the same.
