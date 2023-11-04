@@ -44,3 +44,14 @@ def test_get_request_errors(mock_request, mock_log_error):
     assert mock_request.call_count == 3
     assert mock_log_error.call_count == 2
     assert response == {'result': 'success'}
+
+
+@patch('flights.api.rest.log')
+@patch('requests.request')
+def test_make_request_logs_error_for_bad_reponse(mock_request, mock_log):
+    '''
+    Test that _make_request() logs an error when a request exception is raised
+    '''
+    mock_request.side_effect = ConnectionError(response=Mock())
+    RestApi('https://fakeurl4.com')._make_request('GET')
+    assert mock_log.warning.call_count == 2
