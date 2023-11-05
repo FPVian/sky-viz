@@ -1,8 +1,8 @@
 """presentation
 
-Revision ID: d4689f469fd6
+Revision ID: 2663727eb1ea
 Revises: fcd06ea9f570
-Create Date: 2023-11-02 15:38:22.226188
+Create Date: 2023-11-04 23:58:39.959033
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'd4689f469fd6'
+revision = '2663727eb1ea'
 down_revision = 'fcd06ea9f570'
 branch_labels = None
 depends_on = None
@@ -27,25 +27,24 @@ def upgrade() -> None:
     sa.Column('max_aircraft', sa.Integer(), nullable=False),
     sa.Column('avg_aircraft', sa.Float(), nullable=False),
     sa.Column('min_aircraft', sa.Integer(), nullable=False),
-    sa.Column('avg_ground_speed_knots', sa.Float(), nullable=False),
-    sa.Column('min_ground_speed_knots', sa.Float(), nullable=False),
-    sa.Column('max_ground_speed_knots', sa.Float(), nullable=False),
-    sa.Column('max_speed_aircraft_type', sa.String(), nullable=True),
-    sa.Column('max_speed_aircraft_registration', sa.String(), nullable=True),
-    sa.Column('max_speed_flight', sa.String(), nullable=True),
-    sa.Column('avg_altitude_ft', sa.Float(), nullable=False),
-    sa.Column('max_altitude_ft', sa.Integer(), nullable=False),
+    sa.Column('avg_altitude_ft', sa.Float(), nullable=True),
+    sa.Column('max_altitude_ft', sa.Integer(), nullable=True),
     sa.Column('max_alt_aircraft_type', sa.String(), nullable=True),
     sa.Column('max_alt_aircraft_registration', sa.String(), nullable=True),
     sa.Column('max_alt_flight', sa.String(), nullable=True),
-    sa.Column('max_climb_rate_ft_per_min', sa.Integer(), nullable=False),
+    sa.Column('max_climb_rate_ft_per_min', sa.Integer(), nullable=True),
     sa.Column('max_climb_aircraft_type', sa.String(), nullable=True),
     sa.Column('max_climb_aircraft_registration', sa.String(), nullable=True),
     sa.Column('max_climb_flight', sa.String(), nullable=True),
-    sa.Column('max_descent_rate_ft_per_min', sa.Integer(), nullable=False),
+    sa.Column('max_descent_rate_ft_per_min', sa.Integer(), nullable=True),
     sa.Column('max_descent_aircraft_type', sa.String(), nullable=True),
     sa.Column('max_descent_aircraft_registration', sa.String(), nullable=True),
     sa.Column('max_descent_flight', sa.String(), nullable=True),
+    sa.Column('avg_ground_speed_knots', sa.Float(), nullable=True),
+    sa.Column('max_ground_speed_knots', sa.Float(), nullable=True),
+    sa.Column('max_speed_aircraft_type', sa.String(), nullable=True),
+    sa.Column('max_speed_aircraft_registration', sa.String(), nullable=True),
+    sa.Column('max_speed_flight', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('sample_date')
     )
     op.create_table('daily_top_aircraft',
@@ -65,25 +64,24 @@ def upgrade() -> None:
     op.create_table('flight_aggregates',
     sa.Column('sample_entry_date_utc', sa.DateTime(), nullable=False),
     sa.Column('number_of_flights', sa.Integer(), nullable=False),
-    sa.Column('avg_ground_speed_knots', sa.Float(), nullable=False),
-    sa.Column('min_ground_speed_knots', sa.Float(), nullable=False),
-    sa.Column('max_ground_speed_knots', sa.Float(), nullable=False),
-    sa.Column('max_speed_aircraft_type', sa.String(), nullable=True),
-    sa.Column('max_speed_aircraft_registration', sa.String(), nullable=True),
-    sa.Column('max_speed_flight', sa.String(), nullable=True),
-    sa.Column('avg_altitude_ft', sa.Float(), nullable=False),
-    sa.Column('max_altitude_ft', sa.Integer(), nullable=False),
+    sa.Column('avg_altitude_ft', sa.Float(), nullable=True),
+    sa.Column('max_altitude_ft', sa.Integer(), nullable=True),
     sa.Column('max_alt_aircraft_type', sa.String(), nullable=True),
     sa.Column('max_alt_aircraft_registration', sa.String(), nullable=True),
     sa.Column('max_alt_flight', sa.String(), nullable=True),
-    sa.Column('max_climb_rate_ft_per_min', sa.Integer(), nullable=False),
+    sa.Column('max_climb_rate_ft_per_min', sa.Integer(), nullable=True),
     sa.Column('max_climb_aircraft_type', sa.String(), nullable=True),
     sa.Column('max_climb_aircraft_registration', sa.String(), nullable=True),
     sa.Column('max_climb_flight', sa.String(), nullable=True),
-    sa.Column('max_descent_rate_ft_per_min', sa.Integer(), nullable=False),
+    sa.Column('max_descent_rate_ft_per_min', sa.Integer(), nullable=True),
     sa.Column('max_descent_aircraft_type', sa.String(), nullable=True),
     sa.Column('max_descent_aircraft_registration', sa.String(), nullable=True),
     sa.Column('max_descent_flight', sa.String(), nullable=True),
+    sa.Column('avg_ground_speed_knots', sa.Float(), nullable=True),
+    sa.Column('max_ground_speed_knots', sa.Float(), nullable=True),
+    sa.Column('max_speed_aircraft_type', sa.String(), nullable=True),
+    sa.Column('max_speed_aircraft_registration', sa.String(), nullable=True),
+    sa.Column('max_speed_flight', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('sample_entry_date_utc')
     )
     op.create_table('flight_emergencies',
@@ -116,25 +114,24 @@ def upgrade() -> None:
     sa.Column('max_aircraft', sa.Integer(), nullable=False),
     sa.Column('avg_aircraft', sa.Float(), nullable=False),
     sa.Column('min_aircraft', sa.Integer(), nullable=False),
-    sa.Column('avg_ground_speed_knots', sa.Float(), nullable=False),
-    sa.Column('min_ground_speed_knots', sa.Float(), nullable=False),
-    sa.Column('max_ground_speed_knots', sa.Float(), nullable=False),
-    sa.Column('max_speed_aircraft_type', sa.String(), nullable=True),
-    sa.Column('max_speed_aircraft_registration', sa.String(), nullable=True),
-    sa.Column('max_speed_flight', sa.String(), nullable=True),
-    sa.Column('avg_altitude_ft', sa.Float(), nullable=False),
-    sa.Column('max_altitude_ft', sa.Integer(), nullable=False),
+    sa.Column('avg_altitude_ft', sa.Float(), nullable=True),
+    sa.Column('max_altitude_ft', sa.Integer(), nullable=True),
     sa.Column('max_alt_aircraft_type', sa.String(), nullable=True),
     sa.Column('max_alt_aircraft_registration', sa.String(), nullable=True),
     sa.Column('max_alt_flight', sa.String(), nullable=True),
-    sa.Column('max_climb_rate_ft_per_min', sa.Integer(), nullable=False),
+    sa.Column('max_climb_rate_ft_per_min', sa.Integer(), nullable=True),
     sa.Column('max_climb_aircraft_type', sa.String(), nullable=True),
     sa.Column('max_climb_aircraft_registration', sa.String(), nullable=True),
     sa.Column('max_climb_flight', sa.String(), nullable=True),
-    sa.Column('max_descent_rate_ft_per_min', sa.Integer(), nullable=False),
+    sa.Column('max_descent_rate_ft_per_min', sa.Integer(), nullable=True),
     sa.Column('max_descent_aircraft_type', sa.String(), nullable=True),
     sa.Column('max_descent_aircraft_registration', sa.String(), nullable=True),
     sa.Column('max_descent_flight', sa.String(), nullable=True),
+    sa.Column('avg_ground_speed_knots', sa.Float(), nullable=True),
+    sa.Column('max_ground_speed_knots', sa.Float(), nullable=True),
+    sa.Column('max_speed_aircraft_type', sa.String(), nullable=True),
+    sa.Column('max_speed_aircraft_registration', sa.String(), nullable=True),
+    sa.Column('max_speed_flight', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('month_start_date')
     )
     op.create_table('monthly_top_aircraft',
@@ -161,6 +158,26 @@ def upgrade() -> None:
     sa.Column('num_days_flown', sa.Integer(), nullable=False),
     sa.Column('monthly_rank', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('month_start_date', 'flight')
+    )
+    op.create_table('random_flight_samples',
+    sa.Column('icao_id', sa.String(), nullable=False),
+    sa.Column('sample_entry_date_utc', sa.DateTime(), nullable=False),
+    sa.Column('flight', sa.String(), nullable=True),
+    sa.Column('latitude', sa.Float(), nullable=False),
+    sa.Column('longitude', sa.Float(), nullable=False),
+    sa.Column('altitude_ft', sa.Integer(), nullable=True),
+    sa.Column('alt_change_ft_per_min', sa.Integer(), nullable=True),
+    sa.Column('heading', sa.Float(), nullable=True),
+    sa.Column('ground_speed_knots', sa.Float(), nullable=True),
+    sa.Column('nav_modes', sa.String(), nullable=True),
+    sa.Column('emitter_category', sa.String(), nullable=True),
+    sa.Column('aircraft_type', sa.String(), nullable=True),
+    sa.Column('aircraft_registration', sa.String(), nullable=True),
+    sa.Column('flag', sa.String(), nullable=True),
+    sa.Column('source', sa.String(), nullable=True),
+    sa.Column('rssi', sa.Float(), nullable=True),
+    sa.Column('emergency', sa.String(), nullable=True),
+    sa.PrimaryKeyConstraint('icao_id', 'sample_entry_date_utc')
     )
     op.create_table('recent_flight_samples',
     sa.Column('icao_id', sa.String(), nullable=False),
@@ -190,25 +207,24 @@ def upgrade() -> None:
     sa.Column('max_aircraft', sa.Integer(), nullable=False),
     sa.Column('avg_aircraft', sa.Float(), nullable=False),
     sa.Column('min_aircraft', sa.Integer(), nullable=False),
-    sa.Column('avg_ground_speed_knots', sa.Float(), nullable=False),
-    sa.Column('min_ground_speed_knots', sa.Float(), nullable=False),
-    sa.Column('max_ground_speed_knots', sa.Float(), nullable=False),
-    sa.Column('max_speed_aircraft_type', sa.String(), nullable=True),
-    sa.Column('max_speed_aircraft_registration', sa.String(), nullable=True),
-    sa.Column('max_speed_flight', sa.String(), nullable=True),
-    sa.Column('avg_altitude_ft', sa.Float(), nullable=False),
-    sa.Column('max_altitude_ft', sa.Integer(), nullable=False),
+    sa.Column('avg_altitude_ft', sa.Float(), nullable=True),
+    sa.Column('max_altitude_ft', sa.Integer(), nullable=True),
     sa.Column('max_alt_aircraft_type', sa.String(), nullable=True),
     sa.Column('max_alt_aircraft_registration', sa.String(), nullable=True),
     sa.Column('max_alt_flight', sa.String(), nullable=True),
-    sa.Column('max_climb_rate_ft_per_min', sa.Integer(), nullable=False),
+    sa.Column('max_climb_rate_ft_per_min', sa.Integer(), nullable=True),
     sa.Column('max_climb_aircraft_type', sa.String(), nullable=True),
     sa.Column('max_climb_aircraft_registration', sa.String(), nullable=True),
     sa.Column('max_climb_flight', sa.String(), nullable=True),
-    sa.Column('max_descent_rate_ft_per_min', sa.Integer(), nullable=False),
+    sa.Column('max_descent_rate_ft_per_min', sa.Integer(), nullable=True),
     sa.Column('max_descent_aircraft_type', sa.String(), nullable=True),
     sa.Column('max_descent_aircraft_registration', sa.String(), nullable=True),
     sa.Column('max_descent_flight', sa.String(), nullable=True),
+    sa.Column('avg_ground_speed_knots', sa.Float(), nullable=True),
+    sa.Column('max_ground_speed_knots', sa.Float(), nullable=True),
+    sa.Column('max_speed_aircraft_type', sa.String(), nullable=True),
+    sa.Column('max_speed_aircraft_registration', sa.String(), nullable=True),
+    sa.Column('max_speed_flight', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('week_start_date')
     )
     op.create_table('weekly_top_aircraft',
@@ -232,6 +248,7 @@ def downgrade() -> None:
     op.drop_table('weekly_top_aircraft')
     op.drop_table('weekly_flight_aggregates')
     op.drop_table('recent_flight_samples')
+    op.drop_table('random_flight_samples')
     op.drop_table('monthly_top_flights')
     op.drop_table('monthly_top_aircraft')
     op.drop_table('monthly_flight_aggregates')

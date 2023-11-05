@@ -1,8 +1,8 @@
 from sqlalchemy_data_model_visualizer import generate_data_model_diagram, add_web_font_and_interactivity
 from database.models import (
-    FlightSamples, RecentFlightSamples, FlightEmergencies, FlightAggregates, DailyFlightTotals,
-    WeeklyFlightTotals, MonthlyFlightTotals, DailyTopAircraft, WeeklyTopAircraft, MonthlyTopAircraft,
-    MonthlyTopFlights
+    FlightSamples, RecentFlightSamples, RandomFlightSamples, FlightEmergencies, FlightAggregates,
+    DailyFlightTotals, WeeklyFlightTotals, MonthlyFlightTotals, DailyTopAircraft, WeeklyTopAircraft,
+    MonthlyTopAircraft, MonthlyTopFlights
 )
 
 from sqlalchemy.orm import relationship
@@ -11,11 +11,12 @@ import os
 
 
 output_file_name = 'src/skyviz/static/db_model_diagram'
-svg_file_name = f'src/{output_file_name}.svg'
+svg_file_name = f'{output_file_name}.svg'
 
 models = [
     FlightSamples,
     RecentFlightSamples,
+    RandomFlightSamples,
     FlightEmergencies,
     FlightAggregates,
     DailyFlightTotals,
@@ -28,16 +29,22 @@ models = [
 ]
 
 # Sampling Layer
-FlightSamples.sample = relationship(
+FlightSamples.recent_entries = relationship(
     RecentFlightSamples,
     primaryjoin=RecentFlightSamples.icao_id == FlightSamples.icao_id,
     foreign_keys=[RecentFlightSamples.icao_id]
+)
+FlightSamples.sample = relationship(
+    RandomFlightSamples,
+    primaryjoin=RandomFlightSamples.icao_id == FlightSamples.icao_id,
+    foreign_keys=[RandomFlightSamples.icao_id]
 )
 FlightSamples.emergencies = relationship(
     FlightEmergencies,
     primaryjoin=FlightEmergencies.icao_id == FlightSamples.icao_id,
     foreign_keys=[FlightEmergencies.icao_id]
 )
+
 
 # Analysis Layer
 FlightSamples.aggregate = relationship(
@@ -56,7 +63,7 @@ FlightSamples.weekly_unique_aircraft = relationship(
     primaryjoin=WeeklyTopAircraft.week_start_date == FlightSamples.sample_entry_date_utc,
     foreign_keys=[WeeklyTopAircraft.week_start_date]
 )
-DailyTopAircraft.weekly_unique_aircraft = relationship(
+DailyTopAircraft.num_of_flights = relationship(
     WeeklyTopAircraft,
     primaryjoin=WeeklyTopAircraft.week_start_date == DailyTopAircraft.sample_date,
     foreign_keys=[WeeklyTopAircraft.week_start_date],
@@ -68,7 +75,7 @@ FlightSamples.monthly_unique_aircraft = relationship(
     primaryjoin=MonthlyTopAircraft.month_start_date == FlightSamples.sample_entry_date_utc,
     foreign_keys=[MonthlyTopAircraft.month_start_date]
 )
-WeeklyTopAircraft.monthly_unique_aircraft = relationship(
+WeeklyTopAircraft.num_of_flights = relationship(
     MonthlyTopAircraft,
     primaryjoin=MonthlyTopAircraft.month_start_date == WeeklyTopAircraft.week_start_date,
     foreign_keys=[MonthlyTopAircraft.month_start_date],
@@ -80,6 +87,7 @@ FlightSamples.monthly_unique_flights = relationship(
     primaryjoin=MonthlyTopFlights.month_start_date == FlightSamples.sample_entry_date_utc,
     foreign_keys=[MonthlyTopFlights.month_start_date]
 )
+
 
 # Presentation Layer
 FlightAggregates.daily_totals = relationship(

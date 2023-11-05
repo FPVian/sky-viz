@@ -68,44 +68,6 @@ def test_get_new_flight_samples(sqlite_repo: DbRepo):
     assert unmatched_sample_dates[0].sample_entry_date_utc == datetime(2023, 6, 10)
 
 
-def test_count_flight_samples_by_date(sqlite_repo: DbRepo):
-    '''
-    Test that the count_flight_samples_by_date method 
-    returns the number of flight samples for a given date.
-    '''
-    sample_rows = [
-        FlightSamples(
-            icao_id='abc123',
-            sample_entry_date_utc=datetime(2023, 6, 11),
-            latitude=1.1,
-            longitude=2.2,
-        ),
-        FlightSamples(
-            icao_id='abc456',
-            sample_entry_date_utc=datetime(2023, 6, 11),
-            latitude=-3.3,
-            longitude=-4.4,
-        ),
-        FlightSamples(
-            icao_id='abc789',
-            sample_entry_date_utc=datetime(2023, 6, 12),
-            latitude=-5.5,
-            longitude=-6.6,
-        ),
-    ]
-    with Session(sqlite_repo.engine) as session, session.begin():
-        session.add_all(sample_rows)
-    with Session(sqlite_repo.engine) as session:
-        results: list[int] = [
-            sqlite_repo.count_flight_samples_by_date(session, datetime(2023, 6, 10)),
-            sqlite_repo.count_flight_samples_by_date(session, datetime(2023, 6, 11)),
-            sqlite_repo.count_flight_samples_by_date(session, datetime(2023, 6, 12)),
-        ]
-    assert results[0] == 0
-    assert results[1] == 2
-    assert results[2] == 1
-
-
 @pytest.mark.skip
 def test_filter_table_by_dates(sqlite_repo: DbRepo):
     assert False

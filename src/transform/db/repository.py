@@ -40,7 +40,7 @@ class DbRepo():
 
     def get_new_flight_samples(self, session: Session) -> Iterator[FlightSamples]:
         '''
-        Fetches flight sample dates without matching aggregates.
+        Fetches dates of flight sample without matching aggregates.
         '''
         log.info('fetching flight samples that need to be aggregated')
         query = (
@@ -56,19 +56,6 @@ class DbRepo():
         unmatched_samples: Iterator[FlightSamples] = session.execute(query)
         log.info('returning flight sample dates for aggregation')
         return unmatched_samples
-    
-    def count_flight_samples_by_date(self, session: Session, sample_date: datetime) -> int:  # deprecated
-        '''
-        Counts the number of flight samples for a given date.
-        '''
-        log.info(f'counting flights in sample entered at: {sample_date}')
-        count_result: int = (
-            session.query(FlightSamples)
-            .where(FlightSamples.sample_entry_date_utc == sample_date)
-            .count()
-        )
-        log.info(f'counted {count_result} flights')
-        return count_result
     
     def filter_table_by_dates(
             self,

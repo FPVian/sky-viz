@@ -3,16 +3,13 @@ from config.logger import Logger
 from transform.data.aggregation import FlightsProcessor
 from transform.db.repository import DbRepo
 
-from sqlalchemy.orm import Session
-
 import asyncio
 
 log = Logger.create(__name__)
 
 
-def app_routine(db: DbRepo):
-    with Session(db.engine) as session, session.begin():  # need to sort rows by date before moving this
-        FlightsProcessor().summarize_flight_samples(session, db)
+def app_routine():
+    FlightsProcessor().aggregate_flight_samples()
 
 
 async def main():

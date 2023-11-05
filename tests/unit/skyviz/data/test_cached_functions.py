@@ -161,7 +161,7 @@ def test_get_flight_count_last_sample():
     with the most recent entry date in the flight_aggregates lazyframe
     with the number_of_flights column.
     '''
-    flight_aggregates: pl.LazyFrame = pl.LazyFrame({
+    flight_aggregates = pl.LazyFrame({
         FlightAggregates.sample_entry_date_utc.name: [datetime(2022, 5, 10),datetime(2022, 6, 10)],
         FlightAggregates.number_of_flights.name: [10, 20]
     })
