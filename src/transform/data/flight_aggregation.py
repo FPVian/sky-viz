@@ -3,11 +3,12 @@ from database.models import FlightSamples, FlightAggregates
 from transform.db.repository import DbRepo
 from transform.data.base_calcs import BaseCalcs
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Mapped
 import polars as pl
 
 from typing import Iterator
 from datetime import datetime
+from enum import Enum
 
 log = Logger.create(__name__)
 
@@ -48,97 +49,75 @@ class FlightAggregator(BaseCalcs):
         agg_row.number_of_flights = flight_sample.select(pl.count()).collect().item()
         agg_row.avg_altitude_ft = flight_sample.select(
             pl.col(FlightSamples.altitude_ft.name)).mean().collect().item()
-        agg_row = self._calculate_max_altitude_columns(flight_sample, agg_row)
-        agg_row = self._calculate_max_climb_columns(flight_sample, agg_row)
-        agg_row = self._calculate_max_descent_columns(flight_sample, agg_row)
+        agg_row = self._calculate_max_min_columns(  # max altitude
+            flight_sample, agg_row, FlightSamples.altitude_ft, FlightAggregates.max_altitude_ft,
+            FlightAggregates.max_alt_aircraft_type, FlightAggregates.max_alt_aircraft_registration,
+            FlightAggregates.max_alt_flight, self.AggregationType.MAX)
+        agg_row = self._calculate_max_climb_rate(flight_sample, agg_row)
+        agg_row = self._calculate_max_descent_rate(flight_sample, agg_row)
         agg_row.avg_ground_speed_knots = flight_sample.select(
             pl.col(FlightSamples.ground_speed_knots.name)).mean().collect().item()
-        agg_row = self._calculate_max_speed_columns(flight_sample, agg_row)
+        agg_row = self._calculate_max_min_columns(  # max ground speed
+            flight_sample, agg_row, FlightSamples.ground_speed_knots,
+            FlightAggregates.max_ground_speed_knots, FlightAggregates.max_speed_aircraft_type,
+            FlightAggregates.max_speed_aircraft_registration, FlightAggregates.max_speed_flight,
+            self.AggregationType.MAX)
         log.info(f'returning summarized sample as flight_aggregates row for: {sample_date}')
         return agg_row
     
-    def _calculate_max_altitude_columns(
+    def _calculate_max_climb_rate(
             self, flight_sample: pl.LazyFrame, agg_row: FlightAggregates) -> FlightAggregates:
-        '''
-        Calculates the max altitude and associated aircraft type, registration, and flight
-        for a sample of flights.
-        '''
-        log.info('calculating max altitude flight for sample')
-        max_alt_row = self._filter_to_max_row(flight_sample, FlightSamples.altitude_ft)
-        if max_alt_row.height == 1:
-            agg_row.max_altitude_ft = max_alt_row.select(pl.col(FlightSamples.altitude_ft.name)).item()
-            agg_row.max_alt_aircraft_type = max_alt_row.select(
-                pl.col(FlightSamples.aircraft_type.name)).item()
-            agg_row.max_alt_aircraft_registration = max_alt_row.select(
-                pl.col(FlightSamples.aircraft_registration.name)).item()
-            agg_row.max_alt_flight = max_alt_row.select(pl.col(FlightSamples.flight.name)).item()
-        else:
-            log.warning('no max altitude for sample; all values are null')
-        log.info('returning max altitude flight for sample')
+        log.info('inserting flight with max climb rate')
+        climb_rows = flight_sample.filter(pl.col(FlightSamples.alt_change_ft_per_min.name) > 0)
+        agg_row = self._calculate_max_min_columns(
+            climb_rows, agg_row, FlightSamples.alt_change_ft_per_min,
+            FlightAggregates.max_climb_rate_ft_per_min, FlightAggregates.max_climb_aircraft_type,
+            FlightAggregates.max_climb_aircraft_registration, FlightAggregates.max_climb_flight,
+            self.AggregationType.MAX)
+        log.info('inserting flight with max climb rate')
+        return agg_row
+    
+    def _calculate_max_descent_rate(
+            self, flight_sample: pl.LazyFrame, agg_row: FlightAggregates) -> FlightAggregates:
+        log.info('inserting flight with max descent rate')
+        descent_rows = flight_sample.filter(pl.col(FlightSamples.alt_change_ft_per_min.name) < 0)
+        agg_row = self._calculate_max_min_columns(
+            descent_rows, agg_row, FlightSamples.alt_change_ft_per_min,
+            FlightAggregates.max_descent_rate_ft_per_min, FlightAggregates.max_descent_aircraft_type,
+            FlightAggregates.max_descent_aircraft_registration, FlightAggregates.max_descent_flight,
+            self.AggregationType.MIN)
+        if agg_row.max_descent_rate_ft_per_min:
+            agg_row.max_descent_rate_ft_per_min *= -1
+        log.info('inserted flight with max descent rate')
         return agg_row
 
-    def _calculate_max_climb_columns(
-            self, flight_sample: pl.LazyFrame, agg_row: FlightAggregates) -> FlightAggregates:
+    class AggregationType(Enum):
+        MAX = 'max'
+        MIN = 'min'
+
+    def _calculate_max_min_columns(
+            self, flight_sample: pl.LazyFrame, agg_row: FlightAggregates, search_column: Mapped,
+            max_column: Mapped, aircraft_type_column: Mapped, registration_column: Mapped,
+            flight_column: Mapped, aggregation_type: AggregationType
+        ) -> FlightAggregates:
         '''
-        Calculates the max climb rate and associated aircraft type, registration, and flight
-        for a sample of flights.
+        Calculates the max value in a search column and records the 
+        associated aircraft type, registration, and flight for a sample of flights.
         '''
-        log.info('calculating max climb rate flight for sample')
-        climb_rows = flight_sample.filter(pl.col(FlightSamples.alt_change_ft_per_min.name) > 0)
-        max_climb_row = self._filter_to_max_row(climb_rows, FlightSamples.alt_change_ft_per_min)
-        if max_climb_row.height == 1:
-            agg_row.max_climb_rate_ft_per_min = max_climb_row.select(
-                pl.col(FlightSamples.alt_change_ft_per_min.name)).item()
-            agg_row.max_climb_aircraft_type = max_climb_row.select(
-                pl.col(FlightSamples.aircraft_type.name)).item()
-            agg_row.max_climb_aircraft_registration = max_climb_row.select(
-                pl.col(FlightSamples.aircraft_registration.name)).item()
-            agg_row.max_climb_flight = max_climb_row.select(pl.col(FlightSamples.flight.name)).item()
+        log.info(f'calculating {max_column.name} flight for sample')
+        if aggregation_type == self.AggregationType.MAX:
+            filtered_row = self._filter_to_max_row(flight_sample, search_column)
+        elif aggregation_type == self.AggregationType.MIN:
+            filtered_row = self._filter_to_min_row(flight_sample, search_column)
+        if filtered_row.height == 1:
+            setattr(agg_row, max_column.name, filtered_row.select(pl.col(search_column.name)).item())
+            setattr(agg_row, aircraft_type_column.name,
+                    filtered_row.select(pl.col(FlightSamples.aircraft_type.name)).item())
+            setattr(agg_row, registration_column.name,
+                    filtered_row.select(pl.col(FlightSamples.aircraft_registration.name)).item())
+            setattr(agg_row, flight_column.name,
+                    filtered_row.select(pl.col(FlightSamples.flight.name)).item())
         else:
-            log.warning('no max climb rate for sample; all values are <= 0 or null')
-        log.info('returning max climb rate flight for sample')
-        return agg_row
-    
-    def _calculate_max_descent_columns(
-            self, flight_sample: pl.LazyFrame, agg_row: FlightAggregates) -> FlightAggregates:
-        '''
-        Calculates the max descent rate and associated aircraft type, registration, and flight
-        for a sample of flights.
-        '''
-        log.info('calculating max descent rate flight for sample')
-        descent_rows = flight_sample.filter(pl.col(FlightSamples.alt_change_ft_per_min.name) < 0)
-        max_descent_row = self._filter_to_min_row(descent_rows, FlightSamples.alt_change_ft_per_min)
-        if max_descent_row.height == 1:
-            descent_rate = max_descent_row.select(
-                pl.col(FlightSamples.alt_change_ft_per_min.name)).item()
-            agg_row.max_descent_rate_ft_per_min = -1 * descent_rate
-            agg_row.max_descent_aircraft_type = max_descent_row.select(
-                pl.col(FlightSamples.aircraft_type.name)).item()
-            agg_row.max_descent_aircraft_registration = max_descent_row.select(
-                pl.col(FlightSamples.aircraft_registration.name)).item()
-            agg_row.max_descent_flight = max_descent_row.select(pl.col(FlightSamples.flight.name)).item()
-        else:
-            log.warning('no max descent rate for sample; all values are >= 0 or null')
-        log.info('returning max descent rate flight for sample')
-        return agg_row
-    
-    def _calculate_max_speed_columns(
-            self, flight_sample: pl.LazyFrame, agg_row: FlightAggregates) -> FlightAggregates:
-        '''
-        Calculates the max speed and associated aircraft type, registration, and flight
-        for a sample of flights.
-        '''
-        log.info('calculating max speed flight for sample')
-        max_speed_row = self._filter_to_max_row(flight_sample, FlightSamples.ground_speed_knots)
-        if max_speed_row.height == 1:
-            agg_row.max_ground_speed_knots = max_speed_row.select(
-                pl.col(FlightSamples.ground_speed_knots.name)).item()
-            agg_row.max_speed_aircraft_type = max_speed_row.select(
-                pl.col(FlightSamples.aircraft_type.name)).item()
-            agg_row.max_speed_aircraft_registration = max_speed_row.select(
-                pl.col(FlightSamples.aircraft_registration.name)).item()
-            agg_row.max_speed_flight = max_speed_row.select(pl.col(FlightSamples.flight.name)).item()
-        else:
-            log.warning('no max speed value for sample; all values are null')
-        log.info('returning max speed flight for sample')
+            log.warning(f'no {max_column.name} value for sample; all values are null or filtered out')
+        log.info(f'calculated {max_column.name} flight for sample')
         return agg_row

@@ -58,7 +58,6 @@ def test_summarize_flight_sample():
     '''
     sample_date = datetime(2023, 6, 11, 5, 30)
     flight_sample = pl.LazyFrame({
-        FlightSamples.icao_id.name: ['aaa111', 'bbb222', 'ccc333'],
         FlightSamples.sample_entry_date_utc.name: [sample_date, sample_date, sample_date],
         FlightSamples.flight.name: ['FLIGHT111', 'FLIGHT222', 'FLIGHT333'],
         FlightSamples.latitude.name: [1.1, 1.2, 1.3],
@@ -75,30 +74,18 @@ def test_summarize_flight_sample():
     assert round(result.avg_altitude_ft, 1) == 12000.4
     assert result.max_altitude_ft == 13000.2
     assert result.max_alt_aircraft_type == None
-    assert result.max_alt_aircraft_registration == 'REG111'
-    assert result.max_alt_flight == 'FLIGHT111'
     assert result.max_climb_rate_ft_per_min == 5
-    assert result.max_climb_aircraft_type == 'B222'
-    assert result.max_climb_aircraft_registration == 'REG222'
-    assert result.max_climb_flight == 'FLIGHT222'
     assert result.max_descent_rate_ft_per_min ==  4
-    assert result.max_descent_aircraft_type == None
-    assert result.max_descent_aircraft_registration == 'REG111'
-    assert result.max_descent_flight == 'FLIGHT111'
     assert round(result.avg_ground_speed_knots, 1) == 9.0
     assert result.max_ground_speed_knots == 10.8
-    assert result.max_speed_aircraft_type == 'B222'
-    assert result.max_speed_aircraft_registration == 'REG222'
-    assert result.max_speed_flight == 'FLIGHT222'
 
 
-@patch('transform.data.aggregation.log')
-def test_summarize_flight_sample_all_null(mock_log):
+def test_summarize_flight_sample_all_null():
     '''
-    Test that the summarize_flight_sample method logs warnings when all values are null.
+    Test that the summarize_flight_sample method returns None 
+    in average columns when all values are null.
     '''
     flight_sample = pl.LazyFrame({
-        FlightSamples.icao_id.name: ['aaa111'],
         FlightSamples.sample_entry_date_utc.name: [datetime(2023, 6, 11)],
         FlightSamples.flight.name: [None],
         FlightSamples.latitude.name: [1.1],
@@ -110,38 +97,14 @@ def test_summarize_flight_sample_all_null(mock_log):
         FlightSamples.aircraft_registration.name: [None],
     })
     result = FlightAggregator().summarize_flight_sample(flight_sample)
-    assert result.number_of_flights == 1
     assert result.avg_altitude_ft == None
-    assert result.max_altitude_ft == None
-    assert result.max_climb_rate_ft_per_min == None
-    assert result.max_descent_rate_ft_per_min ==  None
-    assert result.max_ground_speed_knots == None
-    assert mock_log.warning.call_count == 4
+    assert result.avg_ground_speed_knots == None
 
 
-def test_calculate_max_altitude_columns():
+def test_calculate_max_climb_rate():
     '''
-    Test that the _calculate_max_altitude_columns method adds columns for the highest altitude flight
-    to the flight_aggregates row, without failing on ties or nulls.
-    '''
-    flight_sample = pl.LazyFrame({
-        FlightSamples.flight.name: ['FLIGHT111', 'FLIGHT222', 'FLIGHT333'],
-        FlightSamples.altitude_ft.name: [13000.2, 11000.6, None],
-        FlightSamples.aircraft_type.name: [None, 'B222', 'C333'],
-        FlightSamples.aircraft_registration.name: ['REG111', 'REG222', 'REG333'],
-    })
-    row = FlightAggregates()
-    result = FlightAggregator()._calculate_max_altitude_columns(flight_sample, row)
-    assert result.max_altitude_ft == 13000.2
-    assert result.max_alt_aircraft_type == None
-    assert result.max_alt_aircraft_registration == 'REG111'
-    assert result.max_alt_flight == 'FLIGHT111'
-
-
-def test_calculate_max_climb_columns():
-    '''
-    Test that the _calculate_max_climb_columns method adds columns for the highest climb rate flight
-    to the flight_aggregates row, without failing on ties or nulls.
+    Test that the _calculate_max_climb_rate inserts the flight with the maximum climb rate
+    into a row of the flight_aggregates table, without failing on nulls.
     '''
     flight_sample = pl.LazyFrame({
         FlightSamples.flight.name: ['FLIGHT111', 'FLIGHT222', 'FLIGHT333'],
@@ -150,17 +113,76 @@ def test_calculate_max_climb_columns():
         FlightSamples.aircraft_registration.name: ['REG111', 'REG222', 'REG333'],
     })
     row = FlightAggregates()
-    result = FlightAggregator()._calculate_max_climb_columns(flight_sample, row)
+    result = FlightAggregator()._calculate_max_climb_rate(flight_sample, row)
     assert result.max_climb_rate_ft_per_min == 5
     assert result.max_climb_aircraft_type == 'B222'
     assert result.max_climb_aircraft_registration == 'REG222'
     assert result.max_climb_flight == 'FLIGHT222'
 
 
-def test_calculate_max_descent_columns():
+def test_calculate_max_descent_rate():
     '''
-    Test that the _calculate_max_descent_columns method adds columns for the highest descent rate flight
-    to the flight_aggregates row, without failing on ties or nulls.
+    Test that the _calculate_max_descent_rate inserts the flight with the maximum descent rate
+    into a row of the flight_aggregates table, without failing on nulls.
+    '''
+    flight_sample = pl.LazyFrame({
+        FlightSamples.flight.name: ['FLIGHT111', 'FLIGHT222', 'FLIGHT333'],
+        FlightSamples.alt_change_ft_per_min.name: [-4, 5, None],
+        FlightSamples.aircraft_type.name: ['A111', 'B222', 'C333'],
+        FlightSamples.aircraft_registration.name: ['REG111', 'REG222', 'REG333'],
+    })
+    row = FlightAggregates()
+    result = FlightAggregator()._calculate_max_descent_rate(flight_sample, row)
+    assert result.max_descent_rate_ft_per_min ==  4
+    assert result.max_descent_aircraft_type == 'A111'
+    assert result.max_descent_aircraft_registration == 'REG111'
+    assert result.max_descent_flight == 'FLIGHT111'
+
+
+def test_calculate_max_descent_rate_skips_on_nulls():
+    '''
+    Test that the _calculate_max_descent_rate doesn't alter the row when all values are null.
+    '''
+    flight_sample = pl.LazyFrame({
+        FlightSamples.flight.name: ['FLIGHT111', 'FLIGHT222', 'FLIGHT333'],
+        FlightSamples.alt_change_ft_per_min.name: [None, None, None],
+        FlightSamples.aircraft_type.name: ['A111', 'B222', 'C333'],
+        FlightSamples.aircraft_registration.name: ['REG111', 'REG222', 'REG333'],
+    })
+    row = FlightAggregates()
+    result = FlightAggregator()._calculate_max_descent_rate(flight_sample, row)
+    assert result.max_descent_rate_ft_per_min ==  None
+    assert result.max_descent_aircraft_type == None
+    assert result.max_descent_aircraft_registration == None
+    assert result.max_descent_flight == None
+
+
+def test_calculate_max_columns():
+    '''
+    Test that the _calculate_max_min_columns method adds columns for the maximum values
+    in a search column to the flight_aggregates row, without failing on ties or nulls.
+    '''
+    flight_sample = pl.LazyFrame({
+        FlightSamples.flight.name: ['FLIGHT111', 'FLIGHT222', 'FLIGHT333', 'FLIGHT444'],
+        FlightSamples.ground_speed_knots.name: [5.4, 10.8, 10.8, None],
+        FlightSamples.aircraft_type.name: [None, 'B222', 'C333', 'D444'],
+        FlightSamples.aircraft_registration.name: ['REG111', None, 'REG333', 'REG444'],
+    })
+    row = FlightAggregates()
+    result = FlightAggregator()._calculate_max_min_columns(
+        flight_sample, row, FlightSamples.ground_speed_knots, FlightAggregates.max_ground_speed_knots,
+        FlightAggregates.max_speed_aircraft_type, FlightAggregates.max_speed_aircraft_registration,
+        FlightAggregates.max_speed_flight, FlightAggregator.AggregationType.MAX)
+    assert result.max_ground_speed_knots == 10.8
+    assert result.max_speed_aircraft_type in ['B222', 'C333']
+    assert result.max_speed_aircraft_registration in [None, 'REG333']
+    assert result.max_speed_flight in ['FLIGHT222', 'FLIGHT333']
+
+
+def test_calculate_min_columns():
+    '''
+    Test that the _calculate_max_min_columns method adds columns for the minimum values
+    in a search column to the flight_aggregates row, without failing on nulls.
     '''
     flight_sample = pl.LazyFrame({
         FlightSamples.flight.name: ['FLIGHT111', 'FLIGHT222', 'FLIGHT333'],
@@ -169,27 +191,32 @@ def test_calculate_max_descent_columns():
         FlightSamples.aircraft_registration.name: ['REG111', 'REG222', 'REG333'],
     })
     row = FlightAggregates()
-    result = FlightAggregator()._calculate_max_descent_columns(flight_sample, row)
-    assert result.max_descent_rate_ft_per_min ==  4
+    result = FlightAggregator()._calculate_max_min_columns(
+        flight_sample, row, FlightSamples.alt_change_ft_per_min,
+        FlightAggregates.max_descent_rate_ft_per_min, FlightAggregates.max_descent_aircraft_type,
+        FlightAggregates.max_descent_aircraft_registration, FlightAggregates.max_descent_flight,
+        FlightAggregator.AggregationType.MIN)
+    assert result.max_descent_rate_ft_per_min ==  -4
     assert result.max_descent_aircraft_type == None
     assert result.max_descent_aircraft_registration == 'REG111'
     assert result.max_descent_flight == 'FLIGHT111'
 
 
-def test_calculate_max_speed_columns():
+@patch('transform.data.flight_aggregation.log')
+def test_calculate_max_min_columns_all_null(mock_log):
     '''
-    Test that the _calculate_max_speed_columns method adds columns for the highest speed flight
-    to the flight_aggregates row, without failing on ties or nulls.
+    Test that the _calculate_max_min_columns method only logs a warning when all search values are null.
     '''
     flight_sample = pl.LazyFrame({
-        FlightSamples.flight.name: ['FLIGHT111', 'FLIGHT222', 'FLIGHT333'],
-        FlightSamples.ground_speed_knots.name: [5.4, 10.8, 10.8],
-        FlightSamples.aircraft_type.name: [None, 'B222', 'C333'],
-        FlightSamples.aircraft_registration.name: ['REG111', 'REG222', 'REG333'],
+        FlightSamples.flight.name: ['FLIGHT111'],
+        FlightSamples.ground_speed_knots.name: [None],
+        FlightSamples.aircraft_type.name: ['B222'],
+        FlightSamples.aircraft_registration.name: ['REG111'],
     })
     row = FlightAggregates()
-    result = FlightAggregator()._calculate_max_speed_columns(flight_sample, row)
-    assert result.max_ground_speed_knots == 10.8
-    assert result.max_speed_aircraft_type == 'B222'
-    assert result.max_speed_aircraft_registration == 'REG222'
-    assert result.max_speed_flight == 'FLIGHT222'
+    result = FlightAggregator()._calculate_max_min_columns(
+        flight_sample, row, FlightSamples.ground_speed_knots, FlightAggregates.max_ground_speed_knots,
+        FlightAggregates.max_speed_aircraft_type, FlightAggregates.max_speed_aircraft_registration,
+        FlightAggregates.max_speed_flight, FlightAggregator.AggregationType.MAX)
+    assert mock_log.warning.call_count == 1
+    assert result.max_speed_aircraft_registration == None

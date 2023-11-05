@@ -1,7 +1,7 @@
 from config.settings import s
 from config.logger import Logger
 from database.interface import BaseInterface
-from database.models import Base, FlightSamples, FlightAggregates, DailyTopAircraft, MonthlyTopFlights
+from database.models import Base, FlightSamples, FlightAggregates, DailyFlightTotals, DailyTopAircraft, MonthlyTopFlights
 
 from hydra.utils import instantiate
 from sqlalchemy import Engine, select
@@ -30,7 +30,7 @@ class DbRepo():
         self.engine: Engine = interface.engine
         self.upgrade_db = interface.upgrade_db
     
-    def insert_dataframe(self, df: pl.DataFrame, table: Base) -> None:
+    def insert_dataframe(self, df: pl.DataFrame, table: Base) -> None:  # not used yet......................
         '''
         Appends a dataframe to a sqlalchemy mapped table.
         '''
@@ -53,6 +53,26 @@ class DbRepo():
                 )
             .where(FlightAggregates.sample_entry_date_utc == None)
         )
+        unmatched_samples: Iterator[FlightSamples] = session.execute(query)
+        log.info('returning flight sample dates for aggregation')
+        return unmatched_samples
+
+    def get_new_flight_aggregates(self, session: Session) -> Iterator[FlightSamples]:                   # wip
+        '''
+        Fetches dates of flight aggregates without matching totals.
+        '''
+        log.info('fetching flight aggregates that need to be totalled')
+        parent_table = FlightAggregates.__tablename__
+        parent_table_dates = FlightAggregates.sample_entry_date_utc.name
+        child_table = DailyFlightTotals
+        child_table_dates = DailyFlightTotals.sample_date.name
+        query = f'''
+            select distinct cast({parent_table_dates} as date) as parent_dates
+            from {parent_table}
+            outer join {child_table} on parent_dates = {parent_table}.{child_table_dates}
+            where {child_table}.{child_table_dates} is null
+            order by parent dates desc
+        '''
         unmatched_samples: Iterator[FlightSamples] = session.execute(query)
         log.info('returning flight sample dates for aggregation')
         return unmatched_samples

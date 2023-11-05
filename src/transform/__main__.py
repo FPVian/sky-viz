@@ -18,7 +18,7 @@ async def main():
     db.upgrade_db()
     while True:
         try:
-            app_routine(db)
+            app_routine()
         except Exception as e:
             log.error(e)
             if s.transform.suppress_errors is False:
