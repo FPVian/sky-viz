@@ -76,13 +76,6 @@ def test_read_latest_flight_sample(sqlite_repo: SqliteInterface):
         FlightAggregates(
             sample_entry_date_utc=datetime(2023, 6, 10),
             number_of_flights=20,
-            avg_ground_speed_knots=35,
-            min_ground_speed_knots=30,
-            max_ground_speed_knots=40,
-            avg_altitude_ft=15000,
-            max_altitude_ft=20000,
-            max_climb_rate_ft_per_min=1000,
-            max_descent_rate_ft_per_min=500,
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():
@@ -101,13 +94,6 @@ def test_convert_utc_to_local_time(sqlite_repo: SqliteInterface):
         FlightAggregates(
             sample_entry_date_utc=sample_time,
             number_of_flights=10,
-            avg_ground_speed_knots=35,
-            min_ground_speed_knots=30,
-            max_ground_speed_knots=40,
-            avg_altitude_ft=15000,
-            max_altitude_ft=20000,
-            max_climb_rate_ft_per_min=1000,
-            max_descent_rate_ft_per_min=500,
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():
@@ -128,24 +114,10 @@ def test_filter_aggregates_by_recent_days(sqlite_repo: SqliteInterface):
         FlightAggregates(
             sample_entry_date_utc=now,
             number_of_flights=10,
-            avg_ground_speed_knots=35,
-            min_ground_speed_knots=30,
-            max_ground_speed_knots=40,
-            avg_altitude_ft=15000,
-            max_altitude_ft=20000,
-            max_climb_rate_ft_per_min=1000,
-            max_descent_rate_ft_per_min=500,
         ),
         FlightAggregates(
             sample_entry_date_utc=datetime(2022, 6, 10),
             number_of_flights=20,
-            avg_ground_speed_knots=35,
-            min_ground_speed_knots=30,
-            max_ground_speed_knots=40,
-            avg_altitude_ft=15000,
-            max_altitude_ft=20000,
-            max_climb_rate_ft_per_min=1000,
-            max_descent_rate_ft_per_min=500,
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():
@@ -181,24 +153,10 @@ def test_get_last_flight_aggregate(sqlite_repo: SqliteInterface):
         FlightAggregates(
             sample_entry_date_utc=datetime(2022, 5, 10),
             number_of_flights=10,
-            avg_ground_speed_knots=35,
-            min_ground_speed_knots=30,
-            max_ground_speed_knots=40,
-            avg_altitude_ft=15000,
-            max_altitude_ft=20000,
-            max_climb_rate_ft_per_min=1000,
-            max_descent_rate_ft_per_min=500,
         ),
         FlightAggregates(
             sample_entry_date_utc=datetime(2022, 6, 10),
             number_of_flights=20,
-            avg_ground_speed_knots=35,
-            min_ground_speed_knots=30,
-            max_ground_speed_knots=40,
-            avg_altitude_ft=15000,
-            max_altitude_ft=20000,
-            max_climb_rate_ft_per_min=1000,
-            max_descent_rate_ft_per_min=500,
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():
@@ -219,24 +177,10 @@ def test_get_current_flights_count(sqlite_repo: SqliteInterface):
         FlightAggregates(
             sample_entry_date_utc=datetime(2022, 5, 10),
             number_of_flights=5,
-            avg_ground_speed_knots=35,
-            min_ground_speed_knots=30,
-            max_ground_speed_knots=40,
-            avg_altitude_ft=15000,
-            max_altitude_ft=20000,
-            max_climb_rate_ft_per_min=1000,
-            max_descent_rate_ft_per_min=500,
         ),
         FlightAggregates(
             sample_entry_date_utc=datetime(2022, 6, 10),
             number_of_flights=20,
-            avg_ground_speed_knots=35,
-            min_ground_speed_knots=30,
-            max_ground_speed_knots=40,
-            avg_altitude_ft=15000,
-            max_altitude_ft=20000,
-            max_climb_rate_ft_per_min=1000,
-            max_descent_rate_ft_per_min=500,
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():
@@ -254,24 +198,10 @@ def test_calc_change_in_flights(sqlite_repo: SqliteInterface):
         FlightAggregates(
             sample_entry_date_utc=datetime(2022, 5, 10),
             number_of_flights=5,
-            avg_ground_speed_knots=35,
-            min_ground_speed_knots=30,
-            max_ground_speed_knots=40,
-            avg_altitude_ft=15000,
-            max_altitude_ft=20000,
-            max_climb_rate_ft_per_min=1000,
-            max_descent_rate_ft_per_min=500,
         ),
         FlightAggregates(
             sample_entry_date_utc=datetime(2022, 6, 10),
             number_of_flights=20,
-            avg_ground_speed_knots=35,
-            min_ground_speed_knots=30,
-            max_ground_speed_knots=40,
-            avg_altitude_ft=15000,
-            max_altitude_ft=20000,
-            max_climb_rate_ft_per_min=1000,
-            max_descent_rate_ft_per_min=500,
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():

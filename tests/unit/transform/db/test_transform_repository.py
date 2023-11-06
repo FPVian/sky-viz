@@ -29,7 +29,7 @@ def sqlite_repo():
 def test_get_new_flight_samples(sqlite_repo: DbRepo):
     '''
     Test that the get_new_flight_samples method returns flight sample dates
-    that have no match in the flight_aggregates table.
+    that have no match in the flight_aggregates table in order from most recent to oldest.
     '''
     sample_rows = [
         FlightSamples(
@@ -44,18 +44,17 @@ def test_get_new_flight_samples(sqlite_repo: DbRepo):
             latitude=-3.3,
             longitude=-4.4,
         ),
+        FlightSamples(
+            icao_id='abc789',
+            sample_entry_date_utc=datetime(2023, 6, 15),
+            latitude=-3.3,
+            longitude=-4.4,
+        ),
     ]
     aggregate_rows = [
         FlightAggregates(
             sample_entry_date_utc=datetime(2023, 6, 11),
             number_of_flights=1,
-            avg_ground_speed_knots=35,
-            min_ground_speed_knots=30,
-            max_ground_speed_knots=40,
-            avg_altitude_ft=15000,
-            max_altitude_ft=20000,
-            max_climb_rate_ft_per_min=1000,
-            max_descent_rate_ft_per_min=500,
         ),
     ]
     with Session(sqlite_repo.engine) as session, session.begin():
@@ -64,8 +63,8 @@ def test_get_new_flight_samples(sqlite_repo: DbRepo):
     with Session(sqlite_repo.engine) as session:
         result: Iterator[FlightSamples] = sqlite_repo.get_new_flight_samples(session)
     unmatched_sample_dates = list(result)
-    assert len(unmatched_sample_dates) == 1
-    assert unmatched_sample_dates[0].sample_entry_date_utc == datetime(2023, 6, 10)
+    assert len(unmatched_sample_dates) == 2
+    assert unmatched_sample_dates[0].sample_entry_date_utc == datetime(2023, 6, 15)
 
 
 @pytest.mark.skip

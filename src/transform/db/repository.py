@@ -52,6 +52,7 @@ class DbRepo():
                 isouter=True,
                 )
             .where(FlightAggregates.sample_entry_date_utc == None)
+            .order_by(FlightSamples.sample_entry_date_utc.desc())
         )
         unmatched_samples: Iterator[FlightSamples] = session.execute(query)
         log.info('returning flight sample dates for aggregation')

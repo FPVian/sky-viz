@@ -121,7 +121,7 @@ class FlightAggregates(Base):
 
 
 class DailyFlightTotals(Base):
-    __tablename__ = 'daily_flight_aggregates'
+    __tablename__ = 'daily_flight_totals'
     sample_date: Mapped[date] = mapped_column(primary_key=True)
     day_of_week: Mapped[str]  # 'Tue'
     day_and_number: Mapped[str]  # 'Mon 23'
@@ -151,7 +151,7 @@ class DailyFlightTotals(Base):
 
 
 class WeeklyFlightTotals(Base):
-    __tablename__ = 'weekly_flight_aggregates'
+    __tablename__ = 'weekly_flight_totals'
     week_start_date: Mapped[date] = mapped_column(primary_key=True)
     week_of_year: Mapped[int]
     sample_size: Mapped[int]
@@ -180,7 +180,7 @@ class WeeklyFlightTotals(Base):
 
 
 class MonthlyFlightTotals(Base):
-    __tablename__ = 'monthly_flight_aggregates'
+    __tablename__ = 'monthly_flight_totals'
     month_start_date: Mapped[date] = mapped_column(primary_key=True)
     month: Mapped[str]  # 'Jan'
     month_and_year: Mapped[str]  # 'Mar 21'
