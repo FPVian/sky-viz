@@ -1,4 +1,3 @@
-from sqlalchemy_data_model_visualizer import generate_data_model_diagram, add_web_font_and_interactivity
 from database.models import (
     FlightSamples, RecentFlightSamples, RandomFlightSamples, FlightEmergencies, FlightAggregates,
     DailyFlightTotals, WeeklyFlightTotals, MonthlyFlightTotals, DailyTopAircraft, WeeklyTopAircraft,
@@ -6,7 +5,7 @@ from database.models import (
 )
 
 from sqlalchemy.orm import relationship
-import sqlalchemy_data_model_visualizer
+import sqlalchemy_data_model_visualizer as sql_dmv
 
 import os
 
@@ -107,8 +106,7 @@ FlightAggregates.monthly_totals = relationship(
     foreign_keys=[MonthlyFlightTotals.month_start_date]
 )
 
-generate_data_model_diagram(models, output_file_name, add_labels=False)
-add_web_font_and_interactivity(svg_file_name, svg_file_name)
-# sqlalchemy_data_model_visualizer.generate_data_model_diagram(models, output_file_name, add_labels=False)
-# sqlalchemy_data_model_visualizer.add_web_font_and_interactivity(svg_file_name, svg_file_name)
+
+sql_dmv.generate_data_model_diagram(models, output_file_name, add_labels=False)
+sql_dmv.add_web_font_and_interactivity(svg_file_name, svg_file_name)
 os.remove(output_file_name)

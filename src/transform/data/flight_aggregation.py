@@ -26,7 +26,7 @@ class FlightAggregator(BaseCalcs):
         '''
         log.info('summarizing flight samples')
         with Session(self.db.engine) as session:
-            unmatched_flight_samples: Iterator[FlightSamples] = self.db.get_new_flight_samples(session)  # need to sort rows by date?
+            unmatched_flight_samples: Iterator[FlightSamples] = self.db.get_new_flight_samples(session)
         for flight_sample_date in unmatched_flight_samples:  # delete any dependent daily, weekly, monthly totals
             sample_date: datetime = flight_sample_date.sample_entry_date_utc
             flight_sample: pl.LazyFrame = self.db.filter_table_by_dates(
