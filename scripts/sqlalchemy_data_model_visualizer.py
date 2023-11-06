@@ -34,7 +34,7 @@ SOFTWARE.
 """
 
 
-def generate_data_model_diagram(models, output_file='my_data_model_diagram'):
+def generate_data_model_diagram(models, output_file='my_data_model_diagram', add_labels=True):
     # Initialize graph with more advanced visual settings
     dot = graphviz.Digraph(comment='Interactive Data Models', format='svg', 
                             graph_attr={'bgcolor': '#EEEEEE', 'rankdir': 'TB', 'splines': 'spline'},
@@ -81,7 +81,7 @@ def generate_data_model_diagram(models, output_file='my_data_model_diagram'):
             dot.edge(
                 name,
                 target_name,
-                # label=rel.key,
+                label=rel.key if add_labels else None,
                 tooltip=tooltip,
                 color="#1E88E5",
                 style="dashed"
