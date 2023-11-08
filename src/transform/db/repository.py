@@ -4,7 +4,7 @@ from database.interface import BaseInterface
 from database.models import Base, FlightSamples, FlightAggregates, DailyFlightTotals, DailyTopAircraft, MonthlyTopFlights
 
 from hydra.utils import instantiate
-from sqlalchemy import Engine, select
+from sqlalchemy import Engine, select, text
 from sqlalchemy.orm import Session, Mapped
 import polars as pl
 
@@ -58,22 +58,22 @@ class DbRepo():
         log.info('returning flight sample dates for aggregation')
         return unmatched_samples
 
-    def get_new_flight_aggregates(self, session: Session) -> Iterator[FlightSamples]:                   # wip
+    def get_new_flight_aggregates(self, session: Session) -> Iterator[FlightSamples]:                   # wip  (or use date() instead of strftime())
         '''
         Fetches dates of flight aggregates without matching totals.
         '''
         log.info('fetching flight aggregates that need to be totalled')
         parent_table = FlightAggregates.__tablename__
         parent_table_dates = FlightAggregates.sample_entry_date_utc.name
-        child_table = DailyFlightTotals
+        child_table = DailyFlightTotals.__tablename__
         child_table_dates = DailyFlightTotals.sample_date.name
-        query = f'''
-            select distinct cast({parent_table_dates} as date) as parent_dates
-            from {parent_table}
-            outer join {child_table} on parent_dates = {parent_table}.{child_table_dates}
-            where {child_table}.{child_table_dates} is null
-            order by parent dates desc
-        '''
+        query = text(f'''
+            select distinct strftime('%Y-%m-%d', parent.{parent_table_dates}) as parent_dates
+            from {parent_table} as parent
+            left join {child_table} as child on parent_dates = child.{child_table_dates}
+            where child.{child_table_dates} is null
+            order by parent_dates desc
+        ''')
         unmatched_samples: Iterator[FlightSamples] = session.execute(query)
         log.info('returning flight sample dates for aggregation')
         return unmatched_samples
@@ -88,6 +88,7 @@ class DbRepo():
         '''
         Queries a table for rows between two dates and returns a dataframe.
         If no end_date is specified, the date column is filtered to match start_date exactly.
+        Result is inclusive of start_date and exclusive of end_date.
         '''
         log.info(f'reading {table.__tablename__} table between {start_date} and {end_date}')
         if end_date is None:
