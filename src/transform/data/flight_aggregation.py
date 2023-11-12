@@ -95,7 +95,7 @@ class FlightAggregator(BaseCalcs):
         MAX = 'max'
         MIN = 'min'
 
-    def _calculate_max_min_columns(
+    def _calculate_max_min_columns(                                                     # remove else logic by returning early
             self, flight_sample: pl.LazyFrame, agg_row: FlightAggregates, search_column: Mapped,
             max_column: Mapped, aircraft_type_column: Mapped, registration_column: Mapped,
             flight_column: Mapped, aggregation_type: AggregationType

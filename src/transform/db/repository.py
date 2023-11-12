@@ -73,12 +73,12 @@ class DbRepo():
             left join {child_table} as child on parent_dates = child.{child_table_dates}
             where child.{child_table_dates} is null
             order by parent_dates desc
-        ''')
+        ''')                    # dedupe dates and cast to the correct date/date format outside of sql query
         unmatched_samples: Iterator[FlightSamples] = session.execute(query)
         log.info('returning flight sample dates for aggregation')
         return unmatched_samples
     
-    def filter_table_by_dates(
+    def filter_table_by_dates(                                                                  # remove else
             self,
             table: Base,
             date_column: Mapped[datetime],
@@ -99,7 +99,7 @@ class DbRepo():
         log.info(f'returning dataframe filered on {date_column}')
         return table
 
-    def avg_count_aircraft_type_per_sample(
+    def avg_count_aircraft_type_per_sample(                                 # abstract these 4 ranking queries
             self, start_date: datetime, end_date: datetime) -> pl.DataFrame:
         '''
         Counts the average number of aircraft for each aircraft type over a range of samples.
@@ -187,7 +187,7 @@ class DbRepo():
         log.info('returning table of unique registrations by aircraft type')
         return unique_aircraft_by_type
 
-    def count_flights_per_month(self, month_start_date: date) -> pl.DataFrame:
+    def count_flights_per_month(self, month_start_date: date) -> pl.DataFrame:                   # remove else
         '''
         Counts the number of days each flight code is flown over the course of a month.
         '''

@@ -19,7 +19,7 @@ class FlightTotaller(BaseCalcs):
     def __init__(self) -> None:
         self.db = DbRepo()
 
-    def total_daily_aggregates(self):
+    def total_daily_aggregates(self):                                    # abstract this with FlightAggregator
         with Session(self.db.engine) as session:
             unmatched_aggregates: Iterator[FlightAggregates] = self.db.get_new_flight_aggregates(session)
         for agg_sample_date in unmatched_aggregates:
