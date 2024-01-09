@@ -5,6 +5,7 @@ from transform.data.base_calcs import BaseCalcs
 
 from sqlalchemy.orm import Session, Mapped
 import polars as pl
+from polars.exceptions import InvalidOperationError
 
 from typing import Iterator
 from datetime import datetime
@@ -105,11 +106,11 @@ class FlightAggregator(BaseCalcs):
         associated aircraft type, registration, and flight for a sample of flights.
         '''
         log.info(f'calculating {max_column.name} flight for sample')
-        if aggregation_type == self.AggregationType.MAX:
-            filtered_row = self._filter_to_max_row(flight_sample, search_column)
-        elif aggregation_type == self.AggregationType.MIN:
-            filtered_row = self._filter_to_min_row(flight_sample, search_column)
-        if filtered_row.height == 1:
+        try:
+            if aggregation_type == self.AggregationType.MAX:
+                filtered_row = self._filter_to_max_row(flight_sample, search_column)
+            elif aggregation_type == self.AggregationType.MIN:
+                filtered_row = self._filter_to_min_row(flight_sample, search_column)
             setattr(agg_row, max_column.name, filtered_row.select(pl.col(search_column.name)).item())
             setattr(agg_row, aircraft_type_column.name,
                     filtered_row.select(pl.col(FlightSamples.aircraft_type.name)).item())
@@ -117,7 +118,7 @@ class FlightAggregator(BaseCalcs):
                     filtered_row.select(pl.col(FlightSamples.aircraft_registration.name)).item())
             setattr(agg_row, flight_column.name,
                     filtered_row.select(pl.col(FlightSamples.flight.name)).item())
-        else:
+            log.info(f'calculated {max_column.name} flight for sample')
+        except (InvalidOperationError, ValueError):
             log.warning(f'no {max_column.name} value for sample; all values are null or filtered out')
-        log.info(f'calculated {max_column.name} flight for sample')
         return agg_row
