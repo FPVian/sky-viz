@@ -1,23 +1,23 @@
-from config.settings import s
+# from config.settings import s
 from config.env import Environs
 
 import pulumi
-from pulumi import ResourceOptions
-import pulumi_docker as docker
-from pulumi_azure_native.resources.v20220901 import ResourceGroup
-import pulumi_azure_native.dbforpostgresql.v20230301preview as dbforpostgresql
-import pulumi_azure_native.operationalinsights.v20221001 as operationalinsights
-from pulumi_azure_native.operationalinsights.v20200801 import get_shared_keys_output
-import pulumi_azure_native.app.v20230501 as app
-import pulumi_azure_native.web.v20220901 as web
-import pulumi_azure_native.insights.v20230101 as insights
-from pulumi_azure_native.insights.v20210501preview import DiagnosticSetting, LogSettingsArgs
-from pulumi_azure_native.insights.v20230315preview import (
-    ScheduledQueryRule, ScheduledQueryRuleCriteriaArgs, ConditionArgs, ConditionOperator,
-    TimeAggregation, ActionsArgs)
+# from pulumi import ResourceOptions
+# import pulumi_docker as docker
+# from pulumi_azure_native.resources.v20220901 import ResourceGroup
+# import pulumi_azure_native.dbforpostgresql.v20230301preview as dbforpostgresql
+# import pulumi_azure_native.operationalinsights.v20221001 as operationalinsights
+# from pulumi_azure_native.operationalinsights.v20200801 import get_shared_keys_output
+# import pulumi_azure_native.app.v20230501 as app
+# import pulumi_azure_native.web.v20220901 as web
+# import pulumi_azure_native.insights.v20230101 as insights
+# from pulumi_azure_native.insights.v20210501preview import DiagnosticSetting, LogSettingsArgs
+# from pulumi_azure_native.insights.v20230315preview import (
+#     ScheduledQueryRule, ScheduledQueryRuleCriteriaArgs, ConditionArgs, ConditionOperator,
+#     TimeAggregation, ActionsArgs)
 
 import os
-from datetime import datetime
+# from datetime import datetime
 
 '''
 Pulumi Azure Native API docs: https://www.pulumi.com/registry/packages/azure-native/api-docs/
