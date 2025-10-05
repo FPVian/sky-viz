@@ -1,12 +1,12 @@
-from flights.utils import logger
-from flights.config.settings import s
+from config.logger import Logger
+from config.settings import s
 
 import requests
 
 from typing import Optional, Any
 import time
 
-log = logger.create(__name__)
+log = Logger.create(__name__)
 
 '''
 Requests docs: https://requests.readthedocs.io/en/latest/
@@ -30,14 +30,13 @@ class RestApi:
             return response
         except requests.exceptions.RequestException as error:
             self._log_error(error)
-            return None
 
     def _log_error(self, error: requests.exceptions.RequestException):
         request = error.request
         response = error.response
-        log.error(f'Error for {request.method} {request.url}: {error}')
-        if response is not None:
-            log.error(f'Status code {response.status_code}, response text:\n{response.text}')
+        log.warning(f'Error for {request.method} {request.url}: {error}')
+        if response:
+            log.warning(f'Status code {response.status_code}, response text:\n{response.text}')
 
     def get(self, params: Optional[dict] = None) -> Optional[Any]:
         for _ in range(s.api.number_of_tries):
@@ -47,6 +46,3 @@ class RestApi:
                 return response.json()
             time.sleep(s.api.wait_before_retry)
         log.critical(f'Failed to GET 200 status after multiple tries. Url: {self.url} Params: {params}')
-        if response:
-            log.critical(f'Status code {response.status_code}, response text:\n{response.text}')
-        return None

@@ -28,6 +28,7 @@ RUN adduser \
 # Copy the source code into the container.
 COPY ./src/flights ./src/flights
 COPY ./src/database ./src/database
+COPY ./src/config ./src/config
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.

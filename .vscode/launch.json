@@ -11,7 +11,7 @@
             "options": [
                 "default",
                 "dev",
-                "prod",
+                "staging",
                 "test"
             ],
             "default": "default"
@@ -23,6 +23,7 @@
             "options": [
                 "default",
                 "dev",
+                "staging",
                 "prod",
                 "test"
             ],
@@ -35,6 +36,14 @@
             "type": "python",
             "request": "launch",
             "module": "flights",
+            "console": "integratedTerminal",
+            "env": { "SKYVIZ_ENV": "${input:FlightsEnvPicker}" }
+        },
+        {
+            "name": "Transform",
+            "type": "python",
+            "request": "launch",
+            "module": "transform",
             "console": "integratedTerminal",
             "env": { "SKYVIZ_ENV": "${input:FlightsEnvPicker}" }
         },
@@ -57,13 +66,13 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "env": { "SKYVIZ_ENV": "${input:FlightsEnvPicker}" },
+            "env": { "SKYVIZ_ENV": "${input:SkyvizEnvPicker}" },
         },
     ],
     "compounds": [
         {
             "name": "Flights & SkyViz",
-            "configurations": ["Flights", "SkyViz"]
+            "configurations": ["Flights", "Transform", "SkyViz"]
         }
     ],
 }

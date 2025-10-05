@@ -32,3 +32,6 @@
 **/values.dev.yaml
 LICENSE
 README.md
+
+# User-Defined
+**/*.sqlite3

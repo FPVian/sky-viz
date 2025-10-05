@@ -1,5 +1,9 @@
-from flights.api.clients.adsb_exchange import AdsbExchangeClient
+from flights.api.adsb_exchange import AdsbExchangeClient
 import pandas as pd
+
+'''
+pip install pandas and openpyxl
+'''
 
 
 def main():
